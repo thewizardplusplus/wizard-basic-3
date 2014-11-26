@@ -1,6 +1,6 @@
 OBJECTS = source/thewizardplusplus/wizard-basic-3/main.o
 CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
-LDFLAGS += -lboost_program_options
+LDFLAGS += -lboost_program_options -lboost_filesystem
 
 main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o wb3i $(OBJECTS) $(LDFLAGS)

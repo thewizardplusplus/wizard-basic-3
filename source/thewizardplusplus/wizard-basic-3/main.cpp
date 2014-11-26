@@ -3,10 +3,12 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/algorithm/string/join.hpp>
 
 using namespace boost;
 using namespace boost::program_options;
+using namespace boost::filesystem;
 using namespace boost::algorithm;
 
 enum class FinalStage : uint8_t {
@@ -19,6 +21,7 @@ enum class FinalStage : uint8_t {
 struct CommandLineArguments {
 	FinalStage final_stage = FinalStage::NONE;
 	std::string script_file;
+	std::string script_base_path;
 	std::vector<std::string> script_arguments;
 };
 
@@ -90,6 +93,9 @@ auto ProcessCommandLineArguments(
 	} else {
 		throw std::runtime_error("script file not specified");
 	}
+	command_line_arguments.script_base_path = path(
+		command_line_arguments.script_file
+	).parent_path().string();
 	if (arguments_map.count("script-arguments")) {
 		command_line_arguments.script_arguments =
 			arguments_map["script-arguments"].as<std::vector<std::string>>();
@@ -120,6 +126,9 @@ int main(int number_of_arguments, char* arguments[]) try {
 	std::cout
 		<< (format("Script file: \"%s\".\n")
 			% command_line_arguments.script_file).str();
+	std::cout
+		<< (format("Script base path: \"%s\".\n")
+			% command_line_arguments.script_base_path).str();
 	std::cout
 		<< (format("Script arguments: \"%s\".\n")
 			% join(command_line_arguments.script_arguments, "\", \"")).str();
