@@ -1,9 +1,13 @@
+#include <string>
+#include <vector>
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 using namespace boost;
 using namespace boost::program_options;
+using namespace boost::algorithm;
 
 enum class FinalStage : uint8_t {
 	NONE,
@@ -14,6 +18,8 @@ enum class FinalStage : uint8_t {
 
 struct CommandLineArguments {
 	FinalStage final_stage = FinalStage::NONE;
+	std::string script_file;
+	std::vector<std::string> script_arguments;
 };
 
 auto ProcessCommandLineArguments(
@@ -28,12 +34,23 @@ auto ProcessCommandLineArguments(
 			"final-stage,s",
 			value<std::string>(),
 			R"(- set final stage (allowed: "code", "ast" and "ir").)"
+		)
+		("script-file", value<std::string>(), "script file")
+		(
+			"script-arguments",
+			value<std::vector<std::string>>()->composing(),
+			"script arguments"
 		);
+
+	auto script_arguments_description = positional_options_description();
+	script_arguments_description.add("script-file", 1);
+	script_arguments_description.add("script-arguments", -1);
 
 	auto arguments_map = variables_map();
 	store(
 		command_line_parser(number_of_arguments, arguments)
 			.options(interpreter_arguments_description)
+			.positional(script_arguments_description)
 			.run(),
 		arguments_map
 	);
@@ -67,6 +84,16 @@ auto ProcessCommandLineArguments(
 			);
 		}
 	}
+	if (arguments_map.count("script-file")) {
+		command_line_arguments.script_file =
+			arguments_map["script-file"].as<std::string>();
+	} else {
+		throw std::runtime_error("script file not specified");
+	}
+	if (arguments_map.count("script-arguments")) {
+		command_line_arguments.script_arguments =
+			arguments_map["script-arguments"].as<std::vector<std::string>>();
+	}
 
 	return command_line_arguments;
 }
@@ -90,6 +117,12 @@ int main(int number_of_arguments, char* arguments[]) try {
 			std::cout << "Final stage: none.\n";
 			break;
 	}
+	std::cout
+		<< (format("Script file: \"%s\".\n")
+			% command_line_arguments.script_file).str();
+	std::cout
+		<< (format("Script arguments: \"%s\".\n")
+			% join(command_line_arguments.script_arguments, "\", \"")).str();
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }
