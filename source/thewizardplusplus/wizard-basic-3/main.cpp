@@ -1,22 +1,36 @@
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/format.hpp>
 
+using namespace boost;
 using namespace boost::program_options;
 
-void ProcessCommandLineArguments(int number_of_arguments, char* arguments[]) {
-	options_description interpreter_arguments_description("Options");
+enum class FinalStage : uint8_t {
+	NONE,
+	CODE,
+	AST,
+	IR
+};
+
+struct CommandLineArguments {
+	FinalStage final_stage = FinalStage::NONE;
+};
+
+auto ProcessCommandLineArguments(
+	const int number_of_arguments,
+	char* arguments[]
+) -> CommandLineArguments {
+	auto interpreter_arguments_description = options_description("Options");
 	interpreter_arguments_description.add_options()
 		("version,v", "- show version;")
 		("help,h", "- show help;")
 		(
 			"final-stage,s",
 			value<std::string>(),
-			"- set final stage ("
-				R"(allowed: "preprocessed-code", "ast" and "llvm-ir")"
-			")."
+			R"(- set final stage (allowed: "code", "ast" and "ir").)"
 		);
 
-	variables_map arguments_map;
+	auto arguments_map = variables_map();
 	store(
 		command_line_parser(number_of_arguments, arguments)
 			.options(interpreter_arguments_description)
@@ -37,8 +51,45 @@ void ProcessCommandLineArguments(int number_of_arguments, char* arguments[]) {
 			<< interpreter_arguments_description;
 		std::exit(EXIT_SUCCESS);
 	}
+
+	auto command_line_arguments = CommandLineArguments();
+	if (arguments_map.count("final-stage")) {
+		const auto final_stage = arguments_map["final-stage"].as<std::string>();
+		if (final_stage == "code") {
+			command_line_arguments.final_stage = FinalStage::CODE;
+		} else if (final_stage == "ast") {
+			command_line_arguments.final_stage = FinalStage::AST;
+		} else if (final_stage == "ir") {
+			command_line_arguments.final_stage = FinalStage::IR;
+		} else {
+			throw std::runtime_error(
+				(format(R"(unknown final stage "%s")") % final_stage).str()
+			);
+		}
+	}
+
+	return command_line_arguments;
 }
 
-int main(int number_of_arguments, char* arguments[]) {
-	ProcessCommandLineArguments(number_of_arguments, arguments);
+int main(int number_of_arguments, char* arguments[]) try {
+	const auto command_line_arguments = ProcessCommandLineArguments(
+		number_of_arguments,
+		arguments
+	);
+	switch (command_line_arguments.final_stage) {
+		case FinalStage::CODE:
+			std::cout << "Final stage: code.\n";
+			break;
+		case FinalStage::AST:
+			std::cout << "Final stage: AST.\n";
+			break;
+		case FinalStage::IR:
+			std::cout << "Final stage: IR.\n";
+			break;
+		case FinalStage::NONE:
+			std::cout << "Final stage: none.\n";
+			break;
+	}
+} catch (const std::exception& exception) {
+	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }
