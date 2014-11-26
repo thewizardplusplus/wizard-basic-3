@@ -65,6 +65,7 @@ auto ProcessCommandLineArguments(
 				"(c) thewizardplusplus, 2014\n";
 		std::exit(EXIT_SUCCESS);
 	}
+
 	if (arguments_map.count("help")) {
 		std::cout
 			<< "Usage: wb3i [options] <script-file> [<script-arguments>]\n"
@@ -87,15 +88,21 @@ auto ProcessCommandLineArguments(
 			);
 		}
 	}
+
 	if (arguments_map.count("script-file")) {
 		command_line_arguments.script_file =
 			arguments_map["script-file"].as<std::string>();
 	} else {
 		throw std::runtime_error("script file not specified");
 	}
+
 	command_line_arguments.script_base_path = path(
 		command_line_arguments.script_file
 	).parent_path().string();
+	if (!command_line_arguments.script_base_path.empty()) {
+		command_line_arguments.script_base_path += '/';
+	}
+
 	if (arguments_map.count("script-arguments")) {
 		command_line_arguments.script_arguments =
 			arguments_map["script-arguments"].as<std::vector<std::string>>();
