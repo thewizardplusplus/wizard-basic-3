@@ -1,0 +1,9 @@
+OBJECTS = source/thewizardplusplus/wizard-basic-3/main.o
+CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
+LDFLAGS += -lboost_program_options
+
+main: $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o wb3i $(OBJECTS) $(LDFLAGS)
+
+clean:
+	find . -name "*.o" -type f -delete
