@@ -8,8 +8,8 @@ using namespace boost;
 using namespace boost::program_options;
 using namespace boost::filesystem;
 
-static const int POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
-static const int POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
+static const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
+static const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
 
 namespace thewizardplusplus {
 namespace wizard_basic_3 {

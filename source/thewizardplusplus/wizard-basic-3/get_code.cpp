@@ -1,8 +1,18 @@
 #include "get_code.h"
 #include <fstream>
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
 
+using namespace thewizardplusplus::wizard_basic_3;
 using namespace boost;
+
+static const auto INCLUDE_OPERATOR_PATTERN = regex(
+	R"pattern(\binclude\s*"((?:\\.|[^"])*)")pattern"
+);
+
+std::string CleanMatchAndGetCode(const smatch& match) {
+	return GetCode(match[1]);
+}
 
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
@@ -30,7 +40,7 @@ auto GetCode(const std::string& filename) -> std::string {
 		);
 	}
 
-	return code;
+	return regex_replace(code, INCLUDE_OPERATOR_PATTERN, CleanMatchAndGetCode);
 }
 
 }
