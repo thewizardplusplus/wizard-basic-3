@@ -1,16 +1,13 @@
 #include "get_code.h"
+#include <set>
 #include <fstream>
 #include <boost/regex.hpp>
-#include <boost/format.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 
 using namespace thewizardplusplus::wizard_basic_3;
 using namespace boost;
 using namespace boost::filesystem;
-
-static const auto INCLUDE_OPERATOR_PATTERN = regex(
-	R"pattern(\binclude\s*"((?:\\.|[^"])*)")pattern"
-);
 
 struct CodeGetter {
 	std::string base_path;
@@ -20,10 +17,22 @@ struct CodeGetter {
 	}
 };
 
+static const auto INCLUDE_OPERATOR_PATTERN = regex(
+	R"pattern(\binclude\s*"((?:\\.|[^"])*)")pattern"
+);
+
+static auto included_files = std::set<std::string>();
+
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
 auto GetCode(const std::string& filename) -> std::string {
+	const auto absolute_path = canonical(path(filename)).string();
+	if (included_files.count(absolute_path)) {
+		return "";
+	}
+	included_files.insert(absolute_path);
+
 	std::ifstream file(filename.c_str());
 	if ((file.rdstate() & std::ifstream::failbit) != 0) {
 		throw std::runtime_error(
