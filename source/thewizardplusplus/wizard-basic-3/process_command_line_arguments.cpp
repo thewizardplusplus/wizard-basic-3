@@ -2,14 +2,12 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
-#include <boost/filesystem.hpp>
 
 using namespace boost;
 using namespace boost::program_options;
-using namespace boost::filesystem;
 
-static const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
-static const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
+const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
+const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
 
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
@@ -89,13 +87,6 @@ auto ProcessCommandLineArguments(
 			arguments_map["script-file"].as<std::string>();
 	} else {
 		throw std::runtime_error("script file not specified");
-	}
-
-	command_line_arguments.script_base_path = path(
-		command_line_arguments.script_file
-	).parent_path().string();
-	if (!command_line_arguments.script_base_path.empty()) {
-		command_line_arguments.script_base_path += '/';
 	}
 
 	if (arguments_map.count("script-arguments")) {

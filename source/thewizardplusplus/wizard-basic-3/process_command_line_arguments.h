@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/filesystem.hpp>
 
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
@@ -16,8 +17,7 @@ enum class FinalStage : uint8_t {
 using StringGroup = std::vector<std::string>;
 struct CommandLineArguments {
 	FinalStage final_stage = FinalStage::NONE;
-	std::string script_file;
-	std::string script_base_path;
+	boost::filesystem::path script_file;
 	StringGroup script_arguments;
 };
 

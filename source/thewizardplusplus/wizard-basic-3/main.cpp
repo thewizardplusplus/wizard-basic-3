@@ -2,11 +2,9 @@
 #include "get_code.h"
 #include <iostream>
 #include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
 
 using namespace thewizardplusplus::wizard_basic_3;
 using namespace boost;
-using namespace boost::algorithm;
 
 int main(int number_of_arguments, char* arguments[]) try {
 	const auto command_line_arguments = ProcessCommandLineArguments(
