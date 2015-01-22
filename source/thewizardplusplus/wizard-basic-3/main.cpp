@@ -8,6 +8,17 @@
 using namespace thewizardplusplus::wizard_basic_3;
 using namespace boost;
 
+template<FinalStage final_stage, typename ResultType>
+void ProcessResult(
+	CommandLineArguments command_line_arguments,
+	ResultType result
+) {
+	if (command_line_arguments.final_stage == final_stage) {
+		std::cout << result << '\n';
+		std::exit(EXIT_SUCCESS);
+	}
+}
+
 int main(int number_of_arguments, char* arguments[]) try {
 	const auto command_line_arguments = ProcessCommandLineArguments(
 		number_of_arguments,
@@ -15,22 +26,13 @@ int main(int number_of_arguments, char* arguments[]) try {
 	);
 
 	const auto code = GetCode(command_line_arguments.script_file);
-	if (command_line_arguments.final_stage == FinalStage::CODE) {
-		std::cout << code << '\n';
-		std::exit(EXIT_SUCCESS);
-	}
+	ProcessResult<FinalStage::CODE>(command_line_arguments, code);
 
 	const auto ast = Parse(code);
-	if (command_line_arguments.final_stage == FinalStage::AST) {
-		std::cout << ast << '\n';
-		std::exit(EXIT_SUCCESS);
-	}
+	ProcessResult<FinalStage::AST>(command_line_arguments, ast);
 
 	const auto ir = Translate(ast);
-	if (command_line_arguments.final_stage == FinalStage::IR) {
-		std::cout << ir << '\n';
-		std::exit(EXIT_SUCCESS);
-	}
+	ProcessResult<FinalStage::IR>(command_line_arguments, ir);
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }

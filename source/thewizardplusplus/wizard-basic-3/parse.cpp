@@ -10,7 +10,7 @@ using namespace thewizardplusplus::wizard_parser::node;
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-static Parser grammar(void) {
+static Parser Grammar(void) {
 	const auto expression = dummy();
 	const auto statement_list_copy = dummy();
 
@@ -149,7 +149,7 @@ static Parser grammar(void) {
 	return separation(hide(*space()), program >> end());
 }
 
-static Node simplify(const Node& node) {
+static Node Simplify(const Node& node) {
 	auto children = NodeGroup();
 	std::transform(
 		node.children.begin(),
@@ -437,9 +437,9 @@ static Node simplify(const Node& node) {
 }
 
 auto Parse(const std::string& code) -> wizard_parser::node::Node {
-	return simplify(
+	return Simplify(
 		parse(
-			grammar(),
+			Grammar(),
 			code,
 			SimplifyLevel::AST,
 			{
