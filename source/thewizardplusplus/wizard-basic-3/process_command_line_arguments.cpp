@@ -23,13 +23,13 @@ auto ProcessCommandLineArguments(
 		(
 			"final-stage,s",
 			value<std::string>(),
-			R"(- set final stage (allowed: "code", "ast" and "ir").)"
+			R"(- set final stage (allowed: "code", "ast" and "ir");)"
 		)
-		("script-file", value<std::string>(), "script file")
+		("script-file", value<std::string>(), "- script file;")
 		(
 			"script-arguments",
 			value<StringGroup>()->composing(),
-			"script arguments"
+			"- script arguments."
 		);
 
 	auto script_arguments_description = positional_options_description();
