@@ -130,7 +130,7 @@ static Parser grammar(void) {
 	WP_RULE(structure_declaration)
 		hide(word("structure"_t)) >> identifier
 			>> +identifier
-		>> hide(word("end"_t))
+		>> hide(word("end"_t)) >> hide(*space())
 	WP_END
 	WP_RULE(function_declaration)
 		hide(word("function"_t))
@@ -139,7 +139,7 @@ static Parser grammar(void) {
 			>> !list(identifier, hide(','_s))
 			>> hide(')'_s)
 			>> statement_list_copy
-		>> hide(word("end"_t))
+		>> hide(word("end"_t)) >> hide(*space())
 	WP_END
 
 	WP_RULE(program)

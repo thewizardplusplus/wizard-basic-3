@@ -1,5 +1,6 @@
 #include "process_command_line_arguments.h"
 #include "get_code.h"
+#include "parse.h"
 #include <iostream>
 #include <boost/format.hpp>
 
@@ -11,8 +12,18 @@ int main(int number_of_arguments, char* arguments[]) try {
 		number_of_arguments,
 		arguments
 	);
+
 	const auto code = GetCode(command_line_arguments.script_file);
-	std::cout << code << '\n';
+	if (command_line_arguments.final_stage == FinalStage::CODE) {
+		std::cout << code << '\n';
+		std::exit(EXIT_SUCCESS);
+	}
+
+	const auto ast = Parse(code);
+	if (command_line_arguments.final_stage == FinalStage::AST) {
+		std::cout << ast << '\n';
+		std::exit(EXIT_SUCCESS);
+	}
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }
