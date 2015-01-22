@@ -1,6 +1,7 @@
 #include "process_command_line_arguments.h"
 #include "get_code.h"
 #include "parse.h"
+#include "translate.h"
 #include <iostream>
 #include <boost/format.hpp>
 
@@ -22,6 +23,12 @@ int main(int number_of_arguments, char* arguments[]) try {
 	const auto ast = Parse(code);
 	if (command_line_arguments.final_stage == FinalStage::AST) {
 		std::cout << ast << '\n';
+		std::exit(EXIT_SUCCESS);
+	}
+
+	const auto ir = Translate(ast);
+	if (command_line_arguments.final_stage == FinalStage::IR) {
+		std::cout << ir << '\n';
 		std::exit(EXIT_SUCCESS);
 	}
 } catch (const std::exception& exception) {
