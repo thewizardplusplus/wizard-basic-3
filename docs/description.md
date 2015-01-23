@@ -199,12 +199,15 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
     * `ToString(number)`;
     * `GetLength(array)`;
     * `GetType(value)`;
-    * `Call(name, arguments)`;
     * модуль `lang.structure`:
+        * `GetStructures()`;
         * `Create(name)`;
         * `GetFields(structure)`;
         * `GetField(structure, name)`;
         * `SetField(structure, name, value)`;
+    * модуль `lang.function`:
+        * `GetFunctions()`;
+        * `Call(name, arguments)`;
 * модуль `system`:
     * `Exit(exit_code)`;
     * модуль `system.io`:
