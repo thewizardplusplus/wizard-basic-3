@@ -10,7 +10,9 @@ using namespace boost::filesystem;
 
 const auto LIBRARIES_PATH = std::string("libraries");
 const auto INCLUDE_OPERATOR_PATTERN = regex(
-	R"pattern(\binclude\s*"((?:\\.|[^"])*)")pattern" //"
+	R"pattern(\binclude\s*"((?:\\.|[^"])*)")pattern"
+	// comment with closing quote for bugfix stupid syntax highlighter in Atom
+	// "
 );
 
 struct CodeGetter {
