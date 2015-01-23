@@ -197,10 +197,9 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 
 * модуль `lang`:
     * `ToString(number)`;
+    * `GetLength(array)`;
     * `GetType(value)`;
     * `Call(name, arguments)`;
-    * модуль `lang.array`:
-        * `GetLength(array)`;
     * модуль `lang.structure`:
         * `Create(name)`;
         * `GetFields(structure)`;
