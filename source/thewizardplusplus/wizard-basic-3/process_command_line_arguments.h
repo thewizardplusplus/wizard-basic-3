@@ -12,7 +12,7 @@ enum class FinalStage : uint8_t {
 	NONE,
 	CODE,
 	AST,
-	IR
+	ANSI_C
 };
 using StringGroup = std::vector<std::string>;
 struct CommandLineArguments {

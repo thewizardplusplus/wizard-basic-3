@@ -20,12 +20,18 @@ struct CodeGetter {
 
 	std::string operator()(const smatch& match) const {
 		const auto including_path = std::string(match[1]);
-		const auto path_relative_to_interpreter =
-			path(initial_path()).append(LIBRARIES_PATH).append(including_path);
+
+		auto path_relative_to_interpreter = path(initial_path());
+		path_relative_to_interpreter /= LIBRARIES_PATH;
+		path_relative_to_interpreter /= including_path;
+
 		if (exists(path_relative_to_interpreter)) {
 			return GetCode(path_relative_to_interpreter);
 		} else {
-			return GetCode(path(script_base_path).append(including_path));
+			auto path_relative_to_script = path(script_base_path);
+			path_relative_to_script /= including_path;
+
+			return GetCode(path_relative_to_script);
 		}
 	}
 };

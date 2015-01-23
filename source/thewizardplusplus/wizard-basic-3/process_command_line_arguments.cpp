@@ -74,7 +74,7 @@ auto ProcessCommandLineArguments(
 		} else if (final_stage == "ast") {
 			command_line_arguments.final_stage = FinalStage::AST;
 		} else if (final_stage == "ir") {
-			command_line_arguments.final_stage = FinalStage::IR;
+			command_line_arguments.final_stage = FinalStage::ANSI_C;
 		} else {
 			throw std::runtime_error(
 				(format(R"(unknown final stage "%s")") % final_stage).str()

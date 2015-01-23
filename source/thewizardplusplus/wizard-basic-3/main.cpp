@@ -11,6 +11,7 @@ using namespace thewizardplusplus::wizard_basic_3;
 using namespace boost;
 using namespace boost::property_tree;
 
+const auto XML_INDENT_SYMBOL = ' ';
 const auto XML_INDENT_SIZE = 4;
 
 template<FinalStage final_stage, typename ResultType>
@@ -47,15 +48,22 @@ int main(int number_of_arguments, char* arguments[]) try {
 			write_xml(
 				out,
 				property_tree,
-				xml_writer_make_settings<std::string>(' ', XML_INDENT_SIZE)
+				#if BOOST_VERSION >= 105600
+					xml_writer_make_settings<ptree::key_type>(
+						XML_INDENT_SYMBOL,
+						XML_INDENT_SIZE
+					)
+				#else
+					xml_writer_make_settings(XML_INDENT_SYMBOL, XML_INDENT_SIZE)
+				#endif
 			);
 
 			return out.str();
 		})()
 	);
 
-	const auto ir = Translate(ast);
-	ProcessResult<FinalStage::IR>(command_line_arguments, ir);
+	const auto ansi_c = Translate(ast);
+	ProcessResult<FinalStage::ANSI_C>(command_line_arguments, ansi_c);
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }
