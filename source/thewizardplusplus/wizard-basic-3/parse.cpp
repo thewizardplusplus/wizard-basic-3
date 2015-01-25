@@ -79,7 +79,7 @@ static Parser CreateGrammar(void) {
 		(word("new"_t) >> identifier)
 		| (*('-'_s | word("not"_t)) >> accessor)
 	WP_END
-	WP_RULE(product) list(unary, '*'_s | '/'_s) WP_END
+	WP_RULE(product) list(unary, '*'_s | '/'_s | '%'_s) WP_END
 	WP_RULE(sum) list(product, '+'_s | '-'_s) WP_END
 	WP_RULE(comparison) list(sum, '<'_s | "<="_t | '>'_s | ">="_t) WP_END
 	WP_RULE(equality) list(comparison, "=="_t | "/="_t) WP_END

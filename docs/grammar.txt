@@ -48,7 +48,7 @@ conjunction = equality, {"and", equality};
 equality = comparison, {("==" | "/="), comparison};
 comparison = sum, {("<" | "<=" | ">" | ">="), sum};
 sum = product, {("+" | "-"), product};
-product = unary, {("*" | "/"), unary};
+product = unary, {("*" | "/" | "%"), unary};
 unary = ("new", identifier) | ({"-" | "not"}, accessor);
 
 accessor = atom, {array item access | structure field access};
