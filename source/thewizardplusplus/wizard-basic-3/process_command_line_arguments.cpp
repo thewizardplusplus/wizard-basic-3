@@ -55,7 +55,7 @@ auto ProcessCommandLineArguments(
 	if (arguments_map.count("version")) {
 		std::cout
 			<< "Wizard Basic 3 interpreter, v1.0\n"
-				"(c) thewizardplusplus, 2014\n";
+				"(c) thewizardplusplus, 2015\n";
 		std::exit(EXIT_SUCCESS);
 	}
 
