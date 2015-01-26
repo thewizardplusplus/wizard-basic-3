@@ -33,6 +33,25 @@ typedef struct Value {
 	ValueStorage storage;
 } Value, *ValuePointer;
 
+ValuePointer CreateValue(void) {
+	return (ValuePointer)malloc(sizeof(Value));
+}
+
+ValuePointer CreateNull(void) {
+	ValuePointer value = CreateValue();
+	value->type = NULL_VALUE;
+
+	return value;
+}
+
+ValuePointer CreateNumber(Number number) {
+	ValuePointer value = CreateValue();
+	value->type = NUMBER;
+	value->storage.number = number;
+
+	return value;
+}
+
 int main(void) {
 	puts("Test.");
 }
