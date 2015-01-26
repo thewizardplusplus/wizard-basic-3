@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 typedef enum ValueType {
-	NULL_VALUE,
-	NUMBER,
-	ARRAY,
-	STRUCTURE
+	VALUE_TYPE_NULL,
+	VALUE_TYPE_NUMBER,
+	VALUE_TYPE_ARRAY,
+	VALUE_TYPE_STRUCTURE
 } ValueType;
 
 typedef double Number;
@@ -18,7 +18,7 @@ typedef struct ArrayData {
 } ArrayData;
 
 typedef struct StructureData {
-	char* name;
+	const char* name;
 	void* structure;
 } StructureData;
 
@@ -39,14 +39,14 @@ ValuePointer CreateValue(void) {
 
 ValuePointer CreateNull(void) {
 	ValuePointer value = CreateValue();
-	value->type = NULL_VALUE;
+	value->type = VALUE_TYPE_NULL;
 
 	return value;
 }
 
 ValuePointer CreateNumber(Number number) {
 	ValuePointer value = CreateValue();
-	value->type = NUMBER;
+	value->type = VALUE_TYPE_NUMBER;
 	value->storage.number = number;
 
 	return value;
