@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -27,10 +28,10 @@ typedef enum ValueType {
 typedef double Number;
 
 struct Value;
-typedef struct Value* Array;
+typedef struct Value** Array;
 
 typedef struct ArrayData {
-	size_t size;
+	struct Value* size;
 	Array data;
 } ArrayData;
 
@@ -60,52 +61,6 @@ void* AllocateMemory(size_t size) {
 size_t GetStructureFieldsNumber(const char* name) {
 	(void)name;
 	return 1;
-}
-
-ValuePointer CreateValue(void) {
-	return (ValuePointer)AllocateMemory(sizeof(Value));
-}
-
-ValuePointer CreateNull(void) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_NULL;
-
-	return value;
-}
-
-ValuePointer CreateNumber(Number number) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_NUMBER;
-	value->storage.number = number;
-
-	return value;
-}
-
-ArrayData CreateArrayData(size_t size) {
-	ArrayData array_data;
-	array_data.size = size;
-	array_data.data = (Array)AllocateMemory(sizeof(Value) * size);
-
-	return array_data;
-}
-
-ValuePointer CreateArray(size_t size) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_ARRAY;
-	value->storage.array = CreateArrayData(size);
-
-	return value;
-}
-
-ValuePointer CreateStructure(const char* name) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_STRUCTURE;
-	value->storage.structure.name = name;
-
-	size_t fields_number = GetStructureFieldsNumber(name);
-	value->storage.structure.fields = CreateArrayData(fields_number);
-
-	return value;
 }
 
 void ProcessMessage(MessageType type, const char* message) {
@@ -147,6 +102,101 @@ void TestType(ValuePointer value, size_t allowed_types) {
 	if (!valid) {
 		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
 	}
+}
+
+ValuePointer CreateValue(void) {
+	return (ValuePointer)AllocateMemory(sizeof(Value));
+}
+
+ValuePointer CreateNull(void) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_NULL;
+
+	return value;
+}
+
+ValuePointer CreateNumber(Number number) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_NUMBER;
+	value->storage.number = number;
+
+	return value;
+}
+
+ArrayData CreateArrayData(size_t size) {
+	ArrayData array_data;
+	array_data.size = CreateNumber(size);
+	array_data.data = (Array)AllocateMemory(sizeof(Value) * size);
+
+	return array_data;
+}
+
+ValuePointer CreateArray(size_t size) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_ARRAY;
+	value->storage.array = CreateArrayData(size);
+
+	return value;
+}
+
+ValuePointer GetLength(ValuePointer array) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	return array->storage.array.size;
+}
+
+ValuePointer GetArrayItem(ValuePointer array, ValuePointer index) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	TestType(index, VALUE_TYPE_NUMBER);
+
+	if (
+		index->storage.number >= 0.0
+		&& index->storage.number < array->storage.array.size->storage.number
+	) {
+		size_t integral_index = (size_t)floor(abs(index->storage.number));
+		return array->storage.array.data[integral_index];
+	} else {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+	}
+}
+
+void SetArrayItem(ValuePointer array, ValuePointer index, ValuePointer value) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	TestType(index, VALUE_TYPE_NUMBER);
+
+	if (
+		index->storage.number >= 0.0
+		&& index->storage.number < array->storage.array.size->storage.number
+	) {
+		size_t integral_index = (size_t)floor(abs(index->storage.number));
+		array->storage.array.data[integral_index] = value;
+	} else {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+	}
+}
+
+ValuePointer CreateArrayFromData(size_t size, ...) {
+	ValuePointer array = CreateArray(size);
+
+	va_list arguments;
+	va_start(arguments, size);
+	for (size_t i = 0; i < size; i++) {
+		ValuePointer argument = va_arg(arguments, ValuePointer);
+		SetArrayItem(array, CreateNumber(i), argument);
+	}
+	va_end(arguments);
+
+	return array;
+}
+
+ValuePointer CreateStructure(const char* name) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_STRUCTURE;
+	value->storage.structure.name = name;
+
+	size_t fields_number = GetStructureFieldsNumber(name);
+	value->storage.structure.fields = CreateArrayData(fields_number);
+
+	return value;
 }
 
 ValuePointer Add(ValuePointer value_1, ValuePointer value_2) {
