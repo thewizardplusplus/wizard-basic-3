@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -42,13 +41,18 @@ typedef struct Value {
 	ValueStorage storage;
 } Value, *ValuePointer;
 
-ValuePointer CreateValue(void) {
-	return (ValuePointer)malloc(sizeof(Value));
+void* AllocateMemory(size_t size) {
+	(void)size;
+	return NULL;
 }
 
 size_t GetStructureFieldsNumber(const char* name) {
 	(void)name;
 	return 1;
+}
+
+ValuePointer CreateValue(void) {
+	return (ValuePointer)AllocateMemory(sizeof(Value));
 }
 
 ValuePointer CreateNull(void) {
@@ -69,7 +73,7 @@ ValuePointer CreateNumber(Number number) {
 ArrayData CreateArrayData(size_t size) {
 	ArrayData array_data;
 	array_data.size = size;
-	array_data.data = (Array)malloc(sizeof(Value) * size);
+	array_data.data = (Array)AllocateMemory(sizeof(Value) * size);
 
 	return array_data;
 }
