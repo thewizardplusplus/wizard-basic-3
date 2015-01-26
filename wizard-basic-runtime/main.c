@@ -1,16 +1,16 @@
 #include <stdio.h>
 
 typedef enum ValueType {
-	NULL,
+	NULL_VALUE,
 	NUMBER,
 	ARRAY,
 	STRUCTURE
 } ValueType;
 
-typedef Number double;
+typedef double Number;
 
 struct Value;
-typedef Array *struct Value;
+typedef struct Value* Array;
 
 typedef struct ArrayData {
 	size_t size;
