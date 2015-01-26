@@ -20,7 +20,7 @@ typedef struct ArrayData {
 
 typedef struct StructureData {
 	const char* name;
-	void* structure;
+	ArrayData structure;
 } StructureData;
 
 typedef union ValueStorage {
@@ -38,6 +38,11 @@ ValuePointer CreateValue(void) {
 	return (ValuePointer)malloc(sizeof(Value));
 }
 
+size_t GetStructureSize(const char* name) {
+	(void)name;
+	return 0;
+}
+
 ValuePointer CreateNull(void) {
 	ValuePointer value = CreateValue();
 	value->type = VALUE_TYPE_NULL;
@@ -53,11 +58,29 @@ ValuePointer CreateNumber(Number number) {
 	return value;
 }
 
+ArrayData CreateArrayData(size_t size) {
+	ArrayData array_data;
+	array_data.size = size;
+	array_data.array = (Array)malloc(sizeof(Value) * size);
+
+	return array_data;
+}
+
 ValuePointer CreateArray(size_t size) {
 	ValuePointer value = CreateValue();
 	value->type = VALUE_TYPE_ARRAY;
-	value->storage.array.size = size;
-	value->storage.array.array = (Array)malloc(sizeof(Value) * size);
+	value->storage.array = CreateArrayData(size);
+
+	return value;
+}
+
+ValuePointer CreateStructure(const char* name) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_STRUCTURE;
+	value->storage.structure.name = name;
+
+	size_t size = GetStructureSize(name);
+	value->storage.structure.structure = CreateArrayData(size);
 
 	return value;
 }
