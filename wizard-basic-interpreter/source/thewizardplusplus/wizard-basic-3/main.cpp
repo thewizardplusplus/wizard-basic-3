@@ -48,14 +48,10 @@ int main(int number_of_arguments, char* arguments[]) try {
 			write_xml(
 				out,
 				property_tree,
-				#if BOOST_VERSION >= 105600
-					xml_writer_make_settings<ptree::key_type>(
-						XML_INDENT_SYMBOL,
-						XML_INDENT_SIZE
-					)
-				#else
-					xml_writer_make_settings(XML_INDENT_SYMBOL, XML_INDENT_SIZE)
-				#endif
+				xml_writer_make_settings<ptree::key_type>(
+					XML_INDENT_SYMBOL,
+					XML_INDENT_SIZE
+				)
 			);
 
 			return out.str();
