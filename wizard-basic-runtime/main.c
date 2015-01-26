@@ -1,11 +1,19 @@
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
+
+typedef enum MessageType {
+	MESSAGE_TYPE_INFO,
+	MESSAGE_TYPE_WARNING,
+	MESSAGE_TYPE_ERROR
+} MessageType;
 
 typedef enum ValueType {
-	VALUE_TYPE_NULL,
-	VALUE_TYPE_NUMBER,
-	VALUE_TYPE_ARRAY,
-	VALUE_TYPE_STRUCTURE
+	VALUE_TYPE_NULL = 1 << 0,
+	VALUE_TYPE_NUMBER = 1 << 1,
+	VALUE_TYPE_ARRAY = 1 << 2,
+	VALUE_TYPE_STRUCTURE = 1 << 3
 } ValueType;
 
 typedef double Number;
@@ -83,6 +91,47 @@ ValuePointer CreateStructure(const char* name) {
 	value->storage.structure.fields = CreateArrayData(fields_number);
 
 	return value;
+}
+
+void ProcessMessage(MessageType type, const char* message) {
+	if (type == MESSAGE_TYPE_WARNING || type == MESSAGE_TYPE_ERROR) {
+		const char* prefix = NULL;
+		if (type == MESSAGE_TYPE_WARNING) {
+			prefix = "Warning! ";
+		} else {
+			prefix = "Error! ";
+		}
+
+		char buffer[strlen(prefix) + strlen(message) + 1];
+		strcpy(buffer, prefix);
+		strcat(buffer, message);
+
+		fputs(buffer, stderr);
+	} else {
+		puts(message);
+	}
+}
+
+void TestType(ValuePointer value, size_t allowed_types) {
+	bool valid = false;
+	switch (value->type) {
+		case VALUE_TYPE_NULL:
+			valid = allowed_types & VALUE_TYPE_NULL;
+			break;
+		case VALUE_TYPE_NUMBER:
+			valid = allowed_types & VALUE_TYPE_NUMBER;
+			break;
+		case VALUE_TYPE_ARRAY:
+			valid = allowed_types & VALUE_TYPE_ARRAY;
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			valid = allowed_types & VALUE_TYPE_STRUCTURE;
+			break;
+	}
+
+	if (!valid) {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
+	}
 }
 
 int main(void) {
