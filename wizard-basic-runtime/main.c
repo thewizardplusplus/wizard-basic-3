@@ -1,6 +1,15 @@
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
+
+#define VALUE_NUMBER(value) { \
+	.type = VALUE_TYPE_NUMBER, \
+	.storage = { \
+		.number = value \
+	} \
+}
 
 typedef enum MessageType {
 	MESSAGE_TYPE_INFO,
@@ -41,9 +50,11 @@ typedef struct Value {
 	ValueStorage storage;
 } Value, *ValuePointer;
 
+Value FALSE = VALUE_NUMBER(0.0);
+Value TRUE = VALUE_NUMBER(1.0);
+
 void* AllocateMemory(size_t size) {
-	(void)size;
-	return NULL;
+	return malloc(size);
 }
 
 size_t GetStructureFieldsNumber(const char* name) {
@@ -136,6 +147,80 @@ void TestType(ValuePointer value, size_t allowed_types) {
 	if (!valid) {
 		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
 	}
+}
+
+ValuePointer Add(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	double number = value_1->storage.number + value_2->storage.number;
+	return CreateNumber(number);
+}
+
+ValuePointer Subtract(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	double number = value_1->storage.number - value_2->storage.number;
+	return CreateNumber(number);
+}
+
+ValuePointer Multiply(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	double number = value_1->storage.number * value_2->storage.number;
+	return CreateNumber(number);
+}
+
+ValuePointer Divide(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	double number = value_1->storage.number / value_2->storage.number;
+	return CreateNumber(number);
+}
+
+ValuePointer Modulo(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	double number =
+		(long)round(value_1->storage.number)
+		% (long)round(value_2->storage.number);
+	return CreateNumber(number);
+}
+
+ValuePointer Less(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	bool result = value_1->storage.number < value_2->storage.number;
+	return result ? &TRUE : &FALSE;
+}
+
+ValuePointer LessOrEqual(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	bool result = value_1->storage.number <= value_2->storage.number;
+	return result ? &TRUE : &FALSE;
+}
+
+ValuePointer Greater(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	bool result = value_1->storage.number > value_2->storage.number;
+	return result ? &TRUE : &FALSE;
+}
+
+ValuePointer GreaterOrEqual(ValuePointer value_1, ValuePointer value_2) {
+	TestType(value_1, VALUE_TYPE_NUMBER);
+	TestType(value_2, VALUE_TYPE_NUMBER);
+
+	bool result = value_1->storage.number >= value_2->storage.number;
+	return result ? &TRUE : &FALSE;
 }
 
 int main(void) {
