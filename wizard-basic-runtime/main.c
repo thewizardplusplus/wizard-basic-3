@@ -52,6 +52,15 @@ ValuePointer CreateNumber(Number number) {
 	return value;
 }
 
+ValuePointer CreateArray(size_t size) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_ARRAY;
+	value->storage.array.size = size;
+	value->storage.array.array = (Array)malloc(sizeof(Value) * size);
+
+	return value;
+}
+
 int main(void) {
 	puts("Test.");
 }
