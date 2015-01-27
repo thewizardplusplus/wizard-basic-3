@@ -5,13 +5,6 @@
 #include <stdbool.h>
 #include <math.h>
 
-#define VALUE_NUMBER(value) { \
-	.type = VALUE_TYPE_NUMBER, \
-	.storage = { \
-		.number = value \
-	} \
-}
-
 typedef enum MessageType {
 	MESSAGE_TYPE_INFO,
 	MESSAGE_TYPE_WARNING,
@@ -51,9 +44,12 @@ typedef struct Value {
 	ValueStorage storage;
 } Value, *ValuePointer;
 
-Value NULL_VALUE = {.type = VALUE_TYPE_NULL};
-Value FALSE = VALUE_NUMBER(0.0);
-Value TRUE = VALUE_NUMBER(1.0);
+ValuePointer NULL_VALUE = NULL;
+ValuePointer FALSE_VALUE = NULL;
+ValuePointer TRUE_VALUE = NULL;
+ValuePointer TYPE_NAME_NULL = NULL;
+ValuePointer TYPE_NAME_NUMBER = NULL;
+ValuePointer TYPE_NAME_ARRAY = NULL;
 
 void* AllocateMemory(size_t size) {
 	return malloc(size);
@@ -111,6 +107,52 @@ void TestType(ValuePointer value, size_t allowed_types) {
 
 ValuePointer CreateValue(void) {
 	return (ValuePointer)AllocateMemory(sizeof(Value));
+}
+
+bool ToBoolean(ValuePointer value) {
+	return
+		value->type != VALUE_TYPE_NULL
+		&& (value->type != VALUE_TYPE_NUMBER
+		|| value->storage.number != 0.0);
+}
+
+ValuePointer CreateNull(void);
+ValuePointer CreateNumber(Number number);
+ValuePointer CreateArrayFromString(const char* string);
+void ConstantsInit() {
+	NULL_VALUE = CreateNull();
+	FALSE_VALUE = CreateNumber(0.0);
+	TRUE_VALUE = CreateNumber(1.0);
+	TYPE_NAME_NULL = CreateArrayFromString("null");
+	TYPE_NAME_NUMBER = CreateArrayFromString("number");
+	TYPE_NAME_ARRAY = CreateArrayFromString("array");
+}
+
+ValuePointer GetValueType(ValuePointer value) {
+	ValuePointer type_name = NULL;
+	switch (value->type) {
+		case VALUE_TYPE_NULL:
+			type_name = TYPE_NAME_NULL;
+			break;
+		case VALUE_TYPE_NUMBER:
+			type_name = TYPE_NAME_NUMBER;
+			break;
+		case VALUE_TYPE_ARRAY:
+			type_name = TYPE_NAME_ARRAY;
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			type_name = CreateArrayFromString(value->storage.structure.name);
+			break;
+	}
+
+	return type_name;
+}
+
+ValuePointer CreateNull(void) {
+	ValuePointer value = CreateValue();
+	value->type = VALUE_TYPE_NULL;
+
+	return value;
 }
 
 ValuePointer CreateNumber(Number number) {
@@ -232,6 +274,13 @@ void SetStructureField(
 	structure->storage.structure.fields.data[field_index] = value;
 }
 
+ValuePointer UnaryMinus(ValuePointer value) {
+	TestType(value, VALUE_TYPE_NUMBER);
+
+	double number = -value->storage.number;
+	return CreateNumber(number);
+}
+
 ValuePointer Add(ValuePointer value_1, ValuePointer value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
@@ -279,7 +328,7 @@ ValuePointer Less(ValuePointer value_1, ValuePointer value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1->storage.number < value_2->storage.number;
-	return result ? &TRUE : &FALSE;
+	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
 ValuePointer LessOrEqual(ValuePointer value_1, ValuePointer value_2) {
@@ -287,7 +336,7 @@ ValuePointer LessOrEqual(ValuePointer value_1, ValuePointer value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1->storage.number <= value_2->storage.number;
-	return result ? &TRUE : &FALSE;
+	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
 ValuePointer Greater(ValuePointer value_1, ValuePointer value_2) {
@@ -295,7 +344,7 @@ ValuePointer Greater(ValuePointer value_1, ValuePointer value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1->storage.number > value_2->storage.number;
-	return result ? &TRUE : &FALSE;
+	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
 ValuePointer GreaterOrEqual(ValuePointer value_1, ValuePointer value_2) {
@@ -303,7 +352,74 @@ ValuePointer GreaterOrEqual(ValuePointer value_1, ValuePointer value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1->storage.number >= value_2->storage.number;
-	return result ? &TRUE : &FALSE;
+	return result ? TRUE_VALUE : FALSE_VALUE;
+}
+
+ValuePointer Equal(ValuePointer value_1, ValuePointer value_2) {
+	if (value_1->type != value_2->type) {
+		return FALSE_VALUE;
+	}
+
+	bool result = false;
+	switch (value_1->type) {
+		case VALUE_TYPE_NULL:
+			result = true;
+			break;
+		case VALUE_TYPE_NUMBER:
+			result = value_1->storage.number == value_2->storage.number;
+			break;
+		case VALUE_TYPE_ARRAY:
+			result = value_1->storage.array.data == value_2->storage.array.data;
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			result =
+				value_1->storage.structure.fields.data
+				== value_2->storage.structure.fields.data;
+			break;
+	}
+
+	return result ? TRUE_VALUE : FALSE_VALUE;
+}
+
+ValuePointer NotEqual(ValuePointer value_1, ValuePointer value_2) {
+	if (value_1->type != value_2->type) {
+		return TRUE_VALUE;
+	}
+
+	bool result = true;
+	switch (value_1->type) {
+		case VALUE_TYPE_NULL:
+			result = false;
+			break;
+		case VALUE_TYPE_NUMBER:
+			result = value_1->storage.number != value_2->storage.number;
+			break;
+		case VALUE_TYPE_ARRAY:
+			result = value_1->storage.array.data != value_2->storage.array.data;
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			result =
+				value_1->storage.structure.fields.data
+				!= value_2->storage.structure.fields.data;
+			break;
+	}
+
+	return result ? TRUE_VALUE : FALSE_VALUE;
+}
+
+ValuePointer And(ValuePointer value_1, ValuePointer value_2) {
+	bool result = ToBoolean(value_1) && ToBoolean(value_2);
+	return result ? TRUE_VALUE : FALSE_VALUE;
+}
+
+ValuePointer Or(ValuePointer value_1, ValuePointer value_2) {
+	bool result = ToBoolean(value_1) || ToBoolean(value_2);
+	return result ? TRUE_VALUE : FALSE_VALUE;
+}
+
+ValuePointer Not(ValuePointer value) {
+	bool result = !ToBoolean(value);
+	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
 int main(void) {
