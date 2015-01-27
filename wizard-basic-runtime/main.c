@@ -182,6 +182,18 @@ ValuePointer CreateArrayFromData(size_t size, ...) {
 	return array;
 }
 
+ValuePointer CreateArrayFromString(const char* string) {
+	size_t length = strlen(string);
+	ValuePointer array = CreateArray(length);
+
+	for (size_t i = 0; i < length; i++) {
+		ValuePointer symbol_code = CreateNumber(string[i]);
+		SetArrayItem(array, CreateNumber(i), symbol_code);
+	}
+
+	return array;
+}
+
 ValuePointer CreateStructure(const char* name) {
 	ValuePointer value = CreateValue();
 	value->type = VALUE_TYPE_STRUCTURE;
