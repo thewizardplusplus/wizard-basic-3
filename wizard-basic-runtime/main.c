@@ -51,6 +51,7 @@ typedef struct Value {
 	ValueStorage storage;
 } Value, *ValuePointer;
 
+Value NULL_VALUE = {.type = VALUE_TYPE_NULL};
 Value FALSE = VALUE_NUMBER(0.0);
 Value TRUE = VALUE_NUMBER(1.0);
 
@@ -106,13 +107,6 @@ void TestType(ValuePointer value, size_t allowed_types) {
 
 ValuePointer CreateValue(void) {
 	return (ValuePointer)AllocateMemory(sizeof(Value));
-}
-
-ValuePointer CreateNull(void) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_NULL;
-
-	return value;
 }
 
 ValuePointer CreateNumber(Number number) {
