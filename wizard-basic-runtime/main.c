@@ -21,10 +21,10 @@ typedef enum ValueType {
 typedef double Number;
 
 struct Value;
-typedef struct Value** Array;
+typedef struct Value* Array;
 
 typedef struct ArrayData {
-	struct Value* size;
+	size_t size;
 	Array data;
 } ArrayData;
 
@@ -42,14 +42,14 @@ typedef union ValueStorage {
 typedef struct Value {
 	ValueType type;
 	ValueStorage storage;
-} Value, *ValuePointer;
+} Value;
 
-ValuePointer NULL_VALUE = NULL;
-ValuePointer FALSE_VALUE = NULL;
-ValuePointer TRUE_VALUE = NULL;
-ValuePointer TYPE_NAME_NULL = NULL;
-ValuePointer TYPE_NAME_NUMBER = NULL;
-ValuePointer TYPE_NAME_ARRAY = NULL;
+Value NULL_VALUE;
+Value FALSE_VALUE;
+Value TRUE_VALUE;
+Value TYPE_NAME_NULL;
+Value TYPE_NAME_NUMBER;
+Value TYPE_NAME_ARRAY;
 
 void* AllocateMemory(size_t size) {
 	return malloc(size);
@@ -83,9 +83,9 @@ void ProcessMessage(MessageType type, const char* message) {
 	}
 }
 
-void TestType(ValuePointer value, size_t allowed_types) {
+void TestType(Value value, size_t allowed_types) {
 	bool valid = false;
-	switch (value->type) {
+	switch (value.type) {
 		case VALUE_TYPE_NULL:
 			valid = allowed_types & VALUE_TYPE_NULL;
 			break;
@@ -105,20 +105,16 @@ void TestType(ValuePointer value, size_t allowed_types) {
 	}
 }
 
-ValuePointer CreateValue(void) {
-	return (ValuePointer)AllocateMemory(sizeof(Value));
-}
-
-bool ToBoolean(ValuePointer value) {
+bool ToBoolean(Value value) {
 	return
-		value->type != VALUE_TYPE_NULL
-		&& (value->type != VALUE_TYPE_NUMBER
-		|| value->storage.number != 0.0);
+		value.type != VALUE_TYPE_NULL
+		&& (value.type != VALUE_TYPE_NUMBER
+		|| value.storage.number != 0.0);
 }
 
-ValuePointer CreateNull(void);
-ValuePointer CreateNumber(Number number);
-ValuePointer CreateArrayFromString(const char* string);
+Value CreateNull(void);
+Value CreateNumber(Number number);
+Value CreateArrayFromString(const char* string);
 void ConstantsInit() {
 	NULL_VALUE = CreateNull();
 	FALSE_VALUE = CreateNumber(0.0);
@@ -128,9 +124,9 @@ void ConstantsInit() {
 	TYPE_NAME_ARRAY = CreateArrayFromString("array");
 }
 
-ValuePointer GetValueType(ValuePointer value) {
-	ValuePointer type_name = NULL;
-	switch (value->type) {
+Value GetValueType(Value value) {
+	Value type_name;
+	switch (value.type) {
 		case VALUE_TYPE_NULL:
 			type_name = TYPE_NAME_NULL;
 			break;
@@ -141,283 +137,283 @@ ValuePointer GetValueType(ValuePointer value) {
 			type_name = TYPE_NAME_ARRAY;
 			break;
 		case VALUE_TYPE_STRUCTURE:
-			type_name = CreateArrayFromString(value->storage.structure.name);
+			type_name = CreateArrayFromString(value.storage.structure.name);
 			break;
 	}
 
 	return type_name;
 }
 
-ValuePointer CreateNull(void) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_NULL;
+Value CreateNull(void) {
+	Value value;
+	value.type = VALUE_TYPE_NULL;
 
 	return value;
 }
 
-ValuePointer CreateNumber(Number number) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_NUMBER;
-	value->storage.number = number;
+Value CreateNumber(Number number) {
+	Value value;
+	value.type = VALUE_TYPE_NUMBER;
+	value.storage.number = number;
 
 	return value;
 }
 
 ArrayData CreateArrayData(size_t size) {
 	ArrayData array_data;
-	array_data.size = CreateNumber(size);
+	array_data.size = size;
 	array_data.data = (Array)AllocateMemory(sizeof(Value) * size);
 
 	return array_data;
 }
 
-ValuePointer CreateArray(size_t size) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_ARRAY;
-	value->storage.array = CreateArrayData(size);
+Value CreateArray(size_t size) {
+	Value value;
+	value.type = VALUE_TYPE_ARRAY;
+	value.storage.array = CreateArrayData(size);
 
 	return value;
 }
 
-ValuePointer GetArrayLength(ValuePointer array) {
+Value GetArrayLength(Value array) {
 	TestType(array, VALUE_TYPE_ARRAY);
-	return array->storage.array.size;
+	return CreateNumber(array.storage.array.size);
 }
 
-ValuePointer GetArrayItem(ValuePointer array, ValuePointer index) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	TestType(index, VALUE_TYPE_NUMBER);
-
-	if (
-		index->storage.number < 0.0
-		|| index->storage.number >= array->storage.array.size->storage.number
-	) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
-	}
-
-	size_t integral_index = (size_t)floor(abs(index->storage.number));
-	return array->storage.array.data[integral_index];
-}
-
-void SetArrayItem(ValuePointer array, ValuePointer index, ValuePointer value) {
+Value GetArrayItem(Value array, Value index) {
 	TestType(array, VALUE_TYPE_ARRAY);
 	TestType(index, VALUE_TYPE_NUMBER);
 
 	if (
-		index->storage.number < 0.0
-		|| index->storage.number >= array->storage.array.size->storage.number
+		index.storage.number < 0.0
+		|| index.storage.number >= array.storage.array.size
 	) {
 		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
 	}
 
-	size_t integral_index = (size_t)floor(abs(index->storage.number));
-	array->storage.array.data[integral_index] = value;
+	size_t integral_index = (size_t)floor(abs(index.storage.number));
+	return array.storage.array.data[integral_index];
 }
 
-ValuePointer CreateArrayFromList(size_t size, ...) {
-	ValuePointer array = CreateArray(size);
+void SetArrayItem(Value array, Value index, Value value) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	TestType(index, VALUE_TYPE_NUMBER);
+
+	if (
+		index.storage.number < 0.0
+		|| index.storage.number >= array.storage.array.size
+	) {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+	}
+
+	size_t integral_index = (size_t)floor(abs(index.storage.number));
+	array.storage.array.data[integral_index] = value;
+}
+
+Value CreateArrayFromList(size_t size, ...) {
+	Value array = CreateArray(size);
 
 	va_list arguments;
 	va_start(arguments, size);
 	for (size_t i = 0; i < size; i++) {
-		ValuePointer argument = va_arg(arguments, ValuePointer);
-		array->storage.array.data[i] = argument;
+		Value argument = va_arg(arguments, Value);
+		array.storage.array.data[i] = argument;
 	}
 	va_end(arguments);
 
 	return array;
 }
 
-ValuePointer CreateArrayFromString(const char* string) {
+Value CreateArrayFromString(const char* string) {
 	size_t length = strlen(string);
-	ValuePointer array = CreateArray(length);
+	Value array = CreateArray(length);
 	for (size_t i = 0; i < length; i++) {
-		ValuePointer symbol_code = CreateNumber(string[i]);
-		array->storage.array.data[i] = symbol_code;
+		Value symbol_code = CreateNumber(string[i]);
+		array.storage.array.data[i] = symbol_code;
 	}
 
 	return array;
 }
 
-ValuePointer CreateStructure(const char* name) {
-	ValuePointer value = CreateValue();
-	value->type = VALUE_TYPE_STRUCTURE;
-	value->storage.structure.name = name;
+Value CreateStructure(const char* name) {
+	Value value;
+	value.type = VALUE_TYPE_STRUCTURE;
+	value.storage.structure.name = name;
 
 	size_t fields_number = GetStructureFieldsNumber(name);
-	value->storage.structure.fields = CreateArrayData(fields_number);
+	value.storage.structure.fields = CreateArrayData(fields_number);
 
 	return value;
 }
 
-ValuePointer GetStructureField(ValuePointer structure, const char* field_name) {
+Value GetStructureField(Value structure, const char* field_name) {
 	TestType(structure, VALUE_TYPE_STRUCTURE);
 
 	size_t field_index = GetStructureFieldIndex(
-		structure->storage.structure.name,
+		structure.storage.structure.name,
 		field_name
 	);
-	return structure->storage.structure.fields.data[field_index];
+	return structure.storage.structure.fields.data[field_index];
 }
 
 void SetStructureField(
-	ValuePointer structure,
+	Value structure,
 	const char* field_name,
-	ValuePointer value
+	Value value
 ) {
 	TestType(structure, VALUE_TYPE_STRUCTURE);
 
 	size_t field_index = GetStructureFieldIndex(
-		structure->storage.structure.name,
+		structure.storage.structure.name,
 		field_name
 	);
-	structure->storage.structure.fields.data[field_index] = value;
+	structure.storage.structure.fields.data[field_index] = value;
 }
 
-ValuePointer UnaryMinus(ValuePointer value) {
+Value UnaryMinus(Value value) {
 	TestType(value, VALUE_TYPE_NUMBER);
 
-	double number = -value->storage.number;
+	double number = -value.storage.number;
 	return CreateNumber(number);
 }
 
-ValuePointer Add(ValuePointer value_1, ValuePointer value_2) {
+Value Add(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	double number = value_1->storage.number + value_2->storage.number;
+	double number = value_1.storage.number + value_2.storage.number;
 	return CreateNumber(number);
 }
 
-ValuePointer Subtract(ValuePointer value_1, ValuePointer value_2) {
+Value Subtract(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	double number = value_1->storage.number - value_2->storage.number;
+	double number = value_1.storage.number - value_2.storage.number;
 	return CreateNumber(number);
 }
 
-ValuePointer Multiply(ValuePointer value_1, ValuePointer value_2) {
+Value Multiply(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	double number = value_1->storage.number * value_2->storage.number;
+	double number = value_1.storage.number * value_2.storage.number;
 	return CreateNumber(number);
 }
 
-ValuePointer Divide(ValuePointer value_1, ValuePointer value_2) {
+Value Divide(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	double number = value_1->storage.number / value_2->storage.number;
+	double number = value_1.storage.number / value_2.storage.number;
 	return CreateNumber(number);
 }
 
-ValuePointer Modulo(ValuePointer value_1, ValuePointer value_2) {
+Value Modulo(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	double number =
-		(long)round(value_1->storage.number)
-		% (long)round(value_2->storage.number);
+		(long)round(value_1.storage.number)
+		% (long)round(value_2.storage.number);
 	return CreateNumber(number);
 }
 
-ValuePointer Less(ValuePointer value_1, ValuePointer value_2) {
+Value Less(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	bool result = value_1->storage.number < value_2->storage.number;
+	bool result = value_1.storage.number < value_2.storage.number;
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer LessOrEqual(ValuePointer value_1, ValuePointer value_2) {
+Value LessOrEqual(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	bool result = value_1->storage.number <= value_2->storage.number;
+	bool result = value_1.storage.number <= value_2.storage.number;
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer Greater(ValuePointer value_1, ValuePointer value_2) {
+Value Greater(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	bool result = value_1->storage.number > value_2->storage.number;
+	bool result = value_1.storage.number > value_2.storage.number;
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer GreaterOrEqual(ValuePointer value_1, ValuePointer value_2) {
+Value GreaterOrEqual(Value value_1, Value value_2) {
 	TestType(value_1, VALUE_TYPE_NUMBER);
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
-	bool result = value_1->storage.number >= value_2->storage.number;
+	bool result = value_1.storage.number >= value_2.storage.number;
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer Equal(ValuePointer value_1, ValuePointer value_2) {
-	if (value_1->type != value_2->type) {
+Value Equal(Value value_1, Value value_2) {
+	if (value_1.type != value_2.type) {
 		return FALSE_VALUE;
 	}
 
 	bool result = false;
-	switch (value_1->type) {
+	switch (value_1.type) {
 		case VALUE_TYPE_NULL:
 			result = true;
 			break;
 		case VALUE_TYPE_NUMBER:
-			result = value_1->storage.number == value_2->storage.number;
+			result = value_1.storage.number == value_2.storage.number;
 			break;
 		case VALUE_TYPE_ARRAY:
-			result = value_1->storage.array.data == value_2->storage.array.data;
+			result = value_1.storage.array.data == value_2.storage.array.data;
 			break;
 		case VALUE_TYPE_STRUCTURE:
 			result =
-				value_1->storage.structure.fields.data
-				== value_2->storage.structure.fields.data;
+				value_1.storage.structure.fields.data
+				== value_2.storage.structure.fields.data;
 			break;
 	}
 
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer NotEqual(ValuePointer value_1, ValuePointer value_2) {
-	if (value_1->type != value_2->type) {
+Value NotEqual(Value value_1, Value value_2) {
+	if (value_1.type != value_2.type) {
 		return TRUE_VALUE;
 	}
 
 	bool result = true;
-	switch (value_1->type) {
+	switch (value_1.type) {
 		case VALUE_TYPE_NULL:
 			result = false;
 			break;
 		case VALUE_TYPE_NUMBER:
-			result = value_1->storage.number != value_2->storage.number;
+			result = value_1.storage.number != value_2.storage.number;
 			break;
 		case VALUE_TYPE_ARRAY:
-			result = value_1->storage.array.data != value_2->storage.array.data;
+			result = value_1.storage.array.data != value_2.storage.array.data;
 			break;
 		case VALUE_TYPE_STRUCTURE:
 			result =
-				value_1->storage.structure.fields.data
-				!= value_2->storage.structure.fields.data;
+				value_1.storage.structure.fields.data
+				!= value_2.storage.structure.fields.data;
 			break;
 	}
 
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer And(ValuePointer value_1, ValuePointer value_2) {
+Value And(Value value_1, Value value_2) {
 	bool result = ToBoolean(value_1) && ToBoolean(value_2);
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer Or(ValuePointer value_1, ValuePointer value_2) {
+Value Or(Value value_1, Value value_2) {
 	bool result = ToBoolean(value_1) || ToBoolean(value_2);
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
 
-ValuePointer Not(ValuePointer value) {
+Value Not(Value value) {
 	bool result = !ToBoolean(value);
 	return result ? TRUE_VALUE : FALSE_VALUE;
 }
