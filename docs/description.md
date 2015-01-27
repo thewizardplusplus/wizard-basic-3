@@ -210,6 +210,7 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
     * модуль `system.time`:
         * `StartTimer()`;
         * `GetElapsedTime()`;
+        * `GetTime()`;
 * модуль `maths`:
     * `Sin(number)`;
     * `Cos(number)`;
