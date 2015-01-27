@@ -149,14 +149,14 @@ ValuePointer GetArrayItem(ValuePointer array, ValuePointer index) {
 	TestType(index, VALUE_TYPE_NUMBER);
 
 	if (
-		index->storage.number >= 0.0
-		&& index->storage.number < array->storage.array.size->storage.number
+		index->storage.number < 0.0
+		|| index->storage.number >= array->storage.array.size->storage.number
 	) {
-		size_t integral_index = (size_t)floor(abs(index->storage.number));
-		return array->storage.array.data[integral_index];
-	} else {
 		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
 	}
+
+	size_t integral_index = (size_t)floor(abs(index->storage.number));
+	return array->storage.array.data[integral_index];
 }
 
 void SetArrayItem(ValuePointer array, ValuePointer index, ValuePointer value) {
@@ -164,14 +164,14 @@ void SetArrayItem(ValuePointer array, ValuePointer index, ValuePointer value) {
 	TestType(index, VALUE_TYPE_NUMBER);
 
 	if (
-		index->storage.number >= 0.0
-		&& index->storage.number < array->storage.array.size->storage.number
+		index->storage.number < 0.0
+		|| index->storage.number >= array->storage.array.size->storage.number
 	) {
-		size_t integral_index = (size_t)floor(abs(index->storage.number));
-		array->storage.array.data[integral_index] = value;
-	} else {
 		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
 	}
+
+	size_t integral_index = (size_t)floor(abs(index->storage.number));
+	array->storage.array.data[integral_index] = value;
 }
 
 ValuePointer CreateArrayFromData(size_t size, ...) {
