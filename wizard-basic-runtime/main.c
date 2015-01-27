@@ -64,6 +64,15 @@ size_t GetStructureFieldsNumber(const char* name) {
 	return 1;
 }
 
+size_t GetStructureFieldIndex(
+	const char* structure_name,
+	const char* field_name
+) {
+	(void)structure_name;
+	(void)field_name;
+	return 0;
+}
+
 void ProcessMessage(MessageType type, const char* message) {
 	switch (type) {
 		case MESSAGE_TYPE_WARNING:
@@ -197,6 +206,30 @@ ValuePointer CreateStructure(const char* name) {
 	value->storage.structure.fields = CreateArrayData(fields_number);
 
 	return value;
+}
+
+ValuePointer GetStructureField(ValuePointer structure, const char* field_name) {
+	TestType(structure, VALUE_TYPE_STRUCTURE);
+
+	size_t field_index = GetStructureFieldIndex(
+		structure->storage.structure.name,
+		field_name
+	);
+	return structure->storage.structure.fields.data[field_index];
+}
+
+void SetStructureField(
+	ValuePointer structure,
+	const char* field_name,
+	ValuePointer value
+) {
+	TestType(structure, VALUE_TYPE_STRUCTURE);
+
+	size_t field_index = GetStructureFieldIndex(
+		structure->storage.structure.name,
+		field_name
+	);
+	structure->storage.structure.fields.data[field_index] = value;
 }
 
 ValuePointer Add(ValuePointer value_1, ValuePointer value_2) {
