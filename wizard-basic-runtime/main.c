@@ -65,21 +65,16 @@ size_t GetStructureFieldsNumber(const char* name) {
 }
 
 void ProcessMessage(MessageType type, const char* message) {
-	if (type == MESSAGE_TYPE_WARNING || type == MESSAGE_TYPE_ERROR) {
-		const char* prefix = NULL;
-		if (type == MESSAGE_TYPE_WARNING) {
-			prefix = "Warning! ";
-		} else {
-			prefix = "Error! ";
-		}
-
-		char buffer[strlen(prefix) + strlen(message) + 1];
-		strcpy(buffer, prefix);
-		strcat(buffer, message);
-
-		fputs(buffer, stderr);
-	} else {
-		puts(message);
+	switch (type) {
+		case MESSAGE_TYPE_WARNING:
+			fprintf(stderr, "Warning! %s", message);
+			break;
+		case MESSAGE_TYPE_ERROR:
+			fprintf(stderr, "Error! %s", message);
+			exit(EXIT_FAILURE);
+		default:
+			puts(message);
+			break;
 	}
 }
 
@@ -133,7 +128,7 @@ ValuePointer CreateArray(size_t size) {
 	return value;
 }
 
-ValuePointer GetLength(ValuePointer array) {
+ValuePointer GetArrayLength(ValuePointer array) {
 	TestType(array, VALUE_TYPE_ARRAY);
 	return array->storage.array.size;
 }
@@ -168,14 +163,14 @@ void SetArrayItem(ValuePointer array, ValuePointer index, ValuePointer value) {
 	array->storage.array.data[integral_index] = value;
 }
 
-ValuePointer CreateArrayFromData(size_t size, ...) {
+ValuePointer CreateArrayFromList(size_t size, ...) {
 	ValuePointer array = CreateArray(size);
 
 	va_list arguments;
 	va_start(arguments, size);
 	for (size_t i = 0; i < size; i++) {
 		ValuePointer argument = va_arg(arguments, ValuePointer);
-		SetArrayItem(array, CreateNumber(i), argument);
+		array->storage.array.data[i] = argument;
 	}
 	va_end(arguments);
 
@@ -185,10 +180,9 @@ ValuePointer CreateArrayFromData(size_t size, ...) {
 ValuePointer CreateArrayFromString(const char* string) {
 	size_t length = strlen(string);
 	ValuePointer array = CreateArray(length);
-
 	for (size_t i = 0; i < length; i++) {
 		ValuePointer symbol_code = CreateNumber(string[i]);
-		SetArrayItem(array, CreateNumber(i), symbol_code);
+		array->storage.array.data[i] = symbol_code;
 	}
 
 	return array;
