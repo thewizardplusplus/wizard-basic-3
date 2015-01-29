@@ -5,6 +5,7 @@
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/version.hpp>
 #include <boost/format.hpp>
 
 using namespace thewizardplusplus::wizard_basic_3;
@@ -26,6 +27,8 @@ void ProcessResult(
 }
 
 int main(int number_of_arguments, char* arguments[]) try {
+	std::cout << BOOST_VERSION << '\n';
+
 	const auto command_line_arguments = ProcessCommandLineArguments(
 		number_of_arguments,
 		arguments
@@ -48,7 +51,14 @@ int main(int number_of_arguments, char* arguments[]) try {
 			write_xml(
 				out,
 				property_tree,
-				xml_writer_make_settings(XML_INDENT_SYMBOL, XML_INDENT_SIZE)
+				#if BOOST_VERSION >= 105600
+					xml_writer_make_settings<ptree::key_type>(
+						XML_INDENT_SYMBOL,
+						XML_INDENT_SIZE
+					)
+				#else
+					xml_writer_make_settings(XML_INDENT_SYMBOL, XML_INDENT_SIZE)
+				#endif
 			);
 
 			return out.str();
