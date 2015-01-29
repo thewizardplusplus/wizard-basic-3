@@ -134,8 +134,24 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 	return "";
 }
 
+static auto TranslateStatementList(const Node& ast) -> std::string {
+	auto code = std::string();
+	for (const auto& statement: ast.children) {
+		if (statement.name == "variable_definition") {
+			const auto expression = TranslateExpression(
+				statement.children.front()
+			);
+			code += (format("Value %s=%s;")
+				% statement.value
+				% expression).str();
+		}
+	}
+
+	return code;
+}
+
 auto Translate(const Node& ast) -> std::string {
-	return TranslateExpression(ast);
+	return TranslateStatementList(ast);
 }
 
 }
