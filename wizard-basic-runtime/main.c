@@ -153,7 +153,7 @@ Value CreateNumber(Number number) {
 ArrayData CreateArrayData(size_t size) {
 	ArrayData array_data;
 	array_data.size = size;
-	array_data.data = (Array)AllocateMemory(sizeof(Value) * size);
+	array_data.data = (Array)AllocateMemory(size * sizeof(Value));
 
 	return array_data;
 }
@@ -171,16 +171,19 @@ Value GetArrayLength(Value array) {
 	return CreateNumber(array.storage.array.size);
 }
 
-Value GetArrayItem(Value array, Value index) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	TestType(index, VALUE_TYPE_NUMBER);
-
+void TestIndex(Value array, Value index) {
 	if (
 		index.storage.number < 0.0
 		|| index.storage.number >= array.storage.array.size
 	) {
 		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
 	}
+}
+
+Value GetArrayItem(Value array, Value index) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	TestType(index, VALUE_TYPE_NUMBER);
+	TestIndex(array, index);
 
 	size_t integral_index = (size_t)floor(abs(index.storage.number));
 	return array.storage.array.data[integral_index];
@@ -189,13 +192,7 @@ Value GetArrayItem(Value array, Value index) {
 void SetArrayItem(Value array, Value index, Value value) {
 	TestType(array, VALUE_TYPE_ARRAY);
 	TestType(index, VALUE_TYPE_NUMBER);
-
-	if (
-		index.storage.number < 0.0
-		|| index.storage.number >= array.storage.array.size
-	) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
-	}
+	TestIndex(array, index);
 
 	size_t integral_index = (size_t)floor(abs(index.storage.number));
 	array.storage.array.data[integral_index] = value;
