@@ -83,9 +83,55 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 
 			return expression;
 		}
-	} else {
-		throw std::runtime_error("unknown expression");
+	} else if (
+		ast.name == "disjunction"
+		|| ast.name == "conjunction"
+		|| ast.name == "equality"
+		|| ast.name == "comparison"
+		|| ast.name == "sum"
+		|| ast.name == "product"
+	) {
+		const auto expression_left = TranslateExpression(ast.children.front());
+		const auto expression_right = TranslateExpression(ast.children.back());
+
+		auto function = std::string();
+		if (ast.name == "disjunction") {
+			function = "Or";
+		} else if (ast.name == "conjunction") {
+			function = "And";
+		} else {
+			if (ast.value == "==") {
+				function = "Equal";
+			} else if (ast.value == "/=") {
+				function = "NotEqual";
+			} else if (ast.value == "<") {
+				function = "Less";
+			} else if (ast.value == "<=") {
+				function = "LessOrEqual";
+			} else if (ast.value == ">") {
+				function = "Greater";
+			} else if (ast.value == ">=") {
+				function = "GreaterOrEqual";
+			} else if (ast.value == "+") {
+				function = "Add";
+			} else if (ast.value == "-") {
+				function = "Subtract";
+			} else if (ast.value == "*") {
+				function = "Multiply";
+			} else if (ast.value == "/") {
+				function = "Divide";
+			} else {
+				function = "Modulo";
+			}
+		}
+
+		return (format("%s(%s,%s)")
+			% function
+			% expression_left
+			% expression_right).str();
 	}
+
+	return "";
 }
 
 auto Translate(const Node& ast) -> std::string {
