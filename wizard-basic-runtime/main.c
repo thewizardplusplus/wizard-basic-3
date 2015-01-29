@@ -1,9 +1,13 @@
-#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+
+/*******************************************************************************
+ * Messages.
+ ******************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef enum MessageType {
 	MESSAGE_TYPE_INFO,
@@ -11,6 +15,24 @@ typedef enum MessageType {
 	MESSAGE_TYPE_ERROR
 } MessageType;
 
+void ProcessMessage(MessageType type, const char* message) {
+	switch (type) {
+		case MESSAGE_TYPE_WARNING:
+			fprintf(stderr, "Warning! %s", message);
+			break;
+		case MESSAGE_TYPE_ERROR:
+			fprintf(stderr, "Error! %s", message);
+			exit(EXIT_FAILURE);
+		default:
+			puts(message);
+			break;
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+* Types.
+******************************************************************************/
 typedef enum ValueType {
 	VALUE_TYPE_NULL = 1 << 0,
 	VALUE_TYPE_NUMBER = 1 << 1,
@@ -43,13 +65,7 @@ typedef struct Value {
 	ValueType type;
 	ValueStorage storage;
 } Value;
-
-Value NULL_VALUE;
-Value FALSE_VALUE;
-Value TRUE_VALUE;
-Value TYPE_NAME_NULL;
-Value TYPE_NAME_NUMBER;
-Value TYPE_NAME_ARRAY;
+//------------------------------------------------------------------------------
 
 void* AllocateMemory(size_t size) {
 	return malloc(size);
@@ -67,20 +83,6 @@ size_t GetStructureFieldIndex(
 	(void)structure_name;
 	(void)field_name;
 	return 0;
-}
-
-void ProcessMessage(MessageType type, const char* message) {
-	switch (type) {
-		case MESSAGE_TYPE_WARNING:
-			fprintf(stderr, "Warning! %s", message);
-			break;
-		case MESSAGE_TYPE_ERROR:
-			fprintf(stderr, "Error! %s", message);
-			exit(EXIT_FAILURE);
-		default:
-			puts(message);
-			break;
-	}
 }
 
 void TestType(Value value, size_t allowed_types) {
@@ -112,29 +114,18 @@ bool ToBoolean(Value value) {
 		|| value.storage.number != 0.0);
 }
 
-Value CreateNull(void);
-Value CreateNumber(Number number);
 Value CreateArrayFromString(const char* string);
-void ConstantsInit() {
-	NULL_VALUE = CreateNull();
-	FALSE_VALUE = CreateNumber(0.0);
-	TRUE_VALUE = CreateNumber(1.0);
-	TYPE_NAME_NULL = CreateArrayFromString("null");
-	TYPE_NAME_NUMBER = CreateArrayFromString("number");
-	TYPE_NAME_ARRAY = CreateArrayFromString("array");
-}
-
 Value GetValueType(Value value) {
 	Value type_name;
 	switch (value.type) {
 		case VALUE_TYPE_NULL:
-			type_name = TYPE_NAME_NULL;
+			type_name = CreateArrayFromString("null");
 			break;
 		case VALUE_TYPE_NUMBER:
-			type_name = TYPE_NAME_NUMBER;
+			type_name = CreateArrayFromString("number");
 			break;
 		case VALUE_TYPE_ARRAY:
-			type_name = TYPE_NAME_ARRAY;
+			type_name = CreateArrayFromString("array");
 			break;
 		case VALUE_TYPE_STRUCTURE:
 			type_name = CreateArrayFromString(value.storage.structure.name);
@@ -324,7 +315,7 @@ Value Less(Value value_1, Value value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number < value_2.storage.number;
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value LessOrEqual(Value value_1, Value value_2) {
@@ -332,7 +323,7 @@ Value LessOrEqual(Value value_1, Value value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number <= value_2.storage.number;
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value Greater(Value value_1, Value value_2) {
@@ -340,7 +331,7 @@ Value Greater(Value value_1, Value value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number > value_2.storage.number;
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value GreaterOrEqual(Value value_1, Value value_2) {
@@ -348,12 +339,12 @@ Value GreaterOrEqual(Value value_1, Value value_2) {
 	TestType(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number >= value_2.storage.number;
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value Equal(Value value_1, Value value_2) {
 	if (value_1.type != value_2.type) {
-		return FALSE_VALUE;
+		return CreateNumber(0.0);
 	}
 
 	bool result = false;
@@ -374,12 +365,12 @@ Value Equal(Value value_1, Value value_2) {
 			break;
 	}
 
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value NotEqual(Value value_1, Value value_2) {
 	if (value_1.type != value_2.type) {
-		return TRUE_VALUE;
+		return CreateNumber(1.0);
 	}
 
 	bool result = true;
@@ -400,22 +391,22 @@ Value NotEqual(Value value_1, Value value_2) {
 			break;
 	}
 
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value And(Value value_1, Value value_2) {
 	bool result = ToBoolean(value_1) && ToBoolean(value_2);
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value Or(Value value_1, Value value_2) {
 	bool result = ToBoolean(value_1) || ToBoolean(value_2);
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value Not(Value value) {
 	bool result = !ToBoolean(value);
-	return result ? TRUE_VALUE : FALSE_VALUE;
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 int main(void) {
