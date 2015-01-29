@@ -1,4 +1,11 @@
 while x > 2 do
-    let x = x + 1
-    let y = 2 * x
+    if Test1() then
+        break
+    end
+    if Test2() then
+        continue
+    end
+    if Test3() then
+        return 23 + 42
+    end
 end

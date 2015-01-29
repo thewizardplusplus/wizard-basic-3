@@ -176,6 +176,16 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 					+ (format("while(ToBoolean(%s)){%s}")
 						% condition
 						% body).str();
+			} else if (node.name == "loop_continue") {
+				return code + "continue;";
+			} else if (node.name == "loop_break") {
+				return code + "break;";
+			} else if (node.name == "function_return") {
+				const auto expression =
+					node.children.size() == 1
+						? TranslateExpression(node.children.front())
+						: "";
+				return code + (format("return %s;") % expression).str();
 			}
 
 			return "";
