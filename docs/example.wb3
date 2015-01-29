@@ -1,10 +1,4 @@
-if x > 2 then
-    let x = 0
-    let y = 2
-    if y < 4 then
-        let y = 9
-    end
-else
-    let z = 3
-    let x = 2
+while x > 2 do
+    let x = x + 1
+    let y = 2 * x
 end

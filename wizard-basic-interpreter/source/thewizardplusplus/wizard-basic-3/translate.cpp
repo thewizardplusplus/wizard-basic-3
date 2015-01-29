@@ -154,16 +154,28 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				if (node.children.size() == 2) {
 					return
 						code
-						+ (format("if(%s){%s}") % condition % true_body).str();
+						+ (format("if(ToBoolean(%s)){%s}")
+							% condition
+							% true_body).str();
 				} else {
 					const auto false_body = TranslateStatementList(*child++);
 					return
 						code
-						+ (format("if(%s){%s}else{%s}")
+						+ (format("if(ToBoolean(%s)){%s}else{%s}")
 							% condition
 							% true_body
 							% false_body).str();
 				}
+			} else if (node.name == "loop") {
+				const auto condition = TranslateExpression(
+					node.children.front()
+				);
+				const auto body = TranslateStatementList(node.children.back());
+				return
+					code
+					+ (format("while(ToBoolean(%s)){%s}")
+						% condition
+						% body).str();
 			}
 
 			return "";
