@@ -1,1 +1,10 @@
-let x = 23 + 42
+if x > 2 then
+    let x = 0
+    let y = 2
+    if y < 4 then
+        let y = 9
+    end
+else
+    let z = 3
+    let x = 2
+end

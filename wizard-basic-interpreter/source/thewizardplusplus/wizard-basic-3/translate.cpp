@@ -147,6 +147,23 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				return
 					code
 					+ (format("Value %s=%s;") % node.value % expression).str();
+			} else if (node.name == "condition") {
+				auto child = node.children.begin();
+				const auto condition = TranslateExpression(*child++);
+				const auto true_body = TranslateStatementList(*child++);
+				if (node.children.size() == 2) {
+					return
+						code
+						+ (format("if(%s){%s}") % condition % true_body).str();
+				} else {
+					const auto false_body = TranslateStatementList(*child++);
+					return
+						code
+						+ (format("if(%s){%s}else{%s}")
+							% condition
+							% true_body
+							% false_body).str();
+				}
 			}
 
 			return "";
