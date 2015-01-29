@@ -156,7 +156,7 @@ static Node SimplifyAst(const Node& node) {
 		node.children.end(),
 		std::back_inserter(children),
 		[=] (const Node& node) {
-			return simplify(node);
+			return SimplifyAst(node);
 		}
 	);
 

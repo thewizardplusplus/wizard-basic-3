@@ -1,5 +1,6 @@
 #include "translate.h"
 #include <algorithm>
+#include <iostream>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 
@@ -44,6 +45,19 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		);
 
 		return (format("%s(%s)") % ast.value % join(arguments, ",")).str();
+	} else if (ast.name == "accessor") {
+		const auto base = TranslateExpression(ast.children.front());
+
+		const auto second_child = ast.children.back();
+		const auto first_subchild = second_child.children.front();
+		if (second_child.name == "item_access") {
+			const auto index = TranslateExpression(first_subchild);
+			return (format("GetArrayItem(%s,%s)") % base % index).str();
+		} else {
+			return (format(R"(GetStructureField(%s,"%s"))")
+				% base
+				% first_subchild.value).str();
+		}
 	} else {
 		throw std::runtime_error("unknown expression");
 	}
