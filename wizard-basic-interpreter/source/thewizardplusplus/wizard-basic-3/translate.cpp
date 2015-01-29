@@ -1,6 +1,6 @@
 #include "translate.h"
 #include <algorithm>
-#include <iostream>
+#include <numeric>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
 
@@ -135,19 +135,23 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 }
 
 static auto TranslateStatementList(const Node& ast) -> std::string {
-	auto code = std::string();
-	for (const auto& statement: ast.children) {
-		if (statement.name == "variable_definition") {
-			const auto expression = TranslateExpression(
-				statement.children.front()
-			);
-			code += (format("Value %s=%s;")
-				% statement.value
-				% expression).str();
-		}
-	}
+	return std::accumulate(
+		ast.children.begin(),
+		ast.children.end(),
+		std::string(),
+		[] (const std::string& code, const Node& node) -> std::string {
+			if (node.name == "variable_definition") {
+				const auto expression = TranslateExpression(
+					node.children.front()
+				);
+				return
+					code
+					+ (format("Value %s=%s;") % node.value % expression).str();
+			}
 
-	return code;
+			return "";
+		}
+	);
 }
 
 auto Translate(const Node& ast) -> std::string {
