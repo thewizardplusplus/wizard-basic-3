@@ -34,6 +34,16 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		return (format("CreateArrayFromList(%d,%s)")
 			% items.size()
 			% join(items, ",")).str();
+	} else if (ast.name == "function_call") {
+		std::vector<std::string> arguments;
+		std::transform(
+			ast.children.begin(),
+			ast.children.end(),
+			std::back_inserter(arguments),
+			TranslateExpression
+		);
+
+		return (format("%s(%s)") % ast.value % join(arguments, ",")).str();
 	} else {
 		throw std::runtime_error("unknown expression");
 	}
