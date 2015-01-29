@@ -92,7 +92,8 @@ static Parser CreateGrammar(void) {
 	WP_END
 	WP_RULE(assignment) expression >> hide('='_s) >> expression WP_END
 	WP_RULE(condition)
-		hide(word("if"_t)) >> expression >> hide(word("then"_t))
+		hide(*space())
+		>> hide(word("if"_t)) >> expression >> hide(word("then"_t))
 			>> statement_list_copy
 		>> *(hide(word("else"_t))
 			>> hide(word("if"_t))
@@ -102,16 +103,28 @@ static Parser CreateGrammar(void) {
 		>> !(hide(word("else"_t))
 			>> statement_list_copy)
 		>> hide(word("end"_t))
+		>> hide(*space())
 	WP_END
 	WP_RULE(loop)
-		hide(word("while"_t)) >> expression >> hide(word("do"_t))
+		hide(*space())
+		>> hide(word("while"_t)) >> expression >> hide(word("do"_t))
 			>> statement_list_copy
 		>> hide(word("end"_t))
+		>> hide(*space())
 	WP_END
-	WP_RULE(loop_continue) hide(word("continue"_t)) WP_END
-	WP_RULE(loop_break) hide(word("break"_t)) WP_END
+	WP_RULE(loop_continue)
+		hide(*space())
+		>> hide(word("continue"_t))
+		>> hide(*space())
+	WP_END
+	WP_RULE(loop_break)
+		hide(*space())
+		>> hide(word("break"_t))
+		>> hide(*space())
+	WP_END
 	WP_RULE(function_return)
-		hide(word("return"_t)) >> !expression
+		hide(*space())
+		>> hide(word("return"_t)) >> (!expression | hide(*space()))
 	WP_END
 
 	WP_RULE(statement)
@@ -128,18 +141,22 @@ static Parser CreateGrammar(void) {
 	assign(statement_list_copy, statement_list);
 
 	WP_RULE(structure_declaration)
-		hide(word("structure"_t)) >> identifier
+		hide(*space())
+		>> hide(word("structure"_t)) >> identifier
 			>> +identifier
-		>> hide(word("end"_t)) >> hide(*space())
+		>> hide(word("end"_t))
+		>> hide(*space())
 	WP_END
 	WP_RULE(function_declaration)
-		hide(word("function"_t))
+		hide(*space())
+		>> hide(word("function"_t))
 			>> identifier
 			>> hide('('_s)
 			>> !list(identifier, hide(','_s))
 			>> hide(')'_s)
 			>> statement_list_copy
-		>> hide(word("end"_t)) >> hide(*space())
+		>> hide(word("end"_t))
+		>> hide(*space())
 	WP_END
 
 	WP_RULE(program)
