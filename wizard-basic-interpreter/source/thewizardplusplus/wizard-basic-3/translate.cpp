@@ -58,6 +58,31 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 				% base
 				% first_subchild.value).str();
 		}
+	} else if (ast.name == "unary") {
+		const auto first_child = ast.children.front();
+		const auto second_child = ast.children.back();
+		if (first_child.value == "new") {
+			return (format("CreateStructure(%s)") % second_child.value).str();
+		} else {
+			auto expression = TranslateExpression(second_child);
+
+			auto children = NodeGroup();
+			std::reverse_copy(
+				first_child.children.begin(),
+				first_child.children.end(),
+				std::back_inserter(children)
+			);
+
+			for (const auto& subchild: children) {
+				const auto expression_format =
+					subchild.value == "-"
+						? "UnaryMinus(%s)"
+						: "Not(%s)";
+				expression = (format(expression_format) % expression).str();
+			}
+
+			return expression;
+		}
 	} else {
 		throw std::runtime_error("unknown expression");
 	}
