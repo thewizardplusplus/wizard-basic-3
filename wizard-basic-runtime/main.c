@@ -1,14 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <stdbool.h>
 #include <math.h>
+#include <stdbool.h>
 
 /*******************************************************************************
  * Messages.
  ******************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-
 typedef enum MessageType {
 	MESSAGE_TYPE_INFO,
 	MESSAGE_TYPE_WARNING,
@@ -31,8 +30,8 @@ void ProcessMessage(MessageType type, const char* message) {
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
-* Types.
-******************************************************************************/
+ * Types.
+ ******************************************************************************/
 typedef enum ValueType {
 	VALUE_TYPE_NULL = 1 << 0,
 	VALUE_TYPE_NUMBER = 1 << 1,
@@ -67,74 +66,20 @@ typedef struct Value {
 } Value;
 //------------------------------------------------------------------------------
 
-void* AllocateMemory(size_t size) {
-	return malloc(size);
-}
-
-size_t GetStructureFieldsNumber(const char* name) {
-	(void)name;
-	return 1;
-}
-
+/*******************************************************************************
+ * Interpreter API.
+ ******************************************************************************/
+void* AllocateMemory(size_t size);
+size_t GetStructureFieldsNumber(const char* name);
 size_t GetStructureFieldIndex(
 	const char* structure_name,
 	const char* field_name
-) {
-	(void)structure_name;
-	(void)field_name;
-	return 0;
-}
+);
+//------------------------------------------------------------------------------
 
-void TestType(Value value, size_t allowed_types) {
-	bool valid = false;
-	switch (value.type) {
-		case VALUE_TYPE_NULL:
-			valid = allowed_types & VALUE_TYPE_NULL;
-			break;
-		case VALUE_TYPE_NUMBER:
-			valid = allowed_types & VALUE_TYPE_NUMBER;
-			break;
-		case VALUE_TYPE_ARRAY:
-			valid = allowed_types & VALUE_TYPE_ARRAY;
-			break;
-		case VALUE_TYPE_STRUCTURE:
-			valid = allowed_types & VALUE_TYPE_STRUCTURE;
-			break;
-	}
-
-	if (!valid) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
-	}
-}
-
-bool ToBoolean(Value value) {
-	return
-		value.type != VALUE_TYPE_NULL
-		&& (value.type != VALUE_TYPE_NUMBER
-		|| value.storage.number != 0.0);
-}
-
-Value CreateArrayFromString(const char* string);
-Value GetValueType(Value value) {
-	Value type_name;
-	switch (value.type) {
-		case VALUE_TYPE_NULL:
-			type_name = CreateArrayFromString("null");
-			break;
-		case VALUE_TYPE_NUMBER:
-			type_name = CreateArrayFromString("number");
-			break;
-		case VALUE_TYPE_ARRAY:
-			type_name = CreateArrayFromString("array");
-			break;
-		case VALUE_TYPE_STRUCTURE:
-			type_name = CreateArrayFromString(value.storage.structure.name);
-			break;
-	}
-
-	return type_name;
-}
-
+/*******************************************************************************
+ * Types creation.
+ ******************************************************************************/
 Value CreateNull(void) {
 	Value value;
 	value.type = VALUE_TYPE_NULL;
@@ -164,38 +109,6 @@ Value CreateArray(size_t size) {
 	value.storage.array = CreateArrayData(size);
 
 	return value;
-}
-
-Value GetArrayLength(Value array) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	return CreateNumber(array.storage.array.size);
-}
-
-void TestIndex(Value array, Value index) {
-	if (
-		index.storage.number < 0.0
-		|| index.storage.number >= array.storage.array.size
-	) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
-	}
-}
-
-Value GetArrayItem(Value array, Value index) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	TestType(index, VALUE_TYPE_NUMBER);
-	TestIndex(array, index);
-
-	size_t integral_index = (size_t)floor(abs(index.storage.number));
-	return array.storage.array.data[integral_index];
-}
-
-void SetArrayItem(Value array, Value index, Value value) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	TestType(index, VALUE_TYPE_NUMBER);
-	TestIndex(array, index);
-
-	size_t integral_index = (size_t)floor(abs(index.storage.number));
-	array.storage.array.data[integral_index] = value;
 }
 
 Value CreateArrayFromList(size_t size, ...) {
@@ -233,29 +146,31 @@ Value CreateStructure(const char* name) {
 
 	return value;
 }
+//------------------------------------------------------------------------------
 
-Value GetStructureField(Value structure, const char* field_name) {
-	TestType(structure, VALUE_TYPE_STRUCTURE);
+/*******************************************************************************
+ * Number operations.
+ ******************************************************************************/
+void TestType(Value value, size_t allowed_types) {
+	bool valid = false;
+	switch (value.type) {
+		case VALUE_TYPE_NULL:
+			valid = allowed_types & VALUE_TYPE_NULL;
+			break;
+		case VALUE_TYPE_NUMBER:
+			valid = allowed_types & VALUE_TYPE_NUMBER;
+			break;
+		case VALUE_TYPE_ARRAY:
+			valid = allowed_types & VALUE_TYPE_ARRAY;
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			valid = allowed_types & VALUE_TYPE_STRUCTURE;
+			break;
+	}
 
-	size_t field_index = GetStructureFieldIndex(
-		structure.storage.structure.name,
-		field_name
-	);
-	return structure.storage.structure.fields.data[field_index];
-}
-
-void SetStructureField(
-	Value structure,
-	const char* field_name,
-	Value value
-) {
-	TestType(structure, VALUE_TYPE_STRUCTURE);
-
-	size_t field_index = GetStructureFieldIndex(
-		structure.storage.structure.name,
-		field_name
-	);
-	structure.storage.structure.fields.data[field_index] = value;
+	if (!valid) {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
+	}
 }
 
 Value UnaryMinus(Value value) {
@@ -338,6 +253,86 @@ Value GreaterOrEqual(Value value_1, Value value_2) {
 	bool result = value_1.storage.number >= value_2.storage.number;
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * Array operations.
+ ******************************************************************************/
+void TestIndex(Value array, Value index) {
+	if (
+		index.storage.number < 0.0
+		|| index.storage.number >= array.storage.array.size
+	) {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+	}
+}
+
+Value GetArrayItem(Value array, Value index) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	TestType(index, VALUE_TYPE_NUMBER);
+	TestIndex(array, index);
+
+	size_t integral_index = (size_t)floor(abs(index.storage.number));
+	return array.storage.array.data[integral_index];
+}
+
+void SetArrayItem(Value array, Value index, Value value) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	TestType(index, VALUE_TYPE_NUMBER);
+	TestIndex(array, index);
+
+	size_t integral_index = (size_t)floor(abs(index.storage.number));
+	array.storage.array.data[integral_index] = value;
+}
+
+Value GetArrayLength(Value array) {
+	TestType(array, VALUE_TYPE_ARRAY);
+	return CreateNumber(array.storage.array.size);
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * Structure operations.
+ ******************************************************************************/
+Value GetStructureField(Value structure, const char* field_name) {
+	TestType(structure, VALUE_TYPE_STRUCTURE);
+
+	size_t field_index = GetStructureFieldIndex(
+		structure.storage.structure.name,
+		field_name
+	);
+	return structure.storage.structure.fields.data[field_index];
+}
+
+void SetStructureField(
+	Value structure,
+	const char* field_name,
+	Value value
+) {
+	TestType(structure, VALUE_TYPE_STRUCTURE);
+
+	size_t field_index = GetStructureFieldIndex(
+		structure.storage.structure.name,
+		field_name
+	);
+	structure.storage.structure.fields.data[field_index] = value;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * Rest operations.
+ ******************************************************************************/
+bool ToBoolean(Value value) {
+	return
+		value.type != VALUE_TYPE_NULL
+		&& (value.type != VALUE_TYPE_NUMBER
+		|| value.storage.number != 0.0);
+}
+
+Value Not(Value value) {
+	bool result = !ToBoolean(value);
+	return result ? CreateNumber(1.0) : CreateNumber(0.0);
+}
 
 Value Equal(Value value_1, Value value_2) {
 	if (value_1.type != value_2.type) {
@@ -401,10 +396,26 @@ Value Or(Value value_1, Value value_2) {
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
-Value Not(Value value) {
-	bool result = !ToBoolean(value);
-	return result ? CreateNumber(1.0) : CreateNumber(0.0);
+Value GetValueType(Value value) {
+	Value type_name;
+	switch (value.type) {
+		case VALUE_TYPE_NULL:
+			type_name = CreateArrayFromString("null");
+			break;
+		case VALUE_TYPE_NUMBER:
+			type_name = CreateArrayFromString("number");
+			break;
+		case VALUE_TYPE_ARRAY:
+			type_name = CreateArrayFromString("array");
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			type_name = CreateArrayFromString(value.storage.structure.name);
+			break;
+	}
+
+	return type_name;
 }
+//------------------------------------------------------------------------------
 
 int main(void) {
 	puts("Test.");
