@@ -146,7 +146,7 @@ static Parser CreateGrammar(void) {
 		+(variable_definition | structure_declaration | function_declaration)
 	WP_END
 
-	return separation(hide(*space()), program >> end());
+	return separation(hide(*space()), expression >> end());
 }
 
 static Node SimplifyAst(const Node& node) {
