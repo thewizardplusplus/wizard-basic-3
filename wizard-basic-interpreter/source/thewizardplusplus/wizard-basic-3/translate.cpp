@@ -147,6 +147,49 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				return
 					code
 					+ (format("Value %s=%s;") % node.value % expression).str();
+			} else if (node.name == "assignment") {
+				const auto right_expression = TranslateExpression(
+					node.children.back()
+				);
+
+				const auto first_child = node.children.front();
+				if (first_child.name == "identifier") {
+					return
+						code
+						+ (format("%s=%s;")
+							% first_child.value
+							% right_expression).str();
+				} else if (first_child.name == "accessor") {
+					const auto left_expression = TranslateExpression(
+						first_child.children.front()
+					);
+
+					const auto second_subchild = first_child.children.back();
+					const auto first_subsubchild =
+						second_subchild
+						.children
+						.front();
+					if (second_subchild.name == "item_access") {
+						const auto index = TranslateExpression(
+							first_subsubchild
+						);
+						return
+							code
+							+ (format("SetArrayItem(%s,%s,%s);")
+								% left_expression
+								% index
+								% right_expression).str();
+					} else {
+						return
+							code
+							+ (format(R"(SetStructureField(%s,"%s",%s);)")
+								% left_expression
+								% first_subsubchild.value
+								% right_expression).str();
+					}
+				} else {
+					throw std::runtime_error("invalid l-value");
+				}
 			} else if (node.name == "condition") {
 				auto child = node.children.begin();
 				const auto condition = TranslateExpression(*child++);

@@ -1,11 +1,1 @@
-while x > 2 do
-    if Test1() then
-        break
-    end
-    if Test2() then
-        continue
-    end
-    if Test3() then
-        return 23 + 42
-    end
-end
+x.y = 23
