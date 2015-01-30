@@ -1,4 +1,5 @@
 #include "runtime.h"
+#include <gtest/gtest.h>
 
 /*******************************************************************************
  * Interpreter API mocks.
@@ -52,6 +53,7 @@ size_t GetStructureFieldIndex(
 
 //------------------------------------------------------------------------------
 
-int main(void) {
-	puts("Test.");
+int main(int number_of_arguments, char** arguments) {
+	::testing::InitGoogleTest(&number_of_arguments, arguments);
+	return RUN_ALL_TESTS();
 }

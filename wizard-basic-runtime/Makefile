@@ -1,9 +1,9 @@
 OBJECTS = main.o
-CFLAGS += -std=c99 -Wpedantic -Wall -Wextra -O2
-LDFLAGS += -lm
+CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
+LDFLAGS += -lm -lgtest
 
 main: $(OBJECTS)
-	$(CC) $(CFLAGS) -o main $(OBJECTS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o main $(OBJECTS) $(LDFLAGS)
 
 clean:
 	find . -name "*.o" -type f -delete
