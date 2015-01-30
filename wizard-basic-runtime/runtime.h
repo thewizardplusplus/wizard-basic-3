@@ -101,7 +101,9 @@ Value CreateNumber(Number number) {
 ArrayData CreateArrayData(size_t size) {
 	ArrayData array_data;
 	array_data.size = size;
-	array_data.data = (Array)AllocateMemory(size * sizeof(Value));
+	if (size > 0) {
+		array_data.data = (Array)AllocateMemory(size * sizeof(Value));
+	}
 
 	return array_data;
 }

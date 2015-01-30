@@ -24,17 +24,21 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		const auto string = ast.value;
 		return (format(R"(CreateArrayFromString("%s"))") % string).str();
 	} else if (ast.name == "array_definition") {
-		std::vector<std::string> items;
-		std::transform(
-			ast.children.begin(),
-			ast.children.end(),
-			std::back_inserter(items),
-			TranslateExpression
-		);
+		if (!ast.children.empty()) {
+			std::vector<std::string> items;
+			std::transform(
+				ast.children.begin(),
+				ast.children.end(),
+				std::back_inserter(items),
+				TranslateExpression
+			);
 
-		return (format("CreateArrayFromList(%d,%s)")
-			% items.size()
-			% join(items, ",")).str();
+			return (format("CreateArrayFromList(%d,%s)")
+				% items.size()
+				% join(items, ",")).str();
+		} else {
+			return "CreateArray(0)";
+		}
 	} else if (ast.name == "function_call") {
 		std::vector<std::string> arguments;
 		std::transform(
