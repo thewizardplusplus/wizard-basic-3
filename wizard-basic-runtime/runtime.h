@@ -103,6 +103,9 @@ ArrayData CreateArrayData(size_t size) {
 	array_data.size = size;
 	if (size > 0) {
 		array_data.data = (Array)AllocateMemory(size * sizeof(Value));
+		for (size_t i = 0; i < size; i++) {
+			array_data.data[i] = CreateNull();
+		}
 	}
 
 	return array_data;
