@@ -27,8 +27,6 @@ void ProcessResult(
 }
 
 int main(int number_of_arguments, char* arguments[]) try {
-	std::cout << BOOST_VERSION << '\n';
-
 	const auto command_line_arguments = ProcessCommandLineArguments(
 		number_of_arguments,
 		arguments
