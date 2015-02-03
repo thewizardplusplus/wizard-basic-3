@@ -81,6 +81,55 @@ size_t GetStructureFieldIndex(
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
+ * Utils.
+ ******************************************************************************/
+bool HasAllowedType(Value value, size_t allowed_types) {
+	bool valid = false;
+	switch (value.type) {
+		case VALUE_TYPE_NULL:
+			valid = allowed_types & VALUE_TYPE_NULL;
+			break;
+		case VALUE_TYPE_NUMBER:
+			valid = allowed_types & VALUE_TYPE_NUMBER;
+			break;
+		case VALUE_TYPE_ARRAY:
+			valid = allowed_types & VALUE_TYPE_ARRAY;
+			break;
+		case VALUE_TYPE_STRUCTURE:
+			valid = allowed_types & VALUE_TYPE_STRUCTURE;
+			break;
+	}
+
+	return valid;
+}
+
+void TestTypeAndNotify(Value value, size_t allowed_types) {
+	if (!HasAllowedType(value, allowed_types)) {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
+	}
+}
+
+bool IsValidIndex(Value array, Value index) {
+	return
+		index.storage.number >= 0.0
+		&& index.storage.number < array.storage.array.size;
+}
+
+void TestIndexAndNotify(Value array, Value index) {
+	if (!IsValidIndex(array, index)) {
+		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+	}
+}
+
+bool ToBoolean(Value value) {
+	return
+		value.type != VALUE_TYPE_NULL
+		&& (value.type != VALUE_TYPE_NUMBER
+		|| value.storage.number != 0.0);
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
  * Types creation.
  ******************************************************************************/
 Value CreateNull(void) {
@@ -159,70 +208,48 @@ Value CreateStructure(const char* name) {
 /*******************************************************************************
  * Number operations.
  ******************************************************************************/
-void TestType(Value value, size_t allowed_types) {
-	bool valid = false;
-	switch (value.type) {
-		case VALUE_TYPE_NULL:
-			valid = allowed_types & VALUE_TYPE_NULL;
-			break;
-		case VALUE_TYPE_NUMBER:
-			valid = allowed_types & VALUE_TYPE_NUMBER;
-			break;
-		case VALUE_TYPE_ARRAY:
-			valid = allowed_types & VALUE_TYPE_ARRAY;
-			break;
-		case VALUE_TYPE_STRUCTURE:
-			valid = allowed_types & VALUE_TYPE_STRUCTURE;
-			break;
-	}
-
-	if (!valid) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
-	}
-}
-
 Value UnaryMinus(Value value) {
-	TestType(value, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value, VALUE_TYPE_NUMBER);
 
 	double number = -value.storage.number;
 	return CreateNumber(number);
 }
 
 Value Add(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	double number = value_1.storage.number + value_2.storage.number;
 	return CreateNumber(number);
 }
 
 Value Subtract(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	double number = value_1.storage.number - value_2.storage.number;
 	return CreateNumber(number);
 }
 
 Value Multiply(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	double number = value_1.storage.number * value_2.storage.number;
 	return CreateNumber(number);
 }
 
 Value Divide(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	double number = value_1.storage.number / value_2.storage.number;
 	return CreateNumber(number);
 }
 
 Value Modulo(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	double number =
 		(long)round(value_1.storage.number)
@@ -231,32 +258,32 @@ Value Modulo(Value value_1, Value value_2) {
 }
 
 Value Less(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number < value_2.storage.number;
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value LessOrEqual(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number <= value_2.storage.number;
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value Greater(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number > value_2.storage.number;
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);
 }
 
 Value GreaterOrEqual(Value value_1, Value value_2) {
-	TestType(value_1, VALUE_TYPE_NUMBER);
-	TestType(value_2, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	bool result = value_1.storage.number >= value_2.storage.number;
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);
@@ -266,35 +293,26 @@ Value GreaterOrEqual(Value value_1, Value value_2) {
 /*******************************************************************************
  * Array operations.
  ******************************************************************************/
-void TestIndex(Value array, Value index) {
-	if (
-		index.storage.number < 0.0
-		|| index.storage.number >= array.storage.array.size
-	) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
-	}
-}
-
 Value GetArrayItem(Value array, Value index) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	TestType(index, VALUE_TYPE_NUMBER);
-	TestIndex(array, index);
+	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+	TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
+	TestIndexAndNotify(array, index);
 
 	size_t integral_index = (size_t)floor(abs(index.storage.number));
 	return array.storage.array.data[integral_index];
 }
 
 void SetArrayItem(Value array, Value index, Value value) {
-	TestType(array, VALUE_TYPE_ARRAY);
-	TestType(index, VALUE_TYPE_NUMBER);
-	TestIndex(array, index);
+	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+	TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
+	TestIndexAndNotify(array, index);
 
 	size_t integral_index = (size_t)floor(abs(index.storage.number));
 	array.storage.array.data[integral_index] = value;
 }
 
 Value GetArrayLength(Value array) {
-	TestType(array, VALUE_TYPE_ARRAY);
+	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
 	return CreateNumber(array.storage.array.size);
 }
 //------------------------------------------------------------------------------
@@ -303,7 +321,7 @@ Value GetArrayLength(Value array) {
  * Structure operations.
  ******************************************************************************/
 Value GetStructureField(Value structure, const char* field_name) {
-	TestType(structure, VALUE_TYPE_STRUCTURE);
+	TestTypeAndNotify(structure, VALUE_TYPE_STRUCTURE);
 
 	size_t field_index = GetStructureFieldIndex(
 		structure.storage.structure.name,
@@ -317,7 +335,7 @@ void SetStructureField(
 	const char* field_name,
 	Value value
 ) {
-	TestType(structure, VALUE_TYPE_STRUCTURE);
+	TestTypeAndNotify(structure, VALUE_TYPE_STRUCTURE);
 
 	size_t field_index = GetStructureFieldIndex(
 		structure.storage.structure.name,
@@ -330,13 +348,6 @@ void SetStructureField(
 /*******************************************************************************
  * Rest operations.
  ******************************************************************************/
-bool ToBoolean(Value value) {
-	return
-		value.type != VALUE_TYPE_NULL
-		&& (value.type != VALUE_TYPE_NUMBER
-		|| value.storage.number != 0.0);
-}
-
 Value Not(Value value) {
 	bool result = !ToBoolean(value);
 	return result ? CreateNumber(1.0) : CreateNumber(0.0);

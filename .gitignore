@@ -1,3 +1,3 @@
 *.o
-wb3i
-main
+/wizard-basic-interpreter/wb3i
+/wizard-basic-runtime/tests
