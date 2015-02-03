@@ -1,6 +1,6 @@
 OBJECTS = main.o
 CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
-LDFLAGS += -lm -lgtest
+LDFLAGS += -lm -lgtest -lpthread
 
 main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o main $(OBJECTS) $(LDFLAGS)
