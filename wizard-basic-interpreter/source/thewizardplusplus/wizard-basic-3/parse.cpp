@@ -222,6 +222,18 @@ static Node SimplifyAst(const Node& node) {
 				}
 			);
 		}
+	} else if (node.name == "accessor") {
+		const auto second_child = children.back();
+		if (second_child.name.empty()) {
+			simplified_node = std::accumulate(
+				second_child.children.begin(),
+				second_child.children.end(),
+				children.front(),
+				[=] (const Node& simplified_node, const Node& child) {
+					return Node{node.name, "", {simplified_node, child}};
+				}
+			);
+		}
 	} else if (node.name == "unary") {
 		const auto first_child = children.front();
 		if (first_child.value != "new" && first_child.children.size() == 0) {

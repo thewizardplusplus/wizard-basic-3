@@ -1,1 +1,1 @@
-let x = []
+let x = test.test[1].y
