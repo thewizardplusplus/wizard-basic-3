@@ -26,7 +26,18 @@ size_t GetStructureFieldIndex(
 /*******************************************************************************
  * Types creation tests.
  ******************************************************************************/
+TEST(TypesCreation, TestCreateNull) {
+	const auto null = CreateNull();
+	EXPECT_EQ(null.type, VALUE_TYPE_NULL);
+}
 
+TEST(TypesCreation, TestCreateNumber) {
+	const auto TEST_NUMBER_VALUE = 23;
+
+	const auto number = CreateNumber(TEST_NUMBER_VALUE);
+	EXPECT_EQ(number.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(number.storage.number, TEST_NUMBER_VALUE);
+}
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
