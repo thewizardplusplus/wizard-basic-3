@@ -264,7 +264,35 @@ auto Translate(const Node& ast) -> std::string {
 			} else if (node.name == "structure_declaration") {
 
 			} else if (node.name == "function_declaration") {
+				const auto first_child = node.children.front();
+				const auto function_arguments = std::accumulate(
+					first_child.children.begin(),
+					first_child.children.end(),
+					std::string(),
+					[] (
+						const std::string& function_argument_list,
+						const Node& node
+					) -> std::string {
+						return
+							function_argument_list
+							+ (!function_argument_list.empty() ? "," : "")
+							+ (format("const Value %s") % node.value).str();
+					}
+				);
+				const auto function_declaration =
+					(format("Value %s(%s)")
+						% node.value
+						% function_arguments).str();
 
+				functions_declarations += function_declaration + ";";
+
+				const auto statement_list = TranslateStatementList(
+					node.children.back()
+				);
+				functions_implementations +=
+					(format("%s{%s}")
+						% function_declaration
+						% statement_list).str();
 			}
 
 			return "";

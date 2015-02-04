@@ -1,3 +1,11 @@
-let x = 23
-let y = 23 * 3
-let z = 23 - 4
+function Test(x, y, z)
+    let x = 10
+    let x = 10
+    let x = 10
+end
+
+function Test(x, y, z)
+    let x = 10
+    let x = 10
+    let x = 10
+end
