@@ -240,13 +240,15 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 	);
 }
 
-auto Translate(const Node& ast) -> std::string {
+auto Translate(const Node& ast) -> TranslationResult {
 	auto global_variables_declarations = std::string();
 	auto global_variables_initializations = std::string();
 	auto functions_declarations = std::string(
 		"void InitializeGlobalVariables();"
 	);
 	auto functions_implementations = std::string();
+
+	auto structures_descriptions = StructuresDescriptions();
 
 	std::for_each(
 		ast.children.begin(),
@@ -262,7 +264,13 @@ auto Translate(const Node& ast) -> std::string {
 				global_variables_initializations +=
 					(format("%s=%s;") % node.value % expression).str();
 			} else if (node.name == "structure_declaration") {
+				auto structure_description = StructureDescription();
+				for (size_t i = 0; i < node.children.size(); i++) {
+					const auto field_name = node.children[i].value;
+					structure_description[field_name] = i;
+				}
 
+				structures_descriptions[node.value] = structure_description;
 			} else if (node.name == "function_declaration") {
 				const auto first_child = node.children.front();
 				const auto function_arguments = std::accumulate(
@@ -299,12 +307,14 @@ auto Translate(const Node& ast) -> std::string {
 		}
 	);
 
-	return
+	return TranslationResult{
 		global_variables_declarations
-		+ functions_declarations
-		+ functions_implementations
-		+ (format("void InitializeGlobalVariables(){%s}")
-			% global_variables_initializations).str();
+			+ functions_declarations
+			+ functions_implementations
+			+ (format("void InitializeGlobalVariables(){%s}")
+				% global_variables_initializations).str(),
+		structures_descriptions
+	};
 }
 
 }

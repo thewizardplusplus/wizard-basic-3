@@ -1,11 +1,9 @@
-function Test(x, y, z)
-    let x = 10
-    let x = 10
-    let x = 10
+structure Vector
+    x
+    y
+    z
 end
 
 function Test(x, y, z)
-    let x = 10
-    let x = 10
-    let x = 10
+    let x = 10 + 4 - 5 * 45
 end
