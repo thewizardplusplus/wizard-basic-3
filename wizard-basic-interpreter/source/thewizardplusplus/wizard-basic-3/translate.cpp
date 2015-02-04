@@ -241,7 +241,42 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 }
 
 auto Translate(const Node& ast) -> std::string {
-	return TranslateStatementList(ast);
+	auto global_variables_declarations = std::string();
+	auto global_variables_initializations = std::string();
+	auto functions_declarations = std::string(
+		"void InitializeGlobalVariables();"
+	);
+	auto functions_implementations = std::string();
+
+	std::for_each(
+		ast.children.begin(),
+		ast.children.end(),
+		[&] (const Node& node) -> std::string {
+			if (node.name == "variable_definition") {
+				global_variables_declarations +=
+					(format("Value %s;") % node.value).str();
+
+				const auto expression = TranslateExpression(
+					node.children.front()
+				);
+				global_variables_initializations +=
+					(format("%s=%s;") % node.value % expression).str();
+			} else if (node.name == "structure_declaration") {
+
+			} else if (node.name == "function_declaration") {
+
+			}
+
+			return "";
+		}
+	);
+
+	return
+		global_variables_declarations
+		+ functions_declarations
+		+ functions_implementations
+		+ (format("void InitializeGlobalVariables(){%s}")
+			% global_variables_initializations).str();
 }
 
 }
