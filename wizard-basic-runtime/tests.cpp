@@ -10,6 +10,7 @@ const auto TEST_SIZE_VALUE = 23;
 const auto FALSE_VALUE = 0.0;
 const auto TRUE_VALUE = 1.0;
 const auto TEST_STRUCTURE_NAME = std::string("Test");
+const auto TEST_STRUCTURE_FIELD_NAME = std::string("test");
 
 /*******************************************************************************
  * Interpreter API mocks.
@@ -53,8 +54,13 @@ void ValidateArrayContents(const Value array, const std::string contents) {
 TEST(Utils, TestInitializeConstants) {
 	InitializeConstants();
 
+	EXPECT_EQ(__TYPE_NAME_NULL.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(__TYPE_NAME_NULL, "null");
+
+	EXPECT_EQ(__TYPE_NAME_NUMBER.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(__TYPE_NAME_NUMBER, "number");
+
+	EXPECT_EQ(__TYPE_NAME_ARRAY.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(__TYPE_NAME_ARRAY, "array");
 }
 
@@ -357,18 +363,90 @@ TEST(NumberOperations, TestGreaterOrEqual) {
 	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
 	EXPECT_EQ(result.storage.number, FALSE_VALUE);
 }
+
+TEST(NumberOperations, TestToString) {
+	const auto number = CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = ToString(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "2.300000");
+}
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Array operations tests.
  ******************************************************************************/
+TEST(ArrayOperations, TestGetArrayItem) {
+	const auto TEST_SIZE_VALUE = 1;
+	const auto TEST_ARRAY_ITEM_INDEX = 0;
 
+	const auto number = CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto array = CreateArrayFromList(TEST_SIZE_VALUE, number);
+	const auto index = CreateNumber(TEST_ARRAY_ITEM_INDEX);
+	const auto result = GetArrayItem(array, index);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, TEST_NUMBER_1_VALUE);
+}
+
+TEST(ArrayOperations, TestSetArrayItem) {
+	const auto TEST_ARRAY_ITEM_INDEX = 12;
+
+	const auto array = CreateArray(TEST_SIZE_VALUE);
+	const auto index = CreateNumber(TEST_ARRAY_ITEM_INDEX);
+	const auto number = CreateNumber(TEST_NUMBER_1_VALUE);
+	SetArrayItem(array, index, number);
+
+	EXPECT_EQ(
+		array.storage.array.data[TEST_ARRAY_ITEM_INDEX].type,
+		VALUE_TYPE_NUMBER
+	);
+	EXPECT_EQ(
+		array.storage.array.data[TEST_ARRAY_ITEM_INDEX].storage.number,
+		TEST_NUMBER_1_VALUE
+	);
+}
+
+TEST(ArrayOperations, TestGetArrayLength) {
+	const auto array = CreateArray(TEST_SIZE_VALUE);
+	const auto result = GetArrayLength(array);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, TEST_SIZE_VALUE);
+}
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Structure operations tests.
  ******************************************************************************/
+TEST(StructureOperations, TestGetStructureField) {
+	const auto structure = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto result = GetStructureField(
+		structure,
+		TEST_STRUCTURE_FIELD_NAME.c_str()
+	);
 
+	EXPECT_EQ(result.type, VALUE_TYPE_NULL);
+}
+
+TEST(StructureOperations, TestSetStructureField) {
+	const auto structure = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto number = CreateNumber(TEST_NUMBER_1_VALUE);
+	SetStructureField(structure, TEST_STRUCTURE_FIELD_NAME.c_str(), number);
+
+	const auto field_index = GetStructureFieldIndex(
+		TEST_STRUCTURE_NAME.c_str(),
+		TEST_STRUCTURE_FIELD_NAME.c_str()
+	);
+	EXPECT_EQ(
+		structure.storage.structure.fields.data[field_index].type,
+		VALUE_TYPE_NUMBER
+	);
+	EXPECT_EQ(
+		structure.storage.structure.fields.data[field_index].storage.number,
+		TEST_NUMBER_1_VALUE
+	);
+}
 //------------------------------------------------------------------------------
 
 /*******************************************************************************

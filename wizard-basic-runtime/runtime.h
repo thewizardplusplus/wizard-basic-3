@@ -74,6 +74,7 @@ typedef struct Value {
  ******************************************************************************/
 const Value __FALSE = {VALUE_TYPE_NUMBER, {0.0}};
 const Value __TRUE = {VALUE_TYPE_NUMBER, {1.0}};
+const size_t NUMBER_FORMAT_BUFFER_SIZE = 1024;
 Value __TYPE_NAME_NULL;
 Value __TYPE_NAME_NUMBER;
 Value __TYPE_NAME_ARRAY;
@@ -285,6 +286,15 @@ Value GreaterOrEqual(const Value value_1, const Value value_2) {
 
 	const bool result = value_1.storage.number >= value_2.storage.number;
 	return result ? __TRUE : __FALSE;
+}
+
+Value ToString(const Value value) {
+	TestTypeAndNotify(value, VALUE_TYPE_NUMBER);
+
+	char buffer[NUMBER_FORMAT_BUFFER_SIZE];
+	sprintf(buffer, "%f", value.storage.number);
+
+	return CreateArrayFromString(buffer);
 }
 //------------------------------------------------------------------------------
 
