@@ -315,7 +315,7 @@ static Node SimplifyAst(const Node& node) {
 			{children.back()}
 		};
 	} else if (node.name == "condition") {
-		const auto first_child = children.front();
+		/*const auto first_child = children.front();
 		if (
 			first_child.name.empty()
 			&& first_child.value.empty()
@@ -330,7 +330,7 @@ static Node SimplifyAst(const Node& node) {
 					children.back()
 				}
 			};
-		}
+		}*/
 	} else if (node.name == "statement_list") {
 		const auto second_child = children.back();
 		if (
