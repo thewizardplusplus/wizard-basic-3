@@ -14,7 +14,7 @@ const auto TEST_STRUCTURE_NAME = std::string("Test");
 /*******************************************************************************
  * Interpreter API mocks.
  ******************************************************************************/
-void* AllocateMemory(size_t size) {
+void* AllocateMemory(const size_t size) {
 	return malloc(size);
 }
 
@@ -34,8 +34,30 @@ size_t GetStructureFieldIndex(
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
+ * Utils.
+ ******************************************************************************/
+void ValidateArrayContents(const Value array, const std::string contents) {
+	EXPECT_EQ(array.storage.array.size, contents.size());
+
+	for (size_t i = 0; i < array.storage.array.size; i++) {
+		EXPECT_EQ(array.storage.array.data[i].type, VALUE_TYPE_NUMBER);
+		EXPECT_EQ(array.storage.array.data[i].storage.number, contents[i]);
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
  * Utils tests.
  ******************************************************************************/
+// InitializeConstants() test
+TEST(Utils, TestInitializeConstants) {
+	InitializeConstants();
+
+	ValidateArrayContents(__TYPE_NAME_NULL, "null");
+	ValidateArrayContents(__TYPE_NAME_NUMBER, "number");
+	ValidateArrayContents(__TYPE_NAME_ARRAY, "array");
+}
+
 // HasAllowedType() tests
 TEST(Utils, TestHasAllowedTypeWithOneAllowedType) {
 	const auto null = CreateNull();
@@ -214,19 +236,12 @@ TEST(TypesCreation, TestCreateArrayFromList) {
 }
 
 TEST(TypesCreation, TestCreateArrayFromString) {
-	const auto TEST_STRING = "test";
+	const auto TEST_STRING = std::string("test");
 
-	const auto array = CreateArrayFromString(TEST_STRING);
+	const auto array = CreateArrayFromString(TEST_STRING.c_str());
 
 	EXPECT_EQ(array.type, VALUE_TYPE_ARRAY);
-
-	const auto string_length = std::strlen(TEST_STRING);
-	EXPECT_EQ(array.storage.array.size, string_length);
-
-	for (size_t i = 0; i < string_length; i++) {
-		EXPECT_EQ(array.storage.array.data[i].type, VALUE_TYPE_NUMBER);
-		EXPECT_EQ(array.storage.array.data[i].storage.number, TEST_STRING[i]);
-	}
+	ValidateArrayContents(array, TEST_STRING);
 }
 
 TEST(TypesCreation, TestCreateStructure) {
