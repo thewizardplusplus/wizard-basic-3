@@ -201,16 +201,9 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
     * `GetLength(array)`;
     * `GetType(value)`;
 * модуль `system`:
+    * `Show(array)`;
+    * `GetTime()`;
     * `Exit(exit_code)`;
-    * модуль `system.io`:
-        * `Read(stream)`;
-        * `Write(stream, byte)`;
-        * `Open(path, mode)`;
-        * `Close(stream)`;
-    * модуль `system.time`:
-        * `StartTimer()`;
-        * `GetElapsedTime()`;
-        * `GetTime()`;
 * модуль `maths`:
     * `Sin(number)`;
     * `Cos(number)`;

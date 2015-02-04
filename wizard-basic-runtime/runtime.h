@@ -7,6 +7,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
+#include <time.h>
 
 /*******************************************************************************
  * Messages.
@@ -70,7 +71,7 @@ typedef struct Value {
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
- * Constants.
+ * Global constants and variables.
  ******************************************************************************/
 const Value __FALSE = {VALUE_TYPE_NUMBER, {0.0}};
 const Value __TRUE = {VALUE_TYPE_NUMBER, {1.0}};
@@ -78,6 +79,8 @@ const size_t NUMBER_FORMAT_BUFFER_SIZE = 1024;
 Value __TYPE_NAME_NULL;
 Value __TYPE_NAME_NUMBER;
 Value __TYPE_NAME_ARRAY;
+
+static bool prng_initialized = false;
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
@@ -319,7 +322,7 @@ void SetArrayItem(const Value array, const Value index, const Value value) {
 	array.storage.array.data[integral_index] = value;
 }
 
-Value GetArrayLength(const Value array) {
+Value GetLength(const Value array) {
 	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
 	return CreateNumber(array.storage.array.size);
 }
@@ -423,7 +426,7 @@ Value Or(const Value value_1, const Value value_2) {
 	return result ? __TRUE : __FALSE;
 }
 
-Value GetValueType(const Value value) {
+Value GetType(const Value value) {
 	Value type_name;
 	switch (value.type) {
 		case VALUE_TYPE_NULL:
@@ -441,6 +444,125 @@ Value GetValueType(const Value value) {
 	}
 
 	return type_name;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * System module.
+ ******************************************************************************/
+void Exit(const Value exit_code) {
+	TestTypeAndNotify(exit_code, VALUE_TYPE_NUMBER);
+
+	const long unwrapped_exit_code = (long)round(exit_code.storage.number);
+	exit(unwrapped_exit_code);
+}
+
+Value GetTime(void) {
+	const time_t current_time = time(NULL);
+	return CreateNumber(current_time);
+}
+
+void Show(const Value array) {
+	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+
+	for (size_t i = 0; i < array.storage.array.size; i++) {
+		TestTypeAndNotify(array.storage.array.data[i], VALUE_TYPE_NUMBER);
+
+		putchar(array.storage.array.data[i].storage.number);
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * Maths module.
+ ******************************************************************************/
+Value Sin(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = sin(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Cos(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = cos(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Tg(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = tan(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Arcsin(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = asin(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Arccos(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = acos(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Arctg(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = atan(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value SquareRoot(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = sqrt(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Power(const Value base, const Value exponent) {
+	TestTypeAndNotify(base, VALUE_TYPE_NUMBER);
+	TestTypeAndNotify(exponent, VALUE_TYPE_NUMBER);
+
+	const double result = pow(base.storage.number, exponent.storage.number);
+	return CreateNumber(result);
+}
+
+Value Exp(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = exp(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Ln(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const double result = log(number.storage.number);
+	return CreateNumber(result);
+}
+
+Value Integral(const Value number) {
+	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	double result = 0.0;
+	modf(number.storage.number, &result);
+	return CreateNumber(result);
+}
+
+Value GetRandom(void) {
+	if (!prng_initialized) {
+		srand(time(NULL));
+		prng_initialized = true;
+	}
+
+	const double result = (double)rand() / RAND_MAX;
+	return CreateNumber(result);
 }
 //------------------------------------------------------------------------------
 #endif

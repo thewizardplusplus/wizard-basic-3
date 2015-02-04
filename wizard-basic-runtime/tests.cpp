@@ -4,6 +4,8 @@
 #include <gtest/gtest.h>
 #include <boost/preprocessor.hpp>
 
+using namespace testing;
+
 const auto TEST_NUMBER_1_VALUE = 2.3;
 const auto TEST_NUMBER_2_VALUE = 4.2;
 const auto TEST_SIZE_VALUE = 23;
@@ -407,9 +409,9 @@ TEST(ArrayOperations, TestSetArrayItem) {
 	);
 }
 
-TEST(ArrayOperations, TestGetArrayLength) {
+TEST(ArrayOperations, TestGetLength) {
 	const auto array = CreateArray(TEST_SIZE_VALUE);
-	const auto result = GetArrayLength(array);
+	const auto result = GetLength(array);
 
 	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
 	EXPECT_EQ(result.storage.number, TEST_SIZE_VALUE);
@@ -452,10 +454,171 @@ TEST(StructureOperations, TestSetStructureField) {
 /*******************************************************************************
  * Rest operations tests.
  ******************************************************************************/
+// Not() test
+TEST(RestOperations, TestNot) {
+	const auto result = Not(__TRUE);
 
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+// Equal() tests
+TEST(RestOperations, TestEqualWithNulls) {
+	const auto null_1 = CreateNull();
+	const auto null_2 = CreateNull();
+	const auto result = Equal(null_1, null_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+TEST(RestOperations, TestEqualWithNumbers) {
+	const auto number_1 = CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto number_2 = CreateNumber(TEST_NUMBER_2_VALUE);
+	const auto result = Equal(number_1, number_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+TEST(RestOperations, TestEqualWithEqualArrays) {
+	const auto array = CreateArray(TEST_SIZE_VALUE);
+	const auto result = Equal(array, array);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+TEST(RestOperations, TestEqualWithNotEqualArrays) {
+	const auto array_1 = CreateArray(TEST_SIZE_VALUE);
+	const auto array_2 = CreateArray(TEST_SIZE_VALUE);
+	const auto result = Equal(array_1, array_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+TEST(RestOperations, TestEqualWithEqualStructures) {
+	const auto structure = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto result = Equal(structure, structure);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+TEST(RestOperations, TestEqualWithNotEqualStructures) {
+	const auto structure_1 = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto structure_2 = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto result = Equal(structure_1, structure_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+// NotEqual() tests
+TEST(RestOperations, TestNotEqualWithNulls) {
+	const auto null_1 = CreateNull();
+	const auto null_2 = CreateNull();
+	const auto result = NotEqual(null_1, null_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+TEST(RestOperations, TestNotEqualWithNumbers) {
+	const auto number_1 = CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto number_2 = CreateNumber(TEST_NUMBER_2_VALUE);
+	const auto result = NotEqual(number_1, number_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+TEST(RestOperations, TestNotEqualWithEqualArrays) {
+	const auto array = CreateArray(TEST_SIZE_VALUE);
+	const auto result = NotEqual(array, array);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+TEST(RestOperations, TestNotEqualWithNotEqualArrays) {
+	const auto array_1 = CreateArray(TEST_SIZE_VALUE);
+	const auto array_2 = CreateArray(TEST_SIZE_VALUE);
+	const auto result = NotEqual(array_1, array_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+TEST(RestOperations, TestNotEqualWithEqualStructures) {
+	const auto structure = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto result = NotEqual(structure, structure);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+TEST(RestOperations, TestNotEqualWithNotEqualStructures) {
+	const auto structure_1 = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto structure_2 = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto result = NotEqual(structure_1, structure_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+// And() test
+TEST(RestOperations, TestAnd) {
+	const auto result = And(__TRUE, __FALSE);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 0.0);
+}
+
+// Or() test
+TEST(RestOperations, TestOr) {
+	const auto result = Or(__TRUE, __FALSE);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+// GetType() tests
+TEST(RestOperations, TestGetTypeWithNull) {
+	const auto null = CreateNull();
+	const auto result = GetType(null);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "null");
+}
+
+TEST(RestOperations, TestGetTypeWithNumber) {
+	const auto number = CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = GetType(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "number");
+}
+
+TEST(RestOperations, TestGetTypeWithArray) {
+	const auto array = CreateArray(TEST_SIZE_VALUE);
+	const auto result = GetType(array);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "array");
+}
+
+TEST(RestOperations, TestGetTypeWithStructure) {
+	const auto structure = CreateStructure(TEST_STRUCTURE_NAME.c_str());
+	const auto result = GetType(structure);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, TEST_STRUCTURE_NAME);
+}
 //------------------------------------------------------------------------------
 
 int main(int number_of_arguments, char** arguments) {
-	::testing::InitGoogleTest(&number_of_arguments, arguments);
+	InitGoogleTest(&number_of_arguments, arguments);
 	return RUN_ALL_TESTS();
 }
