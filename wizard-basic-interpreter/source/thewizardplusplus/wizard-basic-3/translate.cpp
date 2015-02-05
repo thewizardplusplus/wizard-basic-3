@@ -13,16 +13,16 @@ namespace wizard_basic_3 {
 
 static auto TranslateExpression(const Node& ast) -> std::string {
 	if (ast.name == "null_definition") {
-		return "CreateNull()";
+		return "__NULL";
 	} else if (ast.name == "number") {
 		const auto number = ast.value;
-		return (format("CreateNumber(%s)") % number).str();
+		return (format("__CreateNumber(%s)") % number).str();
 	} else if (ast.name == "identifier") {
 		const auto identifier = ast.value;
 		return identifier;
 	} else if (ast.name == "string_definition") {
 		const auto string = ast.value;
-		return (format(R"(CreateArrayFromString("%s"))") % string).str();
+		return (format(R"(__CreateArrayFromString("%s"))") % string).str();
 	} else if (ast.name == "array_definition") {
 		if (!ast.children.empty()) {
 			std::vector<std::string> items;
@@ -33,11 +33,11 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 				TranslateExpression
 			);
 
-			return (format("CreateArrayFromList(%d,%s)")
+			return (format("__CreateArrayFromList(%d,%s)")
 				% items.size()
 				% join(items, ",")).str();
 		} else {
-			return "CreateArray(0)";
+			return "__CreateArray(0)";
 		}
 	} else if (ast.name == "function_call") {
 		std::vector<std::string> arguments;
@@ -56,9 +56,9 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		const auto first_subchild = second_child.children.front();
 		if (second_child.name == "item_access") {
 			const auto index = TranslateExpression(first_subchild);
-			return (format("GetArrayItem(%s,%s)") % base % index).str();
+			return (format("__GetArrayItem(%s,%s)") % base % index).str();
 		} else {
-			return (format(R"(GetStructureField(%s,"%s"))")
+			return (format(R"(__GetStructureField(%s,"%s"))")
 				% base
 				% first_subchild.value).str();
 		}
@@ -66,7 +66,7 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		const auto first_child = ast.children.front();
 		const auto second_child = ast.children.back();
 		if (first_child.value == "new") {
-			return (format("CreateStructure(%s)") % second_child.value).str();
+			return (format("__CreateStructure(%s)") % second_child.value).str();
 		} else {
 			auto expression = TranslateExpression(second_child);
 
@@ -80,8 +80,8 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 			for (const auto& subchild: children) {
 				const auto expression_format =
 					subchild.value == "-"
-						? "UnaryMinus(%s)"
-						: "Not(%s)";
+						? "__UnaryMinus(%s)"
+						: "__Not(%s)";
 				expression = (format(expression_format) % expression).str();
 			}
 
@@ -100,32 +100,32 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 
 		auto function = std::string();
 		if (ast.name == "disjunction") {
-			function = "Or";
+			function = "__Or";
 		} else if (ast.name == "conjunction") {
-			function = "And";
+			function = "__And";
 		} else {
 			if (ast.value == "==") {
-				function = "Equal";
+				function = "__Equal";
 			} else if (ast.value == "/=") {
-				function = "NotEqual";
+				function = "__NotEqual";
 			} else if (ast.value == "<") {
-				function = "Less";
+				function = "__Less";
 			} else if (ast.value == "<=") {
-				function = "LessOrEqual";
+				function = "__LessOrEqual";
 			} else if (ast.value == ">") {
-				function = "Greater";
+				function = "__Greater";
 			} else if (ast.value == ">=") {
-				function = "GreaterOrEqual";
+				function = "__GreaterOrEqual";
 			} else if (ast.value == "+") {
-				function = "Add";
+				function = "__Add";
 			} else if (ast.value == "-") {
-				function = "Subtract";
+				function = "__Subtract";
 			} else if (ast.value == "*") {
-				function = "Multiply";
+				function = "__Multiply";
 			} else if (ast.value == "/") {
-				function = "Divide";
+				function = "__Divide";
 			} else {
-				function = "Modulo";
+				function = "__Modulo";
 			}
 		}
 
@@ -179,14 +179,14 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 						);
 						return
 							code
-							+ (format("SetArrayItem(%s,%s,%s);")
+							+ (format("__SetArrayItem(%s,%s,%s);")
 								% left_expression
 								% index
 								% right_expression).str();
 					} else {
 						return
 							code
-							+ (format(R"(SetStructureField(%s,"%s",%s);)")
+							+ (format(R"(__SetStructureField(%s,"%s",%s);)")
 								% left_expression
 								% first_subsubchild.value
 								% right_expression).str();
@@ -201,14 +201,14 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				if (node.children.size() == 2) {
 					return
 						code
-						+ (format("if(ToBoolean(%s)){%s}")
+						+ (format("if(__ToBoolean(%s)){%s}")
 							% condition
 							% true_body).str();
 				} else {
 					const auto false_body = TranslateStatementList(*child++);
 					return
 						code
-						+ (format("if(ToBoolean(%s)){%s}else{%s}")
+						+ (format("if(__ToBoolean(%s)){%s}else{%s}")
 							% condition
 							% true_body
 							% false_body).str();
@@ -220,7 +220,7 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				const auto body = TranslateStatementList(node.children.back());
 				return
 					code
-					+ (format("while(ToBoolean(%s)){%s}")
+					+ (format("while(__ToBoolean(%s)){%s}")
 						% condition
 						% body).str();
 			} else if (node.name == "loop_continue") {
@@ -231,8 +231,11 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				const auto expression =
 					node.children.size() == 1
 						? TranslateExpression(node.children.front())
-						: "";
+						: "__NULL";
 				return code + (format("return %s;") % expression).str();
+			} else {
+				const auto expression = TranslateExpression(node);
+				return code + (format("%s;") % expression).str();
 			}
 
 			return "";
@@ -244,7 +247,7 @@ auto Translate(const Node& ast) -> TranslationResult {
 	auto global_variables_declarations = std::string();
 	auto global_variables_initializations = std::string();
 	auto functions_declarations = std::string(
-		"void InitializeGlobalVariables();"
+		"void __InitializeGlobalVariables();"
 	);
 	auto functions_implementations = std::string();
 
@@ -298,7 +301,7 @@ auto Translate(const Node& ast) -> TranslationResult {
 					node.children.back()
 				);
 				functions_implementations +=
-					(format("%s{%s}")
+					(format("%s{%sreturn __NULL;}")
 						% function_declaration
 						% statement_list).str();
 			}
@@ -311,7 +314,7 @@ auto Translate(const Node& ast) -> TranslationResult {
 		global_variables_declarations
 			+ functions_declarations
 			+ functions_implementations
-			+ (format("void InitializeGlobalVariables(){%s}")
+			+ (format("void __InitializeGlobalVariables(){%s}")
 				% global_variables_initializations).str(),
 		structures_descriptions
 	};

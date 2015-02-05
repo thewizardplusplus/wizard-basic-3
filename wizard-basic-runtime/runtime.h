@@ -18,7 +18,7 @@ typedef enum MessageType {
 	MESSAGE_TYPE_ERROR
 } MessageType;
 
-void ProcessMessage(const MessageType type, const char* message) {
+void __ProcessMessage(const MessageType type, const char* message) {
 	switch (type) {
 		case MESSAGE_TYPE_WARNING:
 			fprintf(stderr, "Warning! %s", message);
@@ -71,24 +71,22 @@ typedef struct Value {
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
- * Global constants and variables.
+ * Constants.
  ******************************************************************************/
+const Value __NULL = {VALUE_TYPE_NULL, {0.0}};
 const Value __FALSE = {VALUE_TYPE_NUMBER, {0.0}};
 const Value __TRUE = {VALUE_TYPE_NUMBER, {1.0}};
-const size_t NUMBER_FORMAT_BUFFER_SIZE = 1024;
 Value __TYPE_NAME_NULL;
 Value __TYPE_NAME_NUMBER;
 Value __TYPE_NAME_ARRAY;
-
-static bool prng_initialized = false;
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Interpreter API.
  ******************************************************************************/
-void* AllocateMemory(const size_t size);
-size_t GetStructureFieldsNumber(const char* name);
-size_t GetStructureFieldIndex(
+void* __AllocateMemory(const size_t size);
+size_t __GetStructureFieldsNumber(const char* name);
+size_t __GetStructureFieldIndex(
 	const char* structure_name,
 	const char* field_name
 );
@@ -97,36 +95,36 @@ size_t GetStructureFieldIndex(
 /*******************************************************************************
  * Utils.
  ******************************************************************************/
-Value CreateArrayFromString(const char* string);
-void InitializeConstants(void) {
-	__TYPE_NAME_NULL = CreateArrayFromString("null");
-	__TYPE_NAME_NUMBER = CreateArrayFromString("number");
-	__TYPE_NAME_ARRAY = CreateArrayFromString("array");
+Value __CreateArrayFromString(const char* string);
+void __InitializeConstants(void) {
+	__TYPE_NAME_NULL = __CreateArrayFromString("null");
+	__TYPE_NAME_NUMBER = __CreateArrayFromString("number");
+	__TYPE_NAME_ARRAY = __CreateArrayFromString("array");
 }
 
-bool HasAllowedType(const Value value, const size_t allowed_types) {
+bool __HasAllowedType(const Value value, const size_t allowed_types) {
 	return allowed_types & value.type;
 }
 
-void TestTypeAndNotify(const Value value, const size_t allowed_types) {
-	if (!HasAllowedType(value, allowed_types)) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
+void __TestTypeAndNotify(const Value value, const size_t allowed_types) {
+	if (!__HasAllowedType(value, allowed_types)) {
+		__ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
 	}
 }
 
-bool IsValidIndex(const Value array, const Value index) {
+bool __IsValidIndex(const Value array, const Value index) {
 	return
 		index.storage.number >= 0.0
 		&& index.storage.number < array.storage.array.size;
 }
 
-void TestIndexAndNotify(const Value array, const Value index) {
-	if (!IsValidIndex(array, index)) {
-		ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+void __TestIndexAndNotify(const Value array, const Value index) {
+	if (!__IsValidIndex(array, index)) {
+		__ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
 	}
 }
 
-bool ToBoolean(const Value value) {
+bool __ToBoolean(const Value value) {
 	return
 		value.type != VALUE_TYPE_NULL
 		&& (value.type != VALUE_TYPE_NUMBER
@@ -137,14 +135,7 @@ bool ToBoolean(const Value value) {
 /*******************************************************************************
  * Types creation.
  ******************************************************************************/
-Value CreateNull(void) {
-	Value value;
-	value.type = VALUE_TYPE_NULL;
-
-	return value;
-}
-
-Value CreateNumber(const Number number) {
+Value __CreateNumber(const Number number) {
 	Value value;
 	value.type = VALUE_TYPE_NUMBER;
 	value.storage.number = number;
@@ -152,28 +143,28 @@ Value CreateNumber(const Number number) {
 	return value;
 }
 
-ArrayData CreateArrayData(const size_t size) {
+ArrayData __CreateArrayData(const size_t size) {
 	ArrayData array_data;
 	array_data.size = size;
-	array_data.data = (Array)AllocateMemory(size * sizeof(Value));
+	array_data.data = (Array)__AllocateMemory(size * sizeof(Value));
 
 	for (size_t i = 0; i < size; i++) {
-		array_data.data[i] = CreateNull();
+		array_data.data[i] = __NULL;
 	}
 
 	return array_data;
 }
 
-Value CreateArray(const size_t size) {
+Value __CreateArray(const size_t size) {
 	Value value;
 	value.type = VALUE_TYPE_ARRAY;
-	value.storage.array = CreateArrayData(size);
+	value.storage.array = __CreateArrayData(size);
 
 	return value;
 }
 
-Value CreateArrayFromList(const size_t size, ...) {
-	Value array = CreateArray(size);
+Value __CreateArrayFromList(const size_t size, ...) {
+	Value array = __CreateArray(size);
 
 	va_list arguments;
 	va_start(arguments, size);
@@ -185,23 +176,23 @@ Value CreateArrayFromList(const size_t size, ...) {
 	return array;
 }
 
-Value CreateArrayFromString(const char* string) {
+Value __CreateArrayFromString(const char* string) {
 	const size_t length = strlen(string);
-	Value array = CreateArray(length);
+	Value array = __CreateArray(length);
 	for (size_t i = 0; i < length; i++) {
-		array.storage.array.data[i] = CreateNumber(string[i]);
+		array.storage.array.data[i] = __CreateNumber(string[i]);
 	}
 
 	return array;
 }
 
-Value CreateStructure(const char* name) {
+Value __CreateStructure(const char* name) {
 	Value value;
 	value.type = VALUE_TYPE_STRUCTURE;
 	value.storage.structure.name = name;
 
-	const size_t fields_number = GetStructureFieldsNumber(name);
-	value.storage.structure.fields = CreateArrayData(fields_number);
+	const size_t fields_number = __GetStructureFieldsNumber(name);
+	value.storage.structure.fields = __CreateArrayData(fields_number);
 
 	return value;
 }
@@ -210,145 +201,147 @@ Value CreateStructure(const char* name) {
 /*******************************************************************************
  * Number operations.
  ******************************************************************************/
-Value UnaryMinus(const Value value) {
-	TestTypeAndNotify(value, VALUE_TYPE_NUMBER);
+Value __UnaryMinus(const Value value) {
+	__TestTypeAndNotify(value, VALUE_TYPE_NUMBER);
 
 	const double number = -value.storage.number;
-	return CreateNumber(number);
+	return __CreateNumber(number);
 }
 
-Value Add(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Add(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const double number = value_1.storage.number + value_2.storage.number;
-	return CreateNumber(number);
+	return __CreateNumber(number);
 }
 
-Value Subtract(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Subtract(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const double number = value_1.storage.number - value_2.storage.number;
-	return CreateNumber(number);
+	return __CreateNumber(number);
 }
 
-Value Multiply(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Multiply(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const double number = value_1.storage.number * value_2.storage.number;
-	return CreateNumber(number);
+	return __CreateNumber(number);
 }
 
-Value Divide(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Divide(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const double number = value_1.storage.number / value_2.storage.number;
-	return CreateNumber(number);
+	return __CreateNumber(number);
 }
 
-Value Modulo(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Modulo(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const double number =
 		(long)round(value_1.storage.number)
 		% (long)round(value_2.storage.number);
-	return CreateNumber(number);
+	return __CreateNumber(number);
 }
 
-Value Less(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Less(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number < value_2.storage.number;
 	return result ? __TRUE : __FALSE;
 }
 
-Value LessOrEqual(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __LessOrEqual(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number <= value_2.storage.number;
 	return result ? __TRUE : __FALSE;
 }
 
-Value Greater(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __Greater(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number > value_2.storage.number;
 	return result ? __TRUE : __FALSE;
 }
 
-Value GreaterOrEqual(const Value value_1, const Value value_2) {
-	TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
+Value __GreaterOrEqual(const Value value_1, const Value value_2) {
+	__TestTypeAndNotify(value_1, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number >= value_2.storage.number;
 	return result ? __TRUE : __FALSE;
 }
 
 Value ToString(const Value value) {
-	TestTypeAndNotify(value, VALUE_TYPE_NUMBER);
+	const size_t NUMBER_FORMAT_BUFFER_SIZE = 1024;
+
+	__TestTypeAndNotify(value, VALUE_TYPE_NUMBER);
 
 	char buffer[NUMBER_FORMAT_BUFFER_SIZE];
 	sprintf(buffer, "%f", value.storage.number);
 
-	return CreateArrayFromString(buffer);
+	return __CreateArrayFromString(buffer);
 }
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Array operations.
  ******************************************************************************/
-Value GetArrayItem(const Value array, const Value index) {
-	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
-	TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
-	TestIndexAndNotify(array, index);
+Value __GetArrayItem(const Value array, const Value index) {
+	__TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+	__TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
+	__TestIndexAndNotify(array, index);
 
 	const size_t integral_index = (size_t)floor(abs(index.storage.number));
 	return array.storage.array.data[integral_index];
 }
 
-void SetArrayItem(const Value array, const Value index, const Value value) {
-	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
-	TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
-	TestIndexAndNotify(array, index);
+void __SetArrayItem(const Value array, const Value index, const Value value) {
+	__TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+	__TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
+	__TestIndexAndNotify(array, index);
 
 	const size_t integral_index = (size_t)floor(abs(index.storage.number));
 	array.storage.array.data[integral_index] = value;
 }
 
 Value GetLength(const Value array) {
-	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
-	return CreateNumber(array.storage.array.size);
+	__TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+	return __CreateNumber(array.storage.array.size);
 }
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Structure operations.
  ******************************************************************************/
-Value GetStructureField(const Value structure, const char* field_name) {
-	TestTypeAndNotify(structure, VALUE_TYPE_STRUCTURE);
+Value __GetStructureField(const Value structure, const char* field_name) {
+	__TestTypeAndNotify(structure, VALUE_TYPE_STRUCTURE);
 
-	const size_t field_index = GetStructureFieldIndex(
+	const size_t field_index = __GetStructureFieldIndex(
 		structure.storage.structure.name,
 		field_name
 	);
 	return structure.storage.structure.fields.data[field_index];
 }
 
-void SetStructureField(
+void __SetStructureField(
 	const Value structure,
 	const char* field_name,
 	const Value value
 ) {
-	TestTypeAndNotify(structure, VALUE_TYPE_STRUCTURE);
+	__TestTypeAndNotify(structure, VALUE_TYPE_STRUCTURE);
 
-	const size_t field_index = GetStructureFieldIndex(
+	const size_t field_index = __GetStructureFieldIndex(
 		structure.storage.structure.name,
 		field_name
 	);
@@ -359,12 +352,12 @@ void SetStructureField(
 /*******************************************************************************
  * Rest operations.
  ******************************************************************************/
-Value Not(const Value value) {
-	const bool result = !ToBoolean(value);
+Value __Not(const Value value) {
+	const bool result = !__ToBoolean(value);
 	return result ? __TRUE : __FALSE;
 }
 
-Value Equal(const Value value_1, const Value value_2) {
+Value __Equal(const Value value_1, const Value value_2) {
 	if (value_1.type != value_2.type) {
 		return __FALSE;
 	}
@@ -390,7 +383,7 @@ Value Equal(const Value value_1, const Value value_2) {
 	return result ? __TRUE : __FALSE;
 }
 
-Value NotEqual(const Value value_1, const Value value_2) {
+Value __NotEqual(const Value value_1, const Value value_2) {
 	if (value_1.type != value_2.type) {
 		return __TRUE;
 	}
@@ -416,13 +409,13 @@ Value NotEqual(const Value value_1, const Value value_2) {
 	return result ? __TRUE : __FALSE;
 }
 
-Value And(const Value value_1, const Value value_2) {
-	const bool result = ToBoolean(value_1) && ToBoolean(value_2);
+Value __And(const Value value_1, const Value value_2) {
+	const bool result = __ToBoolean(value_1) && __ToBoolean(value_2);
 	return result ? __TRUE : __FALSE;
 }
 
-Value Or(const Value value_1, const Value value_2) {
-	const bool result = ToBoolean(value_1) || ToBoolean(value_2);
+Value __Or(const Value value_1, const Value value_2) {
+	const bool result = __ToBoolean(value_1) || __ToBoolean(value_2);
 	return result ? __TRUE : __FALSE;
 }
 
@@ -439,7 +432,7 @@ Value GetType(const Value value) {
 			type_name = __TYPE_NAME_ARRAY;
 			break;
 		case VALUE_TYPE_STRUCTURE:
-			type_name = CreateArrayFromString(value.storage.structure.name);
+			type_name = __CreateArrayFromString(value.storage.structure.name);
 			break;
 	}
 
@@ -451,7 +444,7 @@ Value GetType(const Value value) {
  * System module.
  ******************************************************************************/
 void Exit(const Value exit_code) {
-	TestTypeAndNotify(exit_code, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(exit_code, VALUE_TYPE_NUMBER);
 
 	const long unwrapped_exit_code = (long)round(exit_code.storage.number);
 	exit(unwrapped_exit_code);
@@ -459,14 +452,14 @@ void Exit(const Value exit_code) {
 
 Value GetTime(void) {
 	const time_t current_time = time(NULL);
-	return CreateNumber(current_time);
+	return __CreateNumber(current_time);
 }
 
 void Show(const Value array) {
-	TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+	__TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
 
 	for (size_t i = 0; i < array.storage.array.size; i++) {
-		TestTypeAndNotify(array.storage.array.data[i], VALUE_TYPE_NUMBER);
+		__TestTypeAndNotify(array.storage.array.data[i], VALUE_TYPE_NUMBER);
 
 		putchar(array.storage.array.data[i].storage.number);
 	}
@@ -477,92 +470,94 @@ void Show(const Value array) {
  * Maths module.
  ******************************************************************************/
 Value Sin(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = sin(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Cos(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = cos(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Tg(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = tan(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Arcsin(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = asin(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Arccos(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = acos(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Arctg(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = atan(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value SquareRoot(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = sqrt(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Power(const Value base, const Value exponent) {
-	TestTypeAndNotify(base, VALUE_TYPE_NUMBER);
-	TestTypeAndNotify(exponent, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(base, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(exponent, VALUE_TYPE_NUMBER);
 
 	const double result = pow(base.storage.number, exponent.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Exp(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = exp(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Ln(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	const double result = log(number.storage.number);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value Integral(const Value number) {
-	TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
 	double result = 0.0;
 	modf(number.storage.number, &result);
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 
 Value GetRandom(void) {
+	static bool prng_initialized = false;
+
 	if (!prng_initialized) {
 		srand(time(NULL));
 		prng_initialized = true;
 	}
 
 	const double result = (double)rand() / RAND_MAX;
-	return CreateNumber(result);
+	return __CreateNumber(result);
 }
 //------------------------------------------------------------------------------
 #endif

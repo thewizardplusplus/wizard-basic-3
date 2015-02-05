@@ -1,7 +1,7 @@
 function Test()
     while GetRandom() < 0.5 do
         while GetRandom() > 0.5 do
-            2 + 5
+            Show("Test.")
         end
     end
 end
