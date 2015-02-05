@@ -1,9 +1,15 @@
-structure Vector
-    x
-    y
-    z
-end
-
-function Test(x, y, z)
-    let x = 10 + 4 - 5 * 45
+function Test()
+    if x then
+        let x = 10
+    else if y then
+        let x = 10
+    else if y then
+        let x = 10
+    else if y then
+        let x = 10
+    else if y then
+        let x = 10
+    else
+        let x = 10
+    end
 end

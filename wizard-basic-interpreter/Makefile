@@ -15,7 +15,7 @@ LDFLAGS += \
 	-L../../wizard-parser/build/libraries/wizard_parser/ -lWizardParser
 
 main: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o wb3i $(OBJECTS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o wbi $(OBJECTS) $(LDFLAGS)
 
 clean:
 	find . -name "*.o" -type f -delete

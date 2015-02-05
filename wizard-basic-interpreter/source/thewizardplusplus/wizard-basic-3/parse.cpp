@@ -315,22 +315,32 @@ static Node SimplifyAst(const Node& node) {
 			{children.back()}
 		};
 	} else if (node.name == "condition") {
-		/*const auto first_child = children.front();
-		if (
-			first_child.name.empty()
-			&& first_child.value.empty()
-			&& first_child.children.size() > 1
-		) {
-			simplified_node = Node{
-				node.name,
-				"",
-				{
-					first_child.children.front(),
-					first_child.children.back(),
-					children.back()
+		auto new_children = NodeGroup();
+		auto child = children.begin();
+		if (!child->name.empty()) {
+			new_children.push_back({"", "", children});
+		} else {
+			new_children.push_back(*child++);
+			if (child->name.empty()) {
+				auto subchild = child->children.begin();
+				if (!subchild->name.empty()) {
+					new_children.push_back(*child);
+				} else {
+					while (subchild != child->children.end()) {
+						new_children.push_back(*subchild);
+						subchild++;
+					};
 				}
-			};
-		}*/
+
+				child++;
+			}
+
+			if (child != children.end()) {
+				new_children.push_back(*child);
+			}
+		}
+
+		simplified_node = Node{node.name, "", new_children};
 	} else if (node.name == "statement_list") {
 		const auto second_child = children.back();
 		if (
