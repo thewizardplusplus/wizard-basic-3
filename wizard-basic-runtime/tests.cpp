@@ -1,6 +1,7 @@
 #include "runtime.h"
 #include <array>
 #include <cstring>
+#include <cmath>
 #include <gtest/gtest.h>
 #include <boost/preprocessor.hpp>
 
@@ -73,7 +74,7 @@ TEST(Constats, TestTrue) {
  ******************************************************************************/
 // __InitializeConstants() test
 TEST(Utils, TestInitializeConstants) {
-	__InitializeConstants();
+	__Initialize();
 
 	EXPECT_EQ(__TYPE_NAME_NULL.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(__TYPE_NAME_NULL, "null");
@@ -634,6 +635,108 @@ TEST(RestOperations, TestGetTypeWithStructure) {
 
 	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(result, TEST_STRUCTURE_NAME);
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * Maths module tests.
+ ******************************************************************************/
+TEST(MathsModule, TestSin) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Sin(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::sin(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestCos) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Cos(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::cos(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestTg) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Tg(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::tan(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestArcsin) {
+	const auto TEST_NUMBER_VALUE = 0.23;
+
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto result = Arcsin(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::asin(TEST_NUMBER_VALUE));
+}
+
+TEST(MathsModule, TestArccos) {
+	const auto TEST_NUMBER_VALUE = 0.23;
+
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto result = Arccos(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::acos(TEST_NUMBER_VALUE));
+}
+
+TEST(MathsModule, TestArctg) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Arctg(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::atan(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestSquareRoot) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = SquareRoot(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::sqrt(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestPower) {
+	const auto number_1 = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto number_2 = __CreateNumber(TEST_NUMBER_2_VALUE);
+	const auto result = Power(number_1, number_2);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(
+		result.storage.number,
+		std::pow(TEST_NUMBER_1_VALUE, TEST_NUMBER_2_VALUE)
+	);
+}
+
+TEST(MathsModule, TestExp) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Exp(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::exp(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestLn) {
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Ln(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, std::log(TEST_NUMBER_1_VALUE));
+}
+
+TEST(MathsModule, TestIntegral) {
+	const auto TEST_INTERGAL_NUMBER_VALUE = 2.0;
+
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Integral(number);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, TEST_INTERGAL_NUMBER_VALUE);
 }
 //------------------------------------------------------------------------------
 

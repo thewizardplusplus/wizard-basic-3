@@ -10,30 +10,6 @@
 #include <time.h>
 
 /*******************************************************************************
- * Messages.
- ******************************************************************************/
-typedef enum MessageType {
-	MESSAGE_TYPE_INFO,
-	MESSAGE_TYPE_WARNING,
-	MESSAGE_TYPE_ERROR
-} MessageType;
-
-void __ProcessMessage(const MessageType type, const char* message) {
-	switch (type) {
-		case MESSAGE_TYPE_WARNING:
-			fprintf(stderr, "Warning! %s", message);
-			break;
-		case MESSAGE_TYPE_ERROR:
-			fprintf(stderr, "Error! %s", message);
-			exit(EXIT_FAILURE);
-		default:
-			puts(message);
-			break;
-	}
-}
-//------------------------------------------------------------------------------
-
-/*******************************************************************************
  * Types.
  ******************************************************************************/
 typedef enum ValueType {
@@ -79,6 +55,10 @@ const Value __TRUE = {VALUE_TYPE_NUMBER, {1.0}};
 Value __TYPE_NAME_NULL;
 Value __TYPE_NAME_NUMBER;
 Value __TYPE_NAME_ARRAY;
+
+size_t __capacity_of_opened_files_storage = 0;
+size_t __number_of_opened_files = 0;
+FILE** __opened_files = NULL;
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
@@ -95,11 +75,9 @@ size_t __GetStructureFieldIndex(
 /*******************************************************************************
  * Utils.
  ******************************************************************************/
-Value __CreateArrayFromString(const char* string);
-void __InitializeConstants(void) {
-	__TYPE_NAME_NULL = __CreateArrayFromString("null");
-	__TYPE_NAME_NUMBER = __CreateArrayFromString("number");
-	__TYPE_NAME_ARRAY = __CreateArrayFromString("array");
+void __ProcessError(const char* description) {
+	fprintf(stderr, "Error: %s.\n", description);
+	exit(EXIT_FAILURE);
 }
 
 bool __HasAllowedType(const Value value, const size_t allowed_types) {
@@ -108,7 +86,7 @@ bool __HasAllowedType(const Value value, const size_t allowed_types) {
 
 void __TestTypeAndNotify(const Value value, const size_t allowed_types) {
 	if (!__HasAllowedType(value, allowed_types)) {
-		__ProcessMessage(MESSAGE_TYPE_ERROR, "Invalid type.");
+		__ProcessError("invalid type");
 	}
 }
 
@@ -120,7 +98,7 @@ bool __IsValidIndex(const Value array, const Value index) {
 
 void __TestIndexAndNotify(const Value array, const Value index) {
 	if (!__IsValidIndex(array, index)) {
-		__ProcessMessage(MESSAGE_TYPE_ERROR, "Out of range.");
+		__ProcessError("out of range");
 	}
 }
 
@@ -129,6 +107,79 @@ bool __ToBoolean(const Value value) {
 		value.type != VALUE_TYPE_NULL
 		&& (value.type != VALUE_TYPE_NUMBER
 		|| value.storage.number != 0.0);
+}
+
+Value __FromBoolean(bool value) {
+	return value ? __TRUE : __FALSE;
+}
+
+long __Round(const double number) {
+	return (long)round(number);
+}
+
+size_t __ToIntegral(const double number) {
+	return (size_t)floor(abs(number));
+}
+
+char* __ToString(const Value array) {
+	const size_t size = __ToIntegral(array.storage.array.size);
+	char* buffer = (char*)malloc(size + 1);
+	for (size_t i = 0; i < size; i++) {
+		const Value symbol = array.storage.array.data[i];
+		__TestTypeAndNotify(symbol, VALUE_TYPE_ARRAY);
+
+		buffer[i] = symbol.storage.number;
+	}
+	buffer[size] = '\0';
+
+	return buffer;
+}
+
+bool __IsValidFileId(const size_t file_id) {
+	return
+		file_id >= __number_of_opened_files
+		|| __opened_files[file_id] == NULL;
+}
+
+void __TestFileIdAndNotify(const size_t file_id) {
+	if (!__IsValidFileId(file_id)) {
+		__ProcessError("invalid file ID");
+	}
+}
+
+size_t __AddOpenedFile(FILE* file) {
+	const size_t OPENED_FILE_STORAGE_RESIZE_FACTOR = 2;
+	const size_t OPENED_FILE_STORAGE_DEFAULT_CAPACITY = 12;
+
+	if (__number_of_opened_files == __capacity_of_opened_files_storage) {
+		if (__capacity_of_opened_files_storage != 0) {
+			__capacity_of_opened_files_storage *=
+				OPENED_FILE_STORAGE_RESIZE_FACTOR;
+		} else {
+			__capacity_of_opened_files_storage =
+				OPENED_FILE_STORAGE_DEFAULT_CAPACITY;
+		}
+
+		__opened_files = (FILE**)realloc(
+			__opened_files,
+			__capacity_of_opened_files_storage
+		);
+	}
+
+	__opened_files[__number_of_opened_files++] = file;
+
+	return __number_of_opened_files;
+}
+
+Value __CreateArrayFromString(const char* string);
+void __Initialize(void) {
+	__TYPE_NAME_NULL = __CreateArrayFromString("null");
+	__TYPE_NAME_NUMBER = __CreateArrayFromString("number");
+	__TYPE_NAME_ARRAY = __CreateArrayFromString("array");
+
+	__AddOpenedFile(stdin);
+	__AddOpenedFile(stdout);
+	__AddOpenedFile(stderr);
 }
 //------------------------------------------------------------------------------
 
@@ -245,8 +296,8 @@ Value __Modulo(const Value value_1, const Value value_2) {
 	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const double number =
-		(long)round(value_1.storage.number)
-		% (long)round(value_2.storage.number);
+		__Round(value_1.storage.number)
+		% __Round(value_2.storage.number);
 	return __CreateNumber(number);
 }
 
@@ -255,7 +306,7 @@ Value __Less(const Value value_1, const Value value_2) {
 	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number < value_2.storage.number;
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __LessOrEqual(const Value value_1, const Value value_2) {
@@ -263,7 +314,7 @@ Value __LessOrEqual(const Value value_1, const Value value_2) {
 	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number <= value_2.storage.number;
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __Greater(const Value value_1, const Value value_2) {
@@ -271,7 +322,7 @@ Value __Greater(const Value value_1, const Value value_2) {
 	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number > value_2.storage.number;
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __GreaterOrEqual(const Value value_1, const Value value_2) {
@@ -279,7 +330,7 @@ Value __GreaterOrEqual(const Value value_1, const Value value_2) {
 	__TestTypeAndNotify(value_2, VALUE_TYPE_NUMBER);
 
 	const bool result = value_1.storage.number >= value_2.storage.number;
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value ToString(const Value value) {
@@ -302,7 +353,7 @@ Value __GetArrayItem(const Value array, const Value index) {
 	__TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
 	__TestIndexAndNotify(array, index);
 
-	const size_t integral_index = (size_t)floor(abs(index.storage.number));
+	const size_t integral_index = __ToIntegral(index.storage.number);
 	return array.storage.array.data[integral_index];
 }
 
@@ -311,7 +362,7 @@ void __SetArrayItem(const Value array, const Value index, const Value value) {
 	__TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
 	__TestIndexAndNotify(array, index);
 
-	const size_t integral_index = (size_t)floor(abs(index.storage.number));
+	const size_t integral_index = __ToIntegral(index.storage.number);
 	array.storage.array.data[integral_index] = value;
 }
 
@@ -354,7 +405,7 @@ void __SetStructureField(
  ******************************************************************************/
 Value __Not(const Value value) {
 	const bool result = !__ToBoolean(value);
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __Equal(const Value value_1, const Value value_2) {
@@ -380,7 +431,7 @@ Value __Equal(const Value value_1, const Value value_2) {
 			break;
 	}
 
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __NotEqual(const Value value_1, const Value value_2) {
@@ -406,17 +457,17 @@ Value __NotEqual(const Value value_1, const Value value_2) {
 			break;
 	}
 
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __And(const Value value_1, const Value value_2) {
 	const bool result = __ToBoolean(value_1) && __ToBoolean(value_2);
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value __Or(const Value value_1, const Value value_2) {
 	const bool result = __ToBoolean(value_1) || __ToBoolean(value_2);
-	return result ? __TRUE : __FALSE;
+	return __FromBoolean(result);
 }
 
 Value GetType(const Value value) {
@@ -443,26 +494,110 @@ Value GetType(const Value value) {
 /*******************************************************************************
  * System module.
  ******************************************************************************/
-void Exit(const Value exit_code) {
-	__TestTypeAndNotify(exit_code, VALUE_TYPE_NUMBER);
-
-	const long unwrapped_exit_code = (long)round(exit_code.storage.number);
-	exit(unwrapped_exit_code);
-}
-
 Value GetTime(void) {
 	const time_t current_time = time(NULL);
 	return __CreateNumber(current_time);
 }
 
-void Show(const Value array) {
-	__TestTypeAndNotify(array, VALUE_TYPE_ARRAY);
+Value Exit(const Value exit_code) {
+	__TestTypeAndNotify(exit_code, VALUE_TYPE_NUMBER);
 
-	for (size_t i = 0; i < array.storage.array.size; i++) {
-		__TestTypeAndNotify(array.storage.array.data[i], VALUE_TYPE_NUMBER);
+	const size_t unwrapped_exit_code = __ToIntegral(exit_code.storage.number);
+	exit(unwrapped_exit_code);
 
-		putchar(array.storage.array.data[i].storage.number);
+	return __NULL;
+}
+
+Value Read(const Value stream, const Value number) {
+	__TestTypeAndNotify(stream, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
+
+	const size_t file_id = __ToIntegral(stream.storage.number);
+	__TestFileIdAndNotify(file_id);
+
+	FILE* file = __opened_files[file_id];
+
+	const size_t number_of_bytes = __ToIntegral(number.storage.array.size);
+	char* buffer = (char*)malloc(number_of_bytes + 1);
+	size_t i = 0;
+	for (; i < number_of_bytes; i++) {
+		const int byte = fgetc(file);
+		if (byte == EOF) {
+			break;
+		}
+
+		buffer[i] = byte;
 	}
+	buffer[i] = '\0';
+
+	const Value result = __CreateArrayFromString(buffer);
+	free(buffer);
+
+	return result;
+}
+
+Value Write(const Value stream, const Value bytes) {
+	__TestTypeAndNotify(stream, VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(bytes, VALUE_TYPE_ARRAY);
+
+	const size_t file_id = __ToIntegral(stream.storage.number);
+	__TestFileIdAndNotify(file_id);
+
+	FILE* file = __opened_files[file_id];
+	char* buffer = __ToString(bytes);
+
+	int result = fputs(buffer, file);
+	free(buffer);
+	if (result == EOF) {
+		return __FALSE;
+	}
+
+	result = fflush(file);
+	return __FromBoolean(result != EOF);
+}
+
+Value Open(const Value path, const Value mode) {
+	const size_t __FILE_OPEN_MODE_READ = 0;
+	const size_t __FILE_OPEN_MODE_WRITE = 1;
+	const size_t __FILE_OPEN_MODE_APPEND = 2;
+
+	__TestTypeAndNotify(path, VALUE_TYPE_ARRAY);
+	__TestTypeAndNotify(mode, VALUE_TYPE_NUMBER);
+
+	char* path_buffer = __ToString(path);
+
+	const size_t unwrapped_mode = __ToIntegral(mode.storage.number);
+	const char* mode_string = NULL;
+	switch (unwrapped_mode) {
+		case __FILE_OPEN_MODE_READ:
+			mode_string = "r";
+			break;
+		case __FILE_OPEN_MODE_WRITE:
+			mode_string = "w";
+			break;
+		case __FILE_OPEN_MODE_APPEND:
+			mode_string = "a";
+			break;
+	}
+
+	FILE* file = fopen(path_buffer, mode_string);
+	free(path_buffer);
+
+	const size_t file_id = __AddOpenedFile(file);
+	return __CreateNumber(file_id);
+}
+
+Value Close(const Value stream) {
+	__TestTypeAndNotify(stream, VALUE_TYPE_NUMBER);
+
+	const size_t file_id = __ToIntegral(stream.storage.number);
+	__TestFileIdAndNotify(file_id);
+
+	FILE* file = __opened_files[file_id];
+	fclose(file);
+	__opened_files[file_id] = NULL;
+
+	return __NULL;
 }
 //------------------------------------------------------------------------------
 

@@ -56,17 +56,16 @@ auto FormatAnsiC(const TranslationResult& ansi_c) -> std::string {
 	}
 
 	auto code = ansi_c.code;
+	replace_all(code, ";", ";\n");
 	replace_all(code, "{", " {\n");
 	replace_all(code, "}", "}\n");
-	replace_all(code, ";", ";\n");
-	replace_all(code, ",", ", ");
 	replace_all(code, "=", " = ");
-	code = regex_replace(code, regex(R"(\bwhile\b)"), "while ");
+	replace_all(code, ",", ", ");
 	code = regex_replace(code, regex(R"(\bif\b)"), "if ");
+	code = regex_replace(code, regex(R"(\bwhile\b)"), "while ");
 
 	auto lines = std::vector<std::string>();
 	split(lines, code, is_any_of("\n"), token_compress_on);
-
 	auto prefix_size = size_t(0);
 	for (auto& line: lines) {
 		if (line.empty()) {
@@ -83,8 +82,9 @@ auto FormatAnsiC(const TranslationResult& ansi_c) -> std::string {
 			prefix_size++;
 		}
 	}
+	code = join(lines, "\n");
 
-	return structures_descriptions + join(lines, "\n");
+	return structures_descriptions + code;
 }
 
 template<FinalStage final_stage, typename ResultType>
