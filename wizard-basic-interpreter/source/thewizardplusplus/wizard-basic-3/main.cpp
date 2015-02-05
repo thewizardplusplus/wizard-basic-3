@@ -7,6 +7,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/version.hpp>
 #include <boost/format.hpp>
+#include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
 using namespace thewizardplusplus::wizard_basic_3;
@@ -16,6 +17,7 @@ using namespace boost::property_tree;
 
 const auto XML_INDENT_SYMBOL = ' ';
 const auto XML_INDENT_SIZE = 4;
+const auto ANSI_C_INDENT_STRING = "    ";
 
 auto FormatAst(const Node& ast) -> std::string {
 	std::stringstream source;
@@ -45,12 +47,12 @@ auto FormatAnsiC(const TranslationResult& ansi_c) -> std::string {
 	auto structures_descriptions = std::string();
 	for (const auto& structure: ansi_c.structures_descriptions) {
 		structures_descriptions +=
-			(format("// %s:\n") % std::get<0>(structure)).str();
+			(format("// struct %s {\n") % std::get<0>(structure)).str();
 		for (const auto& field: std::get<1>(structure)) {
 			structures_descriptions +=
-				(format("//     %s;\n") % std::get<0>(field)).str();
+				(format("//     Value %s;\n") % std::get<0>(field)).str();
 		}
-		structures_descriptions += "\n";
+		structures_descriptions += "// };\n";
 	}
 
 	auto code = ansi_c.code;
@@ -59,8 +61,30 @@ auto FormatAnsiC(const TranslationResult& ansi_c) -> std::string {
 	replace_all(code, ";", ";\n");
 	replace_all(code, ",", ", ");
 	replace_all(code, "=", " = ");
+	code = regex_replace(code, regex(R"(\bwhile\b)"), "while ");
+	code = regex_replace(code, regex(R"(\bif\b)"), "if ");
 
-	return structures_descriptions + code;
+	auto lines = std::vector<std::string>();
+	split(lines, code, is_any_of("\n"), token_compress_on);
+
+	auto prefix_size = size_t(0);
+	for (auto& line: lines) {
+		if (line.empty()) {
+			continue;
+		}
+
+		if (line.front() == '}') {
+			prefix_size--;
+		}
+		for (size_t i = 0; i < prefix_size; i++) {
+			line = ANSI_C_INDENT_STRING + line;
+		}
+		if (line.back() == '{') {
+			prefix_size++;
+		}
+	}
+
+	return structures_descriptions + join(lines, "\n");
 }
 
 template<FinalStage final_stage, typename ResultType>

@@ -1,15 +1,7 @@
 function Test()
-    if x then
-        let x = 10
-    else if y then
-        let x = 10
-    else if y then
-        let x = 10
-    else if y then
-        let x = 10
-    else if y then
-        let x = 10
-    else
-        let x = 10
+    while GetRandom() < 0.5 do
+        while GetRandom() > 0.5 do
+            2 + 5
+        end
     end
 end
