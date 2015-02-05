@@ -246,9 +246,7 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 auto Translate(const Node& ast) -> TranslationResult {
 	auto global_variables_declarations = std::string();
 	auto global_variables_initializations = std::string();
-	auto functions_declarations = std::string(
-		"void __InitializeGlobalVariables();"
-	);
+	auto functions_declarations = std::string("void __Start();");
 	auto functions_implementations = std::string();
 
 	auto structures_descriptions = StructuresDescriptions();
@@ -314,8 +312,23 @@ auto Translate(const Node& ast) -> TranslationResult {
 		global_variables_declarations
 			+ functions_declarations
 			+ functions_implementations
-			+ (format("void __InitializeGlobalVariables(){%s}")
-				% global_variables_initializations).str(),
+			+ (format(
+				std::string("void __Start(")
+					+ "const char*arguments[],"
+					+ "const size_t number_of_arguments"
+				+ "){"
+					+ "__InitializeConstants();"
+					+ "__InitializeOpenedFileStorage();"
+					+ "%s"
+					+ "Main("
+						+ "__WrapCommandLineArguments("
+							+ "arguments,"
+							+ "number_of_arguments"
+						+ ")"
+					+ ");"
+					+ "__CleanupOpenedFileStorage();"
+				+ "}"
+			) % global_variables_initializations).str(),
 		structures_descriptions
 	};
 }

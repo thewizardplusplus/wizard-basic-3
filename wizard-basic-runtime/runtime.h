@@ -44,6 +44,12 @@ typedef struct Value {
 	ValueType type;
 	ValueStorage storage;
 } Value;
+
+typedef struct OpenedFileStorage {
+	FILE** files;
+	size_t number;
+	size_t capacity;
+} OpenedFileStorage;
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
@@ -52,13 +58,11 @@ typedef struct Value {
 const Value __NULL = {VALUE_TYPE_NULL, {0.0}};
 const Value __FALSE = {VALUE_TYPE_NUMBER, {0.0}};
 const Value __TRUE = {VALUE_TYPE_NUMBER, {1.0}};
-Value __TYPE_NAME_NULL;
-Value __TYPE_NAME_NUMBER;
-Value __TYPE_NAME_ARRAY;
+static Value __TYPE_NAME_NULL;
+static Value __TYPE_NAME_NUMBER;
+static Value __TYPE_NAME_ARRAY;
 
-size_t __capacity_of_opened_files_storage = 0;
-size_t __number_of_opened_files = 0;
-FILE** __opened_files = NULL;
+static OpenedFileStorage __opened_file_storage = {NULL, 0, 0};
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
@@ -75,6 +79,33 @@ size_t __GetStructureFieldIndex(
 /*******************************************************************************
  * Utils.
  ******************************************************************************/
+Value __CreateArrayFromString(const char* string);
+void __InitializeConstants(void) {
+	__TYPE_NAME_NULL = __CreateArrayFromString("null");
+	__TYPE_NAME_NUMBER = __CreateArrayFromString("number");
+	__TYPE_NAME_ARRAY = __CreateArrayFromString("array");
+}
+
+size_t __AddOpenedFile(OpenedFileStorage* storage, FILE* file);
+void __InitializeOpenedFileStorage(void) {
+	__AddOpenedFile(&__opened_file_storage, stdin);
+	__AddOpenedFile(&__opened_file_storage, stdout);
+	__AddOpenedFile(&__opened_file_storage, stderr);
+}
+
+Value __CreateArray(const size_t size);
+Value __WrapCommandLineArguments(
+	const char* arguments[],
+	const size_t number_of_arguments
+) {
+	Value result = __CreateArray(number_of_arguments);
+	for (size_t i = 0; i < number_of_arguments; i++) {
+		result.storage.array.data[i] = __CreateArrayFromString(arguments[i]);
+	}
+
+	return result;
+}
+
 void __ProcessError(const char* description) {
 	fprintf(stderr, "Error: %s.\n", description);
 	exit(EXIT_FAILURE);
@@ -117,16 +148,16 @@ long __Round(const double number) {
 	return (long)round(number);
 }
 
-size_t __ToIntegral(const double number) {
+size_t __GetIntegralModule(const double number) {
 	return (size_t)floor(abs(number));
 }
 
 char* __ToString(const Value array) {
-	const size_t size = __ToIntegral(array.storage.array.size);
+	const size_t size = __GetIntegralModule(array.storage.array.size);
 	char* buffer = (char*)malloc(size + 1);
 	for (size_t i = 0; i < size; i++) {
 		const Value symbol = array.storage.array.data[i];
-		__TestTypeAndNotify(symbol, VALUE_TYPE_ARRAY);
+		__TestTypeAndNotify(symbol, VALUE_TYPE_NUMBER);
 
 		buffer[i] = symbol.storage.number;
 	}
@@ -135,51 +166,57 @@ char* __ToString(const Value array) {
 	return buffer;
 }
 
-bool __IsValidFileId(const size_t file_id) {
-	return
-		file_id >= __number_of_opened_files
-		|| __opened_files[file_id] == NULL;
+bool __IsValidFileId(const OpenedFileStorage* storage, const size_t file_id) {
+	return file_id < storage->number && storage->files[file_id] != NULL;
 }
 
-void __TestFileIdAndNotify(const size_t file_id) {
-	if (!__IsValidFileId(file_id)) {
+void __TestFileIdAndNotify(
+	const OpenedFileStorage* storage,
+	const size_t file_id
+) {
+	if (!__IsValidFileId(storage, file_id)) {
 		__ProcessError("invalid file ID");
 	}
 }
 
-size_t __AddOpenedFile(FILE* file) {
+size_t __AddOpenedFile(OpenedFileStorage* storage, FILE* file) {
 	const size_t OPENED_FILE_STORAGE_RESIZE_FACTOR = 2;
 	const size_t OPENED_FILE_STORAGE_DEFAULT_CAPACITY = 12;
 
-	if (__number_of_opened_files == __capacity_of_opened_files_storage) {
-		if (__capacity_of_opened_files_storage != 0) {
-			__capacity_of_opened_files_storage *=
-				OPENED_FILE_STORAGE_RESIZE_FACTOR;
+	if (storage->number == storage->capacity) {
+		if (storage->capacity != 0) {
+			storage->capacity *= OPENED_FILE_STORAGE_RESIZE_FACTOR;
 		} else {
-			__capacity_of_opened_files_storage =
-				OPENED_FILE_STORAGE_DEFAULT_CAPACITY;
+			storage->capacity = OPENED_FILE_STORAGE_DEFAULT_CAPACITY;
 		}
 
-		__opened_files = (FILE**)realloc(
-			__opened_files,
-			__capacity_of_opened_files_storage
-		);
+		storage->files = (FILE**)realloc(storage->files, storage->capacity);
 	}
 
-	__opened_files[__number_of_opened_files++] = file;
+	const size_t file_id = storage->number++;
+	storage->files[file_id] = file;
 
-	return __number_of_opened_files;
+	return file_id;
 }
 
-Value __CreateArrayFromString(const char* string);
-void __Initialize(void) {
-	__TYPE_NAME_NULL = __CreateArrayFromString("null");
-	__TYPE_NAME_NUMBER = __CreateArrayFromString("number");
-	__TYPE_NAME_ARRAY = __CreateArrayFromString("array");
+void __CleanupOpenedFileStorage() {
+	const size_t NUMBER_OF_UNCLOSED_FILES = 3;
 
-	__AddOpenedFile(stdin);
-	__AddOpenedFile(stdout);
-	__AddOpenedFile(stderr);
+	for (
+		size_t i = NUMBER_OF_UNCLOSED_FILES;
+		i < __opened_file_storage.number;
+		i++
+	) {
+		FILE* file = __opened_file_storage.files[i];
+		if (file == NULL) {
+			continue;
+		}
+
+		fclose(file);
+		__opened_file_storage.files[i] = NULL;
+	}
+
+	//free(__opened_file_storage.files);
 }
 //------------------------------------------------------------------------------
 
@@ -353,7 +390,7 @@ Value __GetArrayItem(const Value array, const Value index) {
 	__TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
 	__TestIndexAndNotify(array, index);
 
-	const size_t integral_index = __ToIntegral(index.storage.number);
+	const size_t integral_index = __GetIntegralModule(index.storage.number);
 	return array.storage.array.data[integral_index];
 }
 
@@ -362,7 +399,7 @@ void __SetArrayItem(const Value array, const Value index, const Value value) {
 	__TestTypeAndNotify(index, VALUE_TYPE_NUMBER);
 	__TestIndexAndNotify(array, index);
 
-	const size_t integral_index = __ToIntegral(index.storage.number);
+	const size_t integral_index = __GetIntegralModule(index.storage.number);
 	array.storage.array.data[integral_index] = value;
 }
 
@@ -502,7 +539,9 @@ Value GetTime(void) {
 Value Exit(const Value exit_code) {
 	__TestTypeAndNotify(exit_code, VALUE_TYPE_NUMBER);
 
-	const size_t unwrapped_exit_code = __ToIntegral(exit_code.storage.number);
+	const size_t unwrapped_exit_code = __GetIntegralModule(
+		exit_code.storage.number
+	);
 	exit(unwrapped_exit_code);
 
 	return __NULL;
@@ -512,12 +551,12 @@ Value Read(const Value stream, const Value number) {
 	__TestTypeAndNotify(stream, VALUE_TYPE_NUMBER);
 	__TestTypeAndNotify(number, VALUE_TYPE_NUMBER);
 
-	const size_t file_id = __ToIntegral(stream.storage.number);
-	__TestFileIdAndNotify(file_id);
+	const size_t file_id = __GetIntegralModule(stream.storage.number);
+	__TestFileIdAndNotify(&__opened_file_storage, file_id);
 
-	FILE* file = __opened_files[file_id];
+	FILE* file = __opened_file_storage.files[file_id];
 
-	const size_t number_of_bytes = __ToIntegral(number.storage.array.size);
+	const size_t number_of_bytes = __GetIntegralModule(number.storage.number);
 	char* buffer = (char*)malloc(number_of_bytes + 1);
 	size_t i = 0;
 	for (; i < number_of_bytes; i++) {
@@ -540,10 +579,10 @@ Value Write(const Value stream, const Value bytes) {
 	__TestTypeAndNotify(stream, VALUE_TYPE_NUMBER);
 	__TestTypeAndNotify(bytes, VALUE_TYPE_ARRAY);
 
-	const size_t file_id = __ToIntegral(stream.storage.number);
-	__TestFileIdAndNotify(file_id);
+	const size_t file_id = __GetIntegralModule(stream.storage.number);
+	__TestFileIdAndNotify(&__opened_file_storage, file_id);
 
-	FILE* file = __opened_files[file_id];
+	FILE* file = __opened_file_storage.files[file_id];
 	char* buffer = __ToString(bytes);
 
 	int result = fputs(buffer, file);
@@ -557,16 +596,16 @@ Value Write(const Value stream, const Value bytes) {
 }
 
 Value Open(const Value path, const Value mode) {
-	const size_t __FILE_OPEN_MODE_READ = 0;
-	const size_t __FILE_OPEN_MODE_WRITE = 1;
-	const size_t __FILE_OPEN_MODE_APPEND = 2;
+	#define __FILE_OPEN_MODE_READ 0
+	#define __FILE_OPEN_MODE_WRITE 1
+	#define __FILE_OPEN_MODE_APPEND 2
 
 	__TestTypeAndNotify(path, VALUE_TYPE_ARRAY);
 	__TestTypeAndNotify(mode, VALUE_TYPE_NUMBER);
 
 	char* path_buffer = __ToString(path);
 
-	const size_t unwrapped_mode = __ToIntegral(mode.storage.number);
+	const size_t unwrapped_mode = __GetIntegralModule(mode.storage.number);
 	const char* mode_string = NULL;
 	switch (unwrapped_mode) {
 		case __FILE_OPEN_MODE_READ:
@@ -582,20 +621,27 @@ Value Open(const Value path, const Value mode) {
 
 	FILE* file = fopen(path_buffer, mode_string);
 	free(path_buffer);
+	if (file == NULL) {
+		return __FALSE;
+	}
 
-	const size_t file_id = __AddOpenedFile(file);
+	const size_t file_id = __AddOpenedFile(&__opened_file_storage, file);
 	return __CreateNumber(file_id);
+
+	#undef __FILE_OPEN_MODE_APPEND
+	#undef __FILE_OPEN_MODE_WRITE
+	#undef __FILE_OPEN_MODE_READ
 }
 
 Value Close(const Value stream) {
 	__TestTypeAndNotify(stream, VALUE_TYPE_NUMBER);
 
-	const size_t file_id = __ToIntegral(stream.storage.number);
-	__TestFileIdAndNotify(file_id);
+	const size_t file_id = __GetIntegralModule(stream.storage.number);
+	__TestFileIdAndNotify(&__opened_file_storage, file_id);
 
-	FILE* file = __opened_files[file_id];
+	FILE* file = __opened_file_storage.files[file_id];
 	fclose(file);
-	__opened_files[file_id] = NULL;
+	__opened_file_storage.files[file_id] = NULL;
 
 	return __NULL;
 }

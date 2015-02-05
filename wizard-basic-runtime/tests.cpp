@@ -9,6 +9,7 @@ using namespace testing;
 
 const auto TEST_NUMBER_1_VALUE = 2.3;
 const auto TEST_NUMBER_2_VALUE = 4.2;
+const auto TEST_STRING_VALUE = std::string("test");
 const auto TEST_SIZE_VALUE = 23;
 const auto FALSE_VALUE = 0.0;
 const auto TRUE_VALUE = 1.0;
@@ -74,7 +75,7 @@ TEST(Constats, TestTrue) {
  ******************************************************************************/
 // __InitializeConstants() test
 TEST(Utils, TestInitializeConstants) {
-	__Initialize();
+	__InitializeConstants();
 
 	EXPECT_EQ(__TYPE_NAME_NULL.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(__TYPE_NAME_NULL, "null");
@@ -84,6 +85,52 @@ TEST(Utils, TestInitializeConstants) {
 
 	EXPECT_EQ(__TYPE_NAME_ARRAY.type, VALUE_TYPE_ARRAY);
 	ValidateArrayContents(__TYPE_NAME_ARRAY, "array");
+}
+
+// __InitializeOpenedFileStorage() test
+TEST(Utils, TestInitializeOpenedFileStorage) {
+	const auto START_CAPACITY_OF_OPENED_FILE_STORAGE = 12;
+	const auto START_NUMBER_OF_OPENED_FILES = 3;
+	const auto STANDART_STREAM_INPUT_ID = 0;
+	const auto STANDART_STREAM_OUTPUT_ID = 1;
+	const auto STANDART_STREAM_ERROR_ID = 2;
+
+	__InitializeOpenedFileStorage();
+
+	EXPECT_EQ(
+		__opened_file_storage.capacity,
+		START_CAPACITY_OF_OPENED_FILE_STORAGE
+	);
+	EXPECT_EQ(__opened_file_storage.number, START_NUMBER_OF_OPENED_FILES);
+	EXPECT_EQ(__opened_file_storage.files[STANDART_STREAM_INPUT_ID], stdin);
+	EXPECT_EQ(__opened_file_storage.files[STANDART_STREAM_OUTPUT_ID], stdout);
+	EXPECT_EQ(__opened_file_storage.files[STANDART_STREAM_ERROR_ID], stderr);
+}
+
+// __WrapCommandLineArguments() test
+TEST(Utils, TestWrapCommandLineArguments) {
+	const auto TEST_ARGUMENTS_NUMBER = 2;
+
+	const char* test_arguments[TEST_ARGUMENTS_NUMBER];
+	for (size_t i = 0; i < TEST_ARGUMENTS_NUMBER; i++) {
+		const auto test_argument = "argument_" + std::to_string(i);
+		test_arguments[i] = (new std::string(test_argument))->c_str();
+	}
+
+	const auto result = __WrapCommandLineArguments(
+		test_arguments,
+		TEST_ARGUMENTS_NUMBER
+	);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_ARRAY);
+	EXPECT_EQ(result.storage.array.size, TEST_ARGUMENTS_NUMBER);
+
+	for (size_t i = 0; i < TEST_ARGUMENTS_NUMBER; i++) {
+		const auto item = result.storage.array.data[i];
+
+		EXPECT_EQ(item.type, VALUE_TYPE_ARRAY);
+		ValidateArrayContents(item, "argument_" + std::to_string(i));
+	}
 }
 
 // __HasAllowedType() tests
@@ -200,6 +247,142 @@ TEST(Utils, TestToBooleanWithStructure) {
 
 	EXPECT_TRUE(result);
 }
+
+// __FromBoolean() test
+TEST(Utils, TestFromBoolean) {
+	const auto result = __FromBoolean(true);
+
+	EXPECT_EQ(result.type, VALUE_TYPE_NUMBER);
+	EXPECT_EQ(result.storage.number, 1.0);
+}
+
+// __Round() tests
+TEST(Utils, TestRoundWithPositiveNumber) {
+	const auto TEST_NUMBER_VALUE = 2.8;
+
+	const auto result = __Round(TEST_NUMBER_VALUE);
+	EXPECT_EQ(result, 3);
+}
+
+TEST(Utils, TestRoundWithNegativeNumber) {
+	const auto TEST_NUMBER_VALUE = -2.8;
+
+	const auto result = __Round(TEST_NUMBER_VALUE);
+	EXPECT_EQ(result, -3);
+}
+
+// __GetIntegralModule() tests
+TEST(Utils, TestGetIntegralModuleWithPositiveNumber) {
+	const auto TEST_NUMBER_VALUE = 2.8;
+
+	const auto result = __GetIntegralModule(TEST_NUMBER_VALUE);
+	EXPECT_EQ(result, 2);
+}
+
+TEST(Utils, TestGetIntegralModuleWithNegativeNumber) {
+	const auto TEST_NUMBER_VALUE = -2.8;
+
+	const auto result = __GetIntegralModule(TEST_NUMBER_VALUE);
+	EXPECT_EQ(result, 2);
+}
+
+// __ToString() test
+TEST(Utils, TestToString) {
+	const auto array = __CreateArrayFromString(TEST_STRING_VALUE.c_str());
+	const auto result = __ToString(array);
+
+	EXPECT_EQ(std::string(result), TEST_STRING_VALUE);
+}
+
+// __IsValidFileId() tests
+TEST(Utils, TestIsValidFileIdWithNullIndex) {
+	const auto TEST_OPENED_FILE_STORAGE_SIZE = 3;
+	FILE* TEST_OPENED_FILES[] = {stdin, stdout, stderr};
+	const auto TEST_OPENED_FILE_STORAGE = OpenedFileStorage{
+		TEST_OPENED_FILES,
+		TEST_OPENED_FILE_STORAGE_SIZE,
+		TEST_OPENED_FILE_STORAGE_SIZE
+	};
+	const auto TEST_NULL_INDEX_VALUE = 0;
+
+	const auto result = __IsValidFileId(
+		&TEST_OPENED_FILE_STORAGE,
+		TEST_NULL_INDEX_VALUE
+	);
+
+	EXPECT_TRUE(result);
+}
+
+TEST(Utils, TestIsValidFileIdWithMiddleIndexAndNotNullFiles) {
+	const auto TEST_OPENED_FILE_STORAGE_SIZE = 3;
+	FILE* TEST_OPENED_FILES[] = {stdin, stdout, stderr};
+	const auto TEST_OPENED_FILE_STORAGE = OpenedFileStorage{
+		TEST_OPENED_FILES,
+		TEST_OPENED_FILE_STORAGE_SIZE,
+		TEST_OPENED_FILE_STORAGE_SIZE
+	};
+	const auto TEST_NULL_INDEX_VALUE = 1;
+
+	const auto result = __IsValidFileId(
+		&TEST_OPENED_FILE_STORAGE,
+		TEST_NULL_INDEX_VALUE
+	);
+
+	EXPECT_TRUE(result);
+}
+
+TEST(Utils, TestIsValidFileIdWithMiddleIndexAndNullFiles) {
+	const auto TEST_OPENED_FILE_STORAGE_SIZE = 3;
+	FILE* TEST_OPENED_FILES[] = {NULL, NULL, NULL};
+	const auto TEST_OPENED_FILE_STORAGE = OpenedFileStorage{
+		TEST_OPENED_FILES,
+		TEST_OPENED_FILE_STORAGE_SIZE,
+		TEST_OPENED_FILE_STORAGE_SIZE
+	};
+	const auto TEST_NULL_INDEX_VALUE = 1;
+
+	const auto result = __IsValidFileId(
+		&TEST_OPENED_FILE_STORAGE,
+		TEST_NULL_INDEX_VALUE
+	);
+
+	EXPECT_FALSE(result);
+}
+
+TEST(Utils, TestIsValidFileIdWithSizeIndex) {
+	const auto TEST_OPENED_FILE_STORAGE_SIZE = 3;
+	FILE* TEST_OPENED_FILES[] = {stdin, stdout, stderr};
+	const auto TEST_OPENED_FILE_STORAGE = OpenedFileStorage{
+		TEST_OPENED_FILES,
+		TEST_OPENED_FILE_STORAGE_SIZE,
+		TEST_OPENED_FILE_STORAGE_SIZE
+	};
+
+	const auto result = __IsValidFileId(
+		&TEST_OPENED_FILE_STORAGE,
+		TEST_OPENED_FILE_STORAGE_SIZE
+	);
+
+	EXPECT_FALSE(result);
+}
+
+TEST(Utils, TestIsValidFileIdWithTooBigIndex) {
+	const auto TEST_OPENED_FILE_STORAGE_SIZE = 3;
+	FILE* TEST_OPENED_FILES[] = {stdin, stdout, stderr};
+	const auto TEST_OPENED_FILE_STORAGE = OpenedFileStorage{
+		TEST_OPENED_FILES,
+		TEST_OPENED_FILE_STORAGE_SIZE,
+		TEST_OPENED_FILE_STORAGE_SIZE
+	};
+	const auto TEST_NULL_INDEX_VALUE = 42;
+
+	const auto result = __IsValidFileId(
+		&TEST_OPENED_FILE_STORAGE,
+		TEST_NULL_INDEX_VALUE
+	);
+
+	EXPECT_FALSE(result);
+}
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
@@ -264,12 +447,10 @@ TEST(TypesCreation, TestCreateArrayFromList) {
 }
 
 TEST(TypesCreation, TestCreateArrayFromString) {
-	const auto TEST_STRING = std::string("test");
-
-	const auto array = __CreateArrayFromString(TEST_STRING.c_str());
+	const auto array = __CreateArrayFromString(TEST_STRING_VALUE.c_str());
 
 	EXPECT_EQ(array.type, VALUE_TYPE_ARRAY);
-	ValidateArrayContents(array, TEST_STRING);
+	ValidateArrayContents(array, TEST_STRING_VALUE);
 }
 
 TEST(TypesCreation, TestCreateStructure) {
