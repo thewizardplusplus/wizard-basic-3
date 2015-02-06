@@ -316,27 +316,43 @@ static Node SimplifyAst(const Node& node) {
 		};
 	} else if (node.name == "condition") {
 		auto new_children = NodeGroup();
-		auto child = children.begin();
-		if (!child->name.empty()) {
+		const auto first_child = children.front();
+		if (!first_child.name.empty()) {
 			new_children.push_back({"", "", children});
 		} else {
-			new_children.push_back(*child++);
-			if (child->name.empty()) {
-				auto subchild = child->children.begin();
+			const auto second_child = children.back();
+			if (second_child.name.empty()) {
+				new_children.push_back(first_child);
+
+				auto subchild = second_child.children.begin();
 				if (!subchild->name.empty()) {
-					new_children.push_back(*child);
+					new_children.push_back(second_child);
 				} else {
-					while (subchild != child->children.end()) {
+					while (subchild != second_child.children.end()) {
 						new_children.push_back(*subchild);
 						subchild++;
 					};
 				}
+			} else {
+				const auto first_subchild = first_child.children.front();
+				if (!first_subchild.name.empty()) {
+					new_children.push_back(first_child);
+				} else {
+					new_children.push_back(first_subchild);
 
-				child++;
-			}
+					const auto second_subchild = first_child.children.back();
+					auto subsubchild = second_subchild.children.begin();
+					if (!subsubchild->name.empty()) {
+						new_children.push_back(second_subchild);
+					} else {
+						while (subsubchild != second_subchild.children.end()) {
+							new_children.push_back(*subsubchild);
+							subsubchild++;
+						};
+					}
+				}
 
-			if (child != children.end()) {
-				new_children.push_back(*child);
+				new_children.push_back(second_child);
 			}
 		}
 

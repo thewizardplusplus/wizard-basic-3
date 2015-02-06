@@ -69,6 +69,12 @@ static OpenedFileStorage __opened_file_storage = {NULL, 0, 0};
  * Interpreter API.
  ******************************************************************************/
 void* __AllocateMemory(const size_t size);
+void __InitializeStructureStorage(void);
+void __RegisterStructureField(
+	const char* structure_name,
+	const char* field_name,
+	const size_t field_index
+);
 size_t __GetStructureFieldsNumber(const char* name);
 size_t __GetStructureFieldIndex(
 	const char* structure_name,

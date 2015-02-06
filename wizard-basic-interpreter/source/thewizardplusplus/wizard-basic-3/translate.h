@@ -7,17 +7,7 @@
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-using StructureDescription = std::unordered_map<std::string, size_t>;
-using StructuresDescriptions = std::unordered_map<
-	std::string,
-	StructureDescription
->;
-struct TranslationResult {
-	std::string code;
-	StructuresDescriptions structures_descriptions;
-};
-
-auto Translate(const wizard_parser::node::Node& ast) -> TranslationResult;
+auto Translate(const wizard_parser::node::Node& ast) -> std::string;
 
 }
 }

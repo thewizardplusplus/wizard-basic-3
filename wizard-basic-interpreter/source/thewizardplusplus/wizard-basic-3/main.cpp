@@ -43,22 +43,12 @@ auto FormatAst(const Node& ast) -> std::string {
 	return out.str();
 }
 
-auto FormatAnsiC(const TranslationResult& ansi_c) -> std::string {
-	auto structures_descriptions = std::string();
-	for (const auto& structure: ansi_c.structures_descriptions) {
-		structures_descriptions +=
-			(format("// struct %s {\n") % std::get<0>(structure)).str();
-		for (const auto& field: std::get<1>(structure)) {
-			structures_descriptions +=
-				(format("//     Value %s;\n") % std::get<0>(field)).str();
-		}
-		structures_descriptions += "// };\n";
-	}
-
-	auto code = ansi_c.code;
+auto FormatAnsiC(const std::string& ansi_c) -> std::string {
+	auto code = ansi_c;
 	replace_all(code, ";", ";\n");
 	replace_all(code, "{", " {\n");
-	replace_all(code, "}", "}\n");
+	code = regex_replace(code, regex(R"(\}(?!else\b))"), "}\n");
+	code = regex_replace(code, regex(R"(\}(?=else\b))"), "} ");
 	replace_all(code, "=", " = ");
 	replace_all(code, ",", ", ");
 	code = regex_replace(code, regex(R"(\bif\b)"), "if ");
@@ -84,7 +74,7 @@ auto FormatAnsiC(const TranslationResult& ansi_c) -> std::string {
 	}
 	code = join(lines, "\n");
 
-	return structures_descriptions + code;
+	return code;
 }
 
 template<FinalStage final_stage, typename ResultType>

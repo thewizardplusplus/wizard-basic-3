@@ -1,15 +1,18 @@
-structure Vector
-    x
-    y
-    z
-end
-
-let x = 12 * Sin(35)
-
 function Test()
-    while GetRandom() < 0.5 do
-        while GetRandom() > 0.5 do
-            Show("Test.")
-        end
+    if x then
+        let x = 10
+        let x = 10
+    else if x then
+        let x = 10
+        let x = 10
+    else if x then
+        let x = 10
+        let x = 10
+    else if x then
+        let x = 10
+        let x = 10
+    else
+        let x = 10
+        let x = 10
     end
 end

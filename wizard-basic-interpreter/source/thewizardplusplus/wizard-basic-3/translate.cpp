@@ -195,24 +195,33 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 					throw std::runtime_error("invalid l-value");
 				}
 			} else if (node.name == "condition") {
+				auto result = std::string();
 				auto child = node.children.begin();
-				const auto condition = TranslateExpression(*child++);
-				const auto true_body = TranslateStatementList(*child++);
-				if (node.children.size() == 2) {
-					return
-						code
-						+ (format("if(__ToBoolean(%s)){%s}")
+				do {
+					if (child != node.children.begin()) {
+						result += "else ";
+					}
+
+					const auto condition = TranslateExpression(
+						child->children.front()
+					);
+					const auto body = TranslateStatementList(
+						child->children.back()
+					);
+					result +=
+						(format("if(__ToBoolean(%s)){%s}")
 							% condition
-							% true_body).str();
-				} else {
-					const auto false_body = TranslateStatementList(*child++);
-					return
-						code
-						+ (format("if(__ToBoolean(%s)){%s}else{%s}")
-							% condition
-							% true_body
-							% false_body).str();
+							% body).str();
+
+					child++;
+				} while (child != node.children.end() && child->name.empty());
+
+				if (child != node.children.end() && !child->name.empty()) {
+					const auto body = TranslateStatementList(*child);
+					result += (format("else{%s}") % body).str();
 				}
+
+				return code + result;
 			} else if (node.name == "loop") {
 				const auto condition = TranslateExpression(
 					node.children.front()
@@ -243,13 +252,12 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 	);
 }
 
-auto Translate(const Node& ast) -> TranslationResult {
+auto Translate(const Node& ast) -> std::string {
+	auto structures_registration = std::string();
 	auto global_variables_declarations = std::string();
 	auto global_variables_initializations = std::string();
 	auto functions_declarations = std::string("void __Start();");
 	auto functions_implementations = std::string();
-
-	auto structures_descriptions = StructuresDescriptions();
 
 	std::for_each(
 		ast.children.begin(),
@@ -265,13 +273,13 @@ auto Translate(const Node& ast) -> TranslationResult {
 				global_variables_initializations +=
 					(format("%s=%s;") % node.value % expression).str();
 			} else if (node.name == "structure_declaration") {
-				auto structure_description = StructureDescription();
 				for (size_t i = 0; i < node.children.size(); i++) {
-					const auto field_name = node.children[i].value;
-					structure_description[field_name] = i;
+					structures_registration +=
+						(format(R"(__RegisterStructureField("%s","%s",%d);)")
+							% node.value
+							% node.children[i].value
+							% i).str();
 				}
-
-				structures_descriptions[node.value] = structure_description;
 			} else if (node.name == "function_declaration") {
 				const auto first_child = node.children.front();
 				const auto function_arguments = std::accumulate(
@@ -308,29 +316,29 @@ auto Translate(const Node& ast) -> TranslationResult {
 		}
 	);
 
-	return TranslationResult{
+	return
 		global_variables_declarations
-			+ functions_declarations
-			+ functions_implementations
-			+ (format(
-				std::string("void __Start(")
-					+ "const char*arguments[],"
-					+ "const size_t number_of_arguments"
-				+ "){"
-					+ "__InitializeConstants();"
-					+ "__InitializeOpenedFileStorage();"
-					+ "%s"
-					+ "Main("
-						+ "__WrapCommandLineArguments("
-							+ "arguments,"
-							+ "number_of_arguments"
-						+ ")"
-					+ ");"
-					+ "__CleanupOpenedFileStorage();"
-				+ "}"
-			) % global_variables_initializations).str(),
-		structures_descriptions
-	};
+		+ functions_declarations
+		+ functions_implementations
+		+ (format(
+			std::string("int main(int number_of_arguments,char*arguments[]){")
+				+ "__InitializeStructureStorage();"
+				+ "__InitializeConstants();"
+				+ "__InitializeOpenedFileStorage();"
+				+ "%s"
+				+ "%s"
+				+ "Main("
+					+ "__WrapCommandLineArguments("
+						+ "arguments,"
+						+ "number_of_arguments"
+					+ ")"
+				+ ");"
+				+ "__CleanupOpenedFileStorage();"
+				+ "return EXIT_SUCCESS;"
+			+ "}"
+		)
+			% structures_registration
+			% global_variables_initializations).str();
 }
 
 }
