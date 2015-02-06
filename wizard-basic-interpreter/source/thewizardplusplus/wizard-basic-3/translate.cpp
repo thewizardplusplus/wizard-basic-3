@@ -321,7 +321,10 @@ auto Translate(const Node& ast) -> std::string {
 		+ functions_declarations
 		+ functions_implementations
 		+ (format(
-			std::string("int main(int number_of_arguments,char*arguments[]){")
+			std::string("void __Start(")
+				+ "const char*arguments[],"
+				+ "const size_t number_of_arguments"
+			+ "){"
 				+ "__InitializeStructureStorage();"
 				+ "__InitializeConstants();"
 				+ "__InitializeOpenedFileStorage();"
@@ -334,7 +337,6 @@ auto Translate(const Node& ast) -> std::string {
 					+ ")"
 				+ ");"
 				+ "__CleanupOpenedFileStorage();"
-				+ "return EXIT_SUCCESS;"
 			+ "}"
 		)
 			% structures_registration

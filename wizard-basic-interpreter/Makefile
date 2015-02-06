@@ -4,7 +4,8 @@ OBJECTS = \
 	$(SOURCE)process_command_line_arguments.o \
 	$(SOURCE)get_code.o \
 	$(SOURCE)parse.o \
-	$(SOURCE)translate.o
+	$(SOURCE)translate.o \
+	$(SOURCE)run.o
 CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2 \
 	-I../../wizard-parser/build/headers/
 LDFLAGS += \

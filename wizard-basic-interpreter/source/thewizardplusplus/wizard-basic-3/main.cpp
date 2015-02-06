@@ -2,6 +2,7 @@
 #include "get_code.h"
 #include "parse.h"
 #include "translate.h"
+#include "run.h"
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -105,6 +106,8 @@ int main(int number_of_arguments, char* arguments[]) try {
 		command_line_arguments,
 		FormatAnsiC(ansi_c)
 	);
+
+	Run(ansi_c);
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }
