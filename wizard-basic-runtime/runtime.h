@@ -80,6 +80,7 @@ size_t __GetStructureFieldIndex(
 	const char* structure_name,
 	const char* field_name
 );
+void __CleanupStructureStorage(void);
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
