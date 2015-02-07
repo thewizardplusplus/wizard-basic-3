@@ -107,7 +107,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 		FormatAnsiC(ansi_c)
 	);
 
-	Run(ansi_c);
+	Run(ansi_c, command_line_arguments);
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }
