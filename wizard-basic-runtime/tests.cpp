@@ -41,32 +41,32 @@ size_t __GetStructureFieldIndex(
 /*******************************************************************************
  * Utils.
  ******************************************************************************/
-void ValidateArrayContents(const __Value __array, const std::string contents) {
-	EXPECT_EQ(__array.storage.__array.size, contents.size());
+void ValidateArrayContents(const __Value array, const std::string contents) {
+	EXPECT_EQ(array.storage.array.size, contents.size());
 
-	for (size_t i = 0; i < __array.storage.__array.size; i++) {
-		EXPECT_EQ(__array.storage.__array.data[i].type, __VALUE_TYPE_NUMBER);
-		EXPECT_EQ(__array.storage.__array.data[i].storage.__number, contents[i]);
+	for (size_t i = 0; i < array.storage.array.size; i++) {
+		EXPECT_EQ(array.storage.array.data[i].type, __VALUE_TYPE_NUMBER);
+		EXPECT_EQ(array.storage.array.data[i].storage.number, contents[i]);
 	}
 }
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
-* Constats tests.
-******************************************************************************/
+ * Constats tests.
+ ******************************************************************************/
 TEST(Constats, TestNull) {
 	EXPECT_EQ(__NULL.type, __VALUE_TYPE_NULL);
-	EXPECT_EQ(__NULL.storage.__number, 0.0);
+	EXPECT_EQ(__NULL.storage.number, 0.0);
 }
 
 TEST(Constats, TestFalse) {
 	EXPECT_EQ(__FALSE.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(__FALSE.storage.__number, 0.0);
+	EXPECT_EQ(__FALSE.storage.number, 0.0);
 }
 
 TEST(Constats, TestTrue) {
 	EXPECT_EQ(__TRUE.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(__TRUE.storage.__number, 1.0);
+	EXPECT_EQ(__TRUE.storage.number, 1.0);
 }
 //------------------------------------------------------------------------------
 
@@ -81,10 +81,10 @@ TEST(Utils, TestInitializeConstants) {
 	ValidateArrayContents(__TYPE_NAME_NULL, "null");
 
 	EXPECT_EQ(__TYPE_NAME_NUMBER.type, __VALUE_TYPE_ARRAY);
-	ValidateArrayContents(__TYPE_NAME_NUMBER, "__number");
+	ValidateArrayContents(__TYPE_NAME_NUMBER, "number");
 
 	EXPECT_EQ(__TYPE_NAME_ARRAY.type, __VALUE_TYPE_ARRAY);
-	ValidateArrayContents(__TYPE_NAME_ARRAY, "__array");
+	ValidateArrayContents(__TYPE_NAME_ARRAY, "array");
 }
 
 // __InitializeOpenedFileStorage() test
@@ -101,7 +101,7 @@ TEST(Utils, TestInitializeOpenedFileStorage) {
 		__opened_file_storage.capacity,
 		START_CAPACITY_OF_OPENED_FILE_STORAGE
 	);
-	EXPECT_EQ(__opened_file_storage.__number, START_NUMBER_OF_OPENED_FILES);
+	EXPECT_EQ(__opened_file_storage.number, START_NUMBER_OF_OPENED_FILES);
 	EXPECT_EQ(__opened_file_storage.files[STANDART_STREAM_INPUT_ID], stdin);
 	EXPECT_EQ(__opened_file_storage.files[STANDART_STREAM_OUTPUT_ID], stdout);
 	EXPECT_EQ(__opened_file_storage.files[STANDART_STREAM_ERROR_ID], stderr);
@@ -123,10 +123,10 @@ TEST(Utils, TestWrapCommandLineArguments) {
 	);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
-	EXPECT_EQ(result.storage.__array.size, TEST_ARGUMENTS_NUMBER);
+	EXPECT_EQ(result.storage.array.size, TEST_ARGUMENTS_NUMBER);
 
 	for (size_t i = 0; i < TEST_ARGUMENTS_NUMBER; i++) {
-		const auto item = result.storage.__array.data[i];
+		const auto item = result.storage.array.data[i];
 
 		EXPECT_EQ(item.type, __VALUE_TYPE_ARRAY);
 		ValidateArrayContents(item, "argument_" + std::to_string(i));
@@ -142,9 +142,9 @@ TEST(Utils, TestHasAllowedTypeWithOneAllowedType) {
 }
 
 TEST(Utils, TestHasAllowedTypeWithSomeAllowedTypeAndRightValue) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto result = __HasAllowedType(
-		__array,
+		array,
 		__VALUE_TYPE_NULL | __VALUE_TYPE_NUMBER | __VALUE_TYPE_ARRAY
 	);
 
@@ -165,9 +165,9 @@ TEST(Utils, TestHasAllowedTypeWithSomeAllowedTypeAndNotRightValue) {
 TEST(Utils, TestIsValidIndexWithNegativeIndex) {
 	const auto TEST_NEGATIVE_INDEX_VALUE = -5;
 
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto index = __CreateNumber(TEST_NEGATIVE_INDEX_VALUE);
-	const auto result = __IsValidIndex(__array, index);
+	const auto result = __IsValidIndex(array, index);
 
 	EXPECT_FALSE(result);
 }
@@ -175,9 +175,9 @@ TEST(Utils, TestIsValidIndexWithNegativeIndex) {
 TEST(Utils, TestIsValidIndexWithNullIndex) {
 	const auto TEST_NULL_INDEX_VALUE = 0;
 
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto index = __CreateNumber(TEST_NULL_INDEX_VALUE);
-	const auto result = __IsValidIndex(__array, index);
+	const auto result = __IsValidIndex(array, index);
 
 	EXPECT_TRUE(result);
 }
@@ -185,17 +185,17 @@ TEST(Utils, TestIsValidIndexWithNullIndex) {
 TEST(Utils, TestIsValidIndexWithMiddleIndex) {
 	const auto TEST_MIDDLE_INDEX_VALUE = 5;
 
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto index = __CreateNumber(TEST_MIDDLE_INDEX_VALUE);
-	const auto result = __IsValidIndex(__array, index);
+	const auto result = __IsValidIndex(array, index);
 
 	EXPECT_TRUE(result);
 }
 
 TEST(Utils, TestIsValidIndexWithSizeIndex) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto index = __CreateNumber(TEST_SIZE_VALUE);
-	const auto result = __IsValidIndex(__array, index);
+	const auto result = __IsValidIndex(array, index);
 
 	EXPECT_FALSE(result);
 }
@@ -203,9 +203,9 @@ TEST(Utils, TestIsValidIndexWithSizeIndex) {
 TEST(Utils, TestIsValidIndexWithTooBigIndex) {
 	const auto TEST_TOO_BIG_INDEX_VALUE = 42;
 
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto index = __CreateNumber(TEST_TOO_BIG_INDEX_VALUE);
-	const auto result = __IsValidIndex(__array, index);
+	const auto result = __IsValidIndex(array, index);
 
 	EXPECT_FALSE(result);
 }
@@ -221,22 +221,22 @@ TEST(Utils, TestToBooleanWithNullType) {
 TEST(Utils, TestToBooleanWithNullNumber) {
 	const auto TEST_NULL_NUMBER_VALUE = 0.0;
 
-	const auto __number = __CreateNumber(TEST_NULL_NUMBER_VALUE);
-	const auto result = __ToBoolean(__number);
+	const auto number = __CreateNumber(TEST_NULL_NUMBER_VALUE);
+	const auto result = __ToBoolean(number);
 
 	EXPECT_FALSE(result);
 }
 
 TEST(Utils, TestToBooleanWithNotNullNumber) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = __ToBoolean(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = __ToBoolean(number);
 
 	EXPECT_TRUE(result);
 }
 
 TEST(Utils, TestToBooleanWithArray) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
-	const auto result = __ToBoolean(__array);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto result = __ToBoolean(array);
 
 	EXPECT_TRUE(result);
 }
@@ -253,7 +253,7 @@ TEST(Utils, TestFromBoolean) {
 	const auto result = __FromBoolean(true);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 // __Round() tests
@@ -288,8 +288,8 @@ TEST(Utils, TestGetIntegralModuleWithNegativeNumber) {
 
 // __ToString() test
 TEST(Utils, TestToString) {
-	const auto __array = __CreateArrayFromString(TEST_STRING_VALUE.c_str());
-	const auto result = __ToString(__array);
+	const auto array = __CreateArrayFromString(TEST_STRING_VALUE.c_str());
+	const auto result = __ToString(array);
 
 	EXPECT_EQ(std::string(result), TEST_STRING_VALUE);
 }
@@ -394,10 +394,10 @@ TEST(TypesCreation, TestNULL) {
 }
 
 TEST(TypesCreation, TestCreateNumber) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
 
-	EXPECT_EQ(__number.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(__number.storage.__number, TEST_NUMBER_1_VALUE);
+	EXPECT_EQ(number.type, __VALUE_TYPE_NUMBER);
+	EXPECT_EQ(number.storage.number, TEST_NUMBER_1_VALUE);
 }
 
 TEST(TypesCreation, TestCreateArrayData) {
@@ -411,13 +411,13 @@ TEST(TypesCreation, TestCreateArrayData) {
 }
 
 TEST(TypesCreation, TestCreateArray) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 
-	EXPECT_EQ(__array.type, __VALUE_TYPE_ARRAY);
-	EXPECT_EQ(__array.storage.__array.size, TEST_SIZE_VALUE);
+	EXPECT_EQ(array.type, __VALUE_TYPE_ARRAY);
+	EXPECT_EQ(array.storage.array.size, TEST_SIZE_VALUE);
 
 	for (size_t i = 0; i < TEST_SIZE_VALUE; i++) {
-		EXPECT_EQ(__array.storage.__array.data[i].type, __VALUE_TYPE_NULL);
+		EXPECT_EQ(array.storage.array.data[i].type, __VALUE_TYPE_NULL);
 	}
 }
 
@@ -429,17 +429,17 @@ TEST(TypesCreation, TestCreateArrayFromList) {
 	};
 
 	#define TEST_LIST_VALUE(z, index, name) __CreateNumber(TEST_LIST[index])
-	const auto __array = __CreateArrayFromList(
+	const auto array = __CreateArrayFromList(
 		TEST_LIST_SIZE,
 		BOOST_PP_ENUM(TEST_LIST_SIZE, TEST_LIST_VALUE, ~)
 	);
 
-	EXPECT_EQ(__array.type, __VALUE_TYPE_ARRAY);
-	EXPECT_EQ(__array.storage.__array.size, TEST_LIST_SIZE);
+	EXPECT_EQ(array.type, __VALUE_TYPE_ARRAY);
+	EXPECT_EQ(array.storage.array.size, TEST_LIST_SIZE);
 
 	for (size_t i = 0; i < TEST_LIST_SIZE; i++) {
-		EXPECT_EQ(__array.storage.__array.data[i].type, __VALUE_TYPE_NUMBER);
-		EXPECT_EQ(__array.storage.__array.data[i].storage.__number, TEST_LIST[i]);
+		EXPECT_EQ(array.storage.array.data[i].type, __VALUE_TYPE_NUMBER);
+		EXPECT_EQ(array.storage.array.data[i].storage.number, TEST_LIST[i]);
 	}
 
 	#undef TEST_LIST_VALUE
@@ -447,10 +447,10 @@ TEST(TypesCreation, TestCreateArrayFromList) {
 }
 
 TEST(TypesCreation, TestCreateArrayFromString) {
-	const auto __array = __CreateArrayFromString(TEST_STRING_VALUE.c_str());
+	const auto array = __CreateArrayFromString(TEST_STRING_VALUE.c_str());
 
-	EXPECT_EQ(__array.type, __VALUE_TYPE_ARRAY);
-	ValidateArrayContents(__array, TEST_STRING_VALUE);
+	EXPECT_EQ(array.type, __VALUE_TYPE_ARRAY);
+	ValidateArrayContents(array, TEST_STRING_VALUE);
 }
 
 TEST(TypesCreation, TestCreateStructure) {
@@ -476,11 +476,11 @@ TEST(TypesCreation, TestCreateStructure) {
  * __Number operations tests.
  ******************************************************************************/
 TEST(NumberOperations, TestUnaryMinus) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = __UnaryMinus(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = __UnaryMinus(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, -TEST_NUMBER_1_VALUE);
+	EXPECT_EQ(result.storage.number, -TEST_NUMBER_1_VALUE);
 }
 
 TEST(NumberOperations, TestAdd) {
@@ -489,7 +489,7 @@ TEST(NumberOperations, TestAdd) {
 	const auto result = __Add(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_NUMBER_1_VALUE + TEST_NUMBER_2_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_NUMBER_1_VALUE + TEST_NUMBER_2_VALUE);
 }
 
 TEST(NumberOperations, TestSubtract) {
@@ -498,7 +498,7 @@ TEST(NumberOperations, TestSubtract) {
 	const auto result = __Subtract(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_NUMBER_1_VALUE - TEST_NUMBER_2_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_NUMBER_1_VALUE - TEST_NUMBER_2_VALUE);
 }
 
 TEST(NumberOperations, TestMultiply) {
@@ -507,7 +507,7 @@ TEST(NumberOperations, TestMultiply) {
 	const auto result = __Multiply(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_NUMBER_1_VALUE * TEST_NUMBER_2_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_NUMBER_1_VALUE * TEST_NUMBER_2_VALUE);
 }
 
 TEST(NumberOperations, TestDivide) {
@@ -516,7 +516,7 @@ TEST(NumberOperations, TestDivide) {
 	const auto result = __Divide(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_NUMBER_1_VALUE / TEST_NUMBER_2_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_NUMBER_1_VALUE / TEST_NUMBER_2_VALUE);
 }
 
 TEST(NumberOperations, TestModulo) {
@@ -526,7 +526,7 @@ TEST(NumberOperations, TestModulo) {
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
 	EXPECT_EQ(
-		result.storage.__number,
+		result.storage.number,
 		(long)round(TEST_NUMBER_1_VALUE) % (long)round(TEST_NUMBER_2_VALUE)
 	);
 }
@@ -537,7 +537,7 @@ TEST(NumberOperations, TestLess) {
 	const auto result = __Less(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TRUE_VALUE);
+	EXPECT_EQ(result.storage.number, TRUE_VALUE);
 }
 
 TEST(NumberOperations, TestLessOrEqual) {
@@ -546,7 +546,7 @@ TEST(NumberOperations, TestLessOrEqual) {
 	const auto result = __LessOrEqual(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TRUE_VALUE);
+	EXPECT_EQ(result.storage.number, TRUE_VALUE);
 }
 
 TEST(NumberOperations, TestGreater) {
@@ -555,7 +555,7 @@ TEST(NumberOperations, TestGreater) {
 	const auto result = __Greater(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, FALSE_VALUE);
+	EXPECT_EQ(result.storage.number, FALSE_VALUE);
 }
 
 TEST(NumberOperations, TestGreaterOrEqual) {
@@ -564,12 +564,12 @@ TEST(NumberOperations, TestGreaterOrEqual) {
 	const auto result = __GreaterOrEqual(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, FALSE_VALUE);
+	EXPECT_EQ(result.storage.number, FALSE_VALUE);
 }
 
 TEST(NumberOperations, TestToString) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = ToString(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = ToString(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
 	ValidateArrayContents(result, "2.300000");
@@ -583,39 +583,39 @@ TEST(ArrayOperations, TestGetArrayItem) {
 	const auto TEST_SIZE_VALUE = 1;
 	const auto TEST_ARRAY_ITEM_INDEX = 0;
 
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto __array = __CreateArrayFromList(TEST_SIZE_VALUE, __number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto array = __CreateArrayFromList(TEST_SIZE_VALUE, number);
 	const auto index = __CreateNumber(TEST_ARRAY_ITEM_INDEX);
-	const auto result = __GetArrayItem(__array, index);
+	const auto result = __GetArrayItem(array, index);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_NUMBER_1_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_NUMBER_1_VALUE);
 }
 
 TEST(ArrayOperations, TestSetArrayItem) {
 	const auto TEST_ARRAY_ITEM_INDEX = 12;
 
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
 	const auto index = __CreateNumber(TEST_ARRAY_ITEM_INDEX);
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	__SetArrayItem(__array, index, __number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	__SetArrayItem(array, index, number);
 
 	EXPECT_EQ(
-		__array.storage.__array.data[TEST_ARRAY_ITEM_INDEX].type,
+		array.storage.array.data[TEST_ARRAY_ITEM_INDEX].type,
 		__VALUE_TYPE_NUMBER
 	);
 	EXPECT_EQ(
-		__array.storage.__array.data[TEST_ARRAY_ITEM_INDEX].storage.__number,
+		array.storage.array.data[TEST_ARRAY_ITEM_INDEX].storage.number,
 		TEST_NUMBER_1_VALUE
 	);
 }
 
 TEST(ArrayOperations, TestGetLength) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
-	const auto result = GetLength(__array);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto result = GetLength(array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_SIZE_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_SIZE_VALUE);
 }
 //------------------------------------------------------------------------------
 
@@ -634,8 +634,8 @@ TEST(StructureOperations, TestGetStructureField) {
 
 TEST(StructureOperations, TestSetStructureField) {
 	const auto structure = __CreateStructure(TEST_STRUCTURE_NAME.c_str());
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	__SetStructureField(structure, TEST_STRUCTURE_FIELD_NAME.c_str(), __number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	__SetStructureField(structure, TEST_STRUCTURE_FIELD_NAME.c_str(), number);
 
 	const auto field_index = __GetStructureFieldIndex(
 		TEST_STRUCTURE_NAME.c_str(),
@@ -646,7 +646,7 @@ TEST(StructureOperations, TestSetStructureField) {
 		__VALUE_TYPE_NUMBER
 	);
 	EXPECT_EQ(
-		structure.storage.structure.fields.data[field_index].storage.__number,
+		structure.storage.structure.fields.data[field_index].storage.number,
 		TEST_NUMBER_1_VALUE
 	);
 }
@@ -660,7 +660,7 @@ TEST(RestOperations, TestNot) {
 	const auto result = __Not(__TRUE);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 // __Equal() tests
@@ -670,7 +670,7 @@ TEST(RestOperations, TestEqualWithNulls) {
 	const auto result = __Equal(null_1, null_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 TEST(RestOperations, TestEqualWithNumbers) {
@@ -679,15 +679,15 @@ TEST(RestOperations, TestEqualWithNumbers) {
 	const auto result = __Equal(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 TEST(RestOperations, TestEqualWithEqualArrays) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
-	const auto result = __Equal(__array, __array);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto result = __Equal(array, array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 TEST(RestOperations, TestEqualWithNotEqualArrays) {
@@ -696,7 +696,7 @@ TEST(RestOperations, TestEqualWithNotEqualArrays) {
 	const auto result = __Equal(array_1, array_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 TEST(RestOperations, TestEqualWithEqualStructures) {
@@ -704,7 +704,7 @@ TEST(RestOperations, TestEqualWithEqualStructures) {
 	const auto result = __Equal(structure, structure);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 TEST(RestOperations, TestEqualWithNotEqualStructures) {
@@ -713,7 +713,7 @@ TEST(RestOperations, TestEqualWithNotEqualStructures) {
 	const auto result = __Equal(structure_1, structure_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 // __NotEqual() tests
@@ -723,7 +723,7 @@ TEST(RestOperations, TestNotEqualWithNulls) {
 	const auto result = __NotEqual(null_1, null_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 TEST(RestOperations, TestNotEqualWithNumbers) {
@@ -732,15 +732,15 @@ TEST(RestOperations, TestNotEqualWithNumbers) {
 	const auto result = __NotEqual(number_1, number_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 TEST(RestOperations, TestNotEqualWithEqualArrays) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
-	const auto result = __NotEqual(__array, __array);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto result = __NotEqual(array, array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 TEST(RestOperations, TestNotEqualWithNotEqualArrays) {
@@ -749,7 +749,7 @@ TEST(RestOperations, TestNotEqualWithNotEqualArrays) {
 	const auto result = __NotEqual(array_1, array_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 TEST(RestOperations, TestNotEqualWithEqualStructures) {
@@ -757,7 +757,7 @@ TEST(RestOperations, TestNotEqualWithEqualStructures) {
 	const auto result = __NotEqual(structure, structure);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 TEST(RestOperations, TestNotEqualWithNotEqualStructures) {
@@ -766,7 +766,7 @@ TEST(RestOperations, TestNotEqualWithNotEqualStructures) {
 	const auto result = __NotEqual(structure_1, structure_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 // __And() test
@@ -774,7 +774,7 @@ TEST(RestOperations, TestAnd) {
 	const auto result = __And(__TRUE, __FALSE);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 0.0);
+	EXPECT_EQ(result.storage.number, 0.0);
 }
 
 // __Or() test
@@ -782,7 +782,7 @@ TEST(RestOperations, TestOr) {
 	const auto result = __Or(__TRUE, __FALSE);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, 1.0);
+	EXPECT_EQ(result.storage.number, 1.0);
 }
 
 // GetType() tests
@@ -795,19 +795,19 @@ TEST(RestOperations, TestGetTypeWithNull) {
 }
 
 TEST(RestOperations, TestGetTypeWithNumber) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = GetType(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = GetType(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
-	ValidateArrayContents(result, "__number");
+	ValidateArrayContents(result, "number");
 }
 
 TEST(RestOperations, TestGetTypeWithArray) {
-	const auto __array = __CreateArray(TEST_SIZE_VALUE);
-	const auto result = GetType(__array);
+	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto result = GetType(array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
-	ValidateArrayContents(result, "__array");
+	ValidateArrayContents(result, "array");
 }
 
 TEST(RestOperations, TestGetTypeWithStructure) {
@@ -823,63 +823,63 @@ TEST(RestOperations, TestGetTypeWithStructure) {
  * Maths module tests.
  ******************************************************************************/
 TEST(MathsModule, TestSin) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Sin(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Sin(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::sin(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::sin(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestCos) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Cos(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Cos(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::cos(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::cos(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestTg) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Tg(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Tg(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::tan(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::tan(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestArcsin) {
 	const auto TEST_NUMBER_VALUE = 0.23;
 
-	const auto __number = __CreateNumber(TEST_NUMBER_VALUE);
-	const auto result = Arcsin(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto result = Arcsin(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::asin(TEST_NUMBER_VALUE));
+	EXPECT_EQ(result.storage.number, std::asin(TEST_NUMBER_VALUE));
 }
 
 TEST(MathsModule, TestArccos) {
 	const auto TEST_NUMBER_VALUE = 0.23;
 
-	const auto __number = __CreateNumber(TEST_NUMBER_VALUE);
-	const auto result = Arccos(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto result = Arccos(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::acos(TEST_NUMBER_VALUE));
+	EXPECT_EQ(result.storage.number, std::acos(TEST_NUMBER_VALUE));
 }
 
 TEST(MathsModule, TestArctg) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Arctg(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Arctg(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::atan(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::atan(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestSquareRoot) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = SquareRoot(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = SquareRoot(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::sqrt(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::sqrt(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestPower) {
@@ -889,39 +889,39 @@ TEST(MathsModule, TestPower) {
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
 	EXPECT_EQ(
-		result.storage.__number,
+		result.storage.number,
 		std::pow(TEST_NUMBER_1_VALUE, TEST_NUMBER_2_VALUE)
 	);
 }
 
 TEST(MathsModule, TestExp) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Exp(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Exp(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::exp(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::exp(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestLn) {
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Ln(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Ln(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, std::log(TEST_NUMBER_1_VALUE));
+	EXPECT_EQ(result.storage.number, std::log(TEST_NUMBER_1_VALUE));
 }
 
 TEST(MathsModule, TestIntegral) {
 	const auto TEST_INTERGAL_NUMBER_VALUE = 2.0;
 
-	const auto __number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = Integral(__number);
+	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
+	const auto result = Integral(number);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
-	EXPECT_EQ(result.storage.__number, TEST_INTERGAL_NUMBER_VALUE);
+	EXPECT_EQ(result.storage.number, TEST_INTERGAL_NUMBER_VALUE);
 }
 //------------------------------------------------------------------------------
 
-int main(int number_of_arguments, char** arguments) {
+int main(int number_of_arguments, char* arguments[]) {
 	InitGoogleTest(&number_of_arguments, arguments);
 	return RUN_ALL_TESTS();
 }
