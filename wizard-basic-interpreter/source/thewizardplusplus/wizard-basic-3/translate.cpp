@@ -150,7 +150,9 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				);
 				return
 					code
-					+ (format("Value %s=%s;") % node.value % expression).str();
+					+ (format("__Value %s=%s;")
+						% node.value
+						% expression).str();
 			} else if (node.name == "assignment") {
 				const auto right_expression = TranslateExpression(
 					node.children.back()

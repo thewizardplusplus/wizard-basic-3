@@ -3,3 +3,5 @@
 /wizard-basic-runtime/tests
 /wizard-basic-runtime/io_test
 /io_test.txt
+/wizard-basic-runtime/io_test.txt
+/wizard-basic-runtime/hash_table_tests
