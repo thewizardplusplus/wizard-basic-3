@@ -19,14 +19,11 @@ size_t __GetNumberOfFields(FieldMap* fields) {
 	return HASH_CNT(hash_handle, *fields);
 }
 
-size_t __FindField(FieldMap* fields, const char* name) {
+FieldInfo* __FindField(FieldMap* fields, const char* name) {
 	FieldInfo* field = NULL;
 	HASH_FIND(hash_handle, *fields, name, strlen(name), field);
-	if (field == NULL) {
-		__ProcessError("unknown field");
-	}
 
-	return field->index;
+	return field;
 }
 
 void __AddField(FieldMap* fields, const char* name, const size_t index) {
@@ -49,6 +46,61 @@ void __DeleteFields(FieldMap* fields) {
 	HASH_ITER(hash_handle, *fields, current_field, temporary_field) {
 		HASH_DELETE(hash_handle, *fields, current_field);
 		free(current_field);
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+ * StructureInfo type.
+ ******************************************************************************/
+typedef struct StructureInfo {
+	const char* name;
+	FieldMap* fields;
+	UT_hash_handle hash_handle;
+} StructureInfo;
+
+typedef StructureInfo* StructureMap;
+
+StructureInfo* __FindStructure(StructureMap* structures, const char* name) {
+	StructureInfo* structure = NULL;
+	HASH_FIND(hash_handle, *structures, name, strlen(name), structure);
+
+	return structure;
+}
+
+void __AddStructure(
+	StructureMap* structures,
+	const char* name,
+	FieldMap* fields
+) {
+	StructureInfo* structure = (StructureInfo*)malloc(sizeof(StructureInfo));
+	structure->name = name;
+	structure->fields = fields;
+
+	HASH_ADD_KEYPTR(
+		hash_handle,
+		*structures,
+		structure->name,
+		strlen(structure->name),
+		structure
+	);
+}
+
+void __DeleteFields(StructureMap* structures) {
+	StructureInfo* current_structure = NULL;
+	StructureInfo* temporary_structure = NULL;
+	HASH_ITER(
+		hash_handle,
+		*structures,
+		current_structure,
+		temporary_structure
+	) {
+		if (current_structure != NULL && current_structure->fields != NULL) {
+			__DeleteFields(current_structure->fields);
+		}
+
+		HASH_DELETE(hash_handle, *structures, current_structure);
+		free(current_structure);
 	}
 }
 //------------------------------------------------------------------------------
