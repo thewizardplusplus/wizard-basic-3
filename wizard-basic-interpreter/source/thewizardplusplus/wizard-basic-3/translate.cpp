@@ -1,17 +1,31 @@
 #include "translate.h"
 #include <algorithm>
 #include <numeric>
+#include <set>
 #include <boost/format.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/random/random_device.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 using namespace thewizardplusplus::wizard_parser::node;
 using namespace boost;
 using namespace boost::algorithm;
+using namespace boost::random;
 
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-static auto TranslateExpression(const Node& ast) -> std::string {
+const auto RANDOM_PREFIX_SYMBOLS = std::string(
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	"abcdefghijklmnopqrstuvwxyz"
+	"1234567890"
+);
+const auto RANDOM_PREFIX_LENGTH = 5;
+
+static auto TranslateExpression(
+	const Node& ast,
+	const std::string& identify_prefix
+) -> std::string {
 	if (ast.name == "null_definition") {
 		return "__NULL";
 	} else if (ast.name == "number") {
@@ -19,7 +33,7 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		return (format("__CreateNumber(%s)") % number).str();
 	} else if (ast.name == "identifier") {
 		const auto identifier = ast.value;
-		return identifier;
+		return identify_prefix + identifier;
 	} else if (ast.name == "string_definition") {
 		const auto string = ast.value;
 		return (format(R"(__CreateArrayFromString("%s"))") % string).str();
@@ -30,7 +44,9 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 				ast.children.begin(),
 				ast.children.end(),
 				std::back_inserter(items),
-				TranslateExpression
+				[&] (const Node& node) {
+					return TranslateExpression(node, identify_prefix);
+				}
 			);
 
 			return (format("__CreateArrayFromList(%d,%s)")
@@ -45,17 +61,29 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 			ast.children.begin(),
 			ast.children.end(),
 			std::back_inserter(arguments),
-			TranslateExpression
+			[&] (const Node& node) {
+				return TranslateExpression(node, identify_prefix);
+			}
 		);
 
-		return (format("%s(%s)") % ast.value % join(arguments, ",")).str();
+		return
+			(format("%s%s(%s)")
+				% identify_prefix
+				% ast.value
+				% join(arguments, ",")).str();
 	} else if (ast.name == "accessor") {
-		const auto base = TranslateExpression(ast.children.front());
+		const auto base = TranslateExpression(
+			ast.children.front(),
+			identify_prefix
+		);
 
 		const auto second_child = ast.children.back();
 		const auto first_subchild = second_child.children.front();
 		if (second_child.name == "item_access") {
-			const auto index = TranslateExpression(first_subchild);
+			const auto index = TranslateExpression(
+				first_subchild,
+				identify_prefix
+			);
 			return (format("__GetArrayItem(%s,%s)") % base % index).str();
 		} else {
 			return (format(R"(__GetStructureField(%s,"%s"))")
@@ -68,7 +96,10 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		if (first_child.value == "new") {
 			return (format("__CreateStructure(%s)") % second_child.value).str();
 		} else {
-			auto expression = TranslateExpression(second_child);
+			auto expression = TranslateExpression(
+				second_child,
+				identify_prefix
+			);
 
 			auto children = NodeGroup();
 			std::reverse_copy(
@@ -95,8 +126,14 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 		|| ast.name == "sum"
 		|| ast.name == "product"
 	) {
-		const auto expression_left = TranslateExpression(ast.children.front());
-		const auto expression_right = TranslateExpression(ast.children.back());
+		const auto expression_left = TranslateExpression(
+			ast.children.front(),
+			identify_prefix
+		);
+		const auto expression_right = TranslateExpression(
+			ast.children.back(),
+			identify_prefix
+		);
 
 		auto function = std::string();
 		if (ast.name == "disjunction") {
@@ -138,36 +175,44 @@ static auto TranslateExpression(const Node& ast) -> std::string {
 	return "";
 }
 
-static auto TranslateStatementList(const Node& ast) -> std::string {
+static auto TranslateStatementList(
+	const Node& ast,
+	const std::string& identify_prefix
+) -> std::string {
 	return std::accumulate(
 		ast.children.begin(),
 		ast.children.end(),
 		std::string(),
-		[] (const std::string& code, const Node& node) -> std::string {
+		[&] (const std::string& code, const Node& node) -> std::string {
 			if (node.name == "variable_definition") {
 				const auto expression = TranslateExpression(
-					node.children.front()
+					node.children.front(),
+					identify_prefix
 				);
 				return
 					code
-					+ (format("__Value %s=%s;")
+					+ (format("__Value %s%s=%s;")
+						% identify_prefix
 						% node.value
 						% expression).str();
 			} else if (node.name == "assignment") {
 				const auto right_expression = TranslateExpression(
-					node.children.back()
+					node.children.back(),
+					identify_prefix
 				);
 
 				const auto first_child = node.children.front();
 				if (first_child.name == "identifier") {
 					return
 						code
-						+ (format("%s=%s;")
+						+ (format("%s%s=%s;")
+							% identify_prefix
 							% first_child.value
 							% right_expression).str();
 				} else if (first_child.name == "accessor") {
 					const auto left_expression = TranslateExpression(
-						first_child.children.front()
+						first_child.children.front(),
+						identify_prefix
 					);
 
 					const auto second_subchild = first_child.children.back();
@@ -177,7 +222,8 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 						.front();
 					if (second_subchild.name == "item_access") {
 						const auto index = TranslateExpression(
-							first_subsubchild
+							first_subsubchild,
+							identify_prefix
 						);
 						return
 							code
@@ -205,10 +251,12 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 					}
 
 					const auto condition = TranslateExpression(
-						child->children.front()
+						child->children.front(),
+						identify_prefix
 					);
 					const auto body = TranslateStatementList(
-						child->children.back()
+						child->children.back(),
+						identify_prefix
 					);
 					result +=
 						(format("if(__ToBoolean(%s)){%s}")
@@ -219,16 +267,23 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 				} while (child != node.children.end() && child->name.empty());
 
 				if (child != node.children.end() && !child->name.empty()) {
-					const auto body = TranslateStatementList(*child);
+					const auto body = TranslateStatementList(
+						*child,
+						identify_prefix
+					);
 					result += (format("else{%s}") % body).str();
 				}
 
 				return code + result;
 			} else if (node.name == "loop") {
 				const auto condition = TranslateExpression(
-					node.children.front()
+					node.children.front(),
+					identify_prefix
 				);
-				const auto body = TranslateStatementList(node.children.back());
+				const auto body = TranslateStatementList(
+					node.children.back(),
+					identify_prefix
+				);
 				return
 					code
 					+ (format("while(__ToBoolean(%s)){%s}")
@@ -241,17 +296,39 @@ static auto TranslateStatementList(const Node& ast) -> std::string {
 			} else if (node.name == "function_return") {
 				const auto expression =
 					node.children.size() == 1
-						? TranslateExpression(node.children.front())
+						? TranslateExpression(
+							node.children.front(),
+							identify_prefix
+						)
 						: "__NULL";
 				return code + (format("return %s;") % expression).str();
 			} else {
-				const auto expression = TranslateExpression(node);
+				const auto expression = TranslateExpression(
+					node,
+					identify_prefix
+				);
 				return code + (format("%s;") % expression).str();
 			}
 
 			return "";
 		}
 	);
+}
+
+auto GetRandomPrefix(
+	const std::string& symbols,
+	const size_t length
+) -> std::string {
+	random_device device;
+	uniform_int_distribution<> index(0, RANDOM_PREFIX_SYMBOLS.size() - 1);
+
+	auto result = std::string("_");
+	for(size_t i = 0; i < length; i++) {
+		result += symbols[index(device)];
+	}
+	result += "_";
+
+	return result;
 }
 
 auto Translate(const Node& ast) -> std::string {
@@ -261,25 +338,55 @@ auto Translate(const Node& ast) -> std::string {
 	auto functions_declarations = std::string("void __Start();");
 	auto functions_implementations = std::string();
 
+	const auto identify_prefix = GetRandomPrefix(
+		RANDOM_PREFIX_SYMBOLS,
+		RANDOM_PREFIX_LENGTH
+	);
+	auto structures = std::set<std::string>();
 	std::for_each(
 		ast.children.begin(),
 		ast.children.end(),
 		[&] (const Node& node) -> std::string {
 			if (node.name == "variable_definition") {
 				global_variables_declarations +=
-					(format("Value %s;") % node.value).str();
+					(format("Value %s%s;")
+						% identify_prefix
+						% node.value).str();
 
 				const auto expression = TranslateExpression(
-					node.children.front()
+					node.children.front(),
+					identify_prefix
 				);
 				global_variables_initializations +=
-					(format("%s=%s;") % node.value % expression).str();
+					(format("%s%s=%s;")
+						% identify_prefix
+						% node.value
+						% expression).str();
 			} else if (node.name == "structure_declaration") {
+				const auto structure = node.value;
+				if (structures.count(structure)) {
+					throw std::runtime_error(
+						(format("duplicate of structure %s") % structure).str()
+					);
+				}
+				structures.insert(structure);
+
+				auto fields = std::set<std::string>();
 				for (size_t i = 0; i < node.children.size(); i++) {
+					const auto field = node.children[i].value;
+					if (fields.count(field)) {
+						throw std::runtime_error(
+							(format("duplicate of structure field %s.%s")
+								% structure
+								% field).str()
+						);
+					}
+					fields.insert(field);
+
 					structures_registration +=
 						(format(R"(__RegisterStructureField("%s","%s",%d);)")
-							% node.value
-							% node.children[i].value
+							% structure
+							% field
 							% i).str();
 				}
 			} else if (node.name == "function_declaration") {
@@ -288,25 +395,29 @@ auto Translate(const Node& ast) -> std::string {
 					first_child.children.begin(),
 					first_child.children.end(),
 					std::string(),
-					[] (
+					[&] (
 						const std::string& function_argument_list,
 						const Node& node
 					) -> std::string {
 						return
 							function_argument_list
 							+ (!function_argument_list.empty() ? "," : "")
-							+ (format("const Value %s") % node.value).str();
+							+ (format("const Value %s%s")
+								% identify_prefix
+								% node.value).str();
 					}
 				);
 				const auto function_declaration =
-					(format("Value %s(%s)")
+					(format("Value %s%s(%s)")
+						% identify_prefix
 						% node.value
 						% function_arguments).str();
 
 				functions_declarations += function_declaration + ";";
 
 				const auto statement_list = TranslateStatementList(
-					node.children.back()
+					node.children.back(),
+					identify_prefix
 				);
 				functions_implementations +=
 					(format("%s{%sreturn __NULL;}")
@@ -329,7 +440,9 @@ auto Translate(const Node& ast) -> std::string {
 			+ "){"
 				+ "__InitializeConstants();"
 				+ "__InitializeStructureStorage();"
+				+ "atexit(__CleanupStructureStorage);"
 				+ "__InitializeOpenedFileStorage();"
+				+ "atexit(__CleanupOpenedFileStorage);"
 				+ "%s"
 				+ "%s"
 				+ "Main("
@@ -338,8 +451,6 @@ auto Translate(const Node& ast) -> std::string {
 						+ "number_of_arguments"
 					+ ")"
 				+ ");"
-				+ "__CleanupOpenedFileStorage();"
-				+ "__CleanupStructureStorage();"
 			+ "}"
 		)
 			% structures_registration

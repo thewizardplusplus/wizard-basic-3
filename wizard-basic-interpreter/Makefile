@@ -13,6 +13,7 @@ LDFLAGS += \
 	-lboost_filesystem \
 	-lboost_system \
 	-lboost_regex \
+	-lboost_random \
 	-L../../wizard-parser/build/libraries/wizard_parser/ -lWizardParser
 
 main: $(OBJECTS)
