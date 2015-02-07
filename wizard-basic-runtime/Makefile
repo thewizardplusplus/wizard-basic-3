@@ -1,6 +1,8 @@
-CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
-CC = tcc
-CFLAGS += -Wall -Wunusupported -Wwrite-strings
+FLAGS = -Wpedantic -Wall -Wextra -O2
+CXXFLAGS += -std=c++11 $(FLAGS)
+CFLAGS += -std=c99 $(FLAGS)
+
+all: tests io_test
 
 tests: tests.o
 	$(CXX) $(CXXFLAGS) -o tests tests.o -lm -lgtest -lpthread

@@ -7,7 +7,8 @@ namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
 void Run(const std::string& ansi_c) {
-	const auto source_filename = std::string(std::tmpnam(NULL)) + ".c";
+	(void)ansi_c;
+	/*const auto source_filename = std::string(std::tmpnam(NULL)) + ".c";
 	std::ofstream out(filename.c_str());
 	if (!out) {
 		throw std::runtime_error(
@@ -29,7 +30,7 @@ void Run(const std::string& ansi_c) {
 		throw std::runtime_error("assembling or linking error");
 	}
 
-	std::remove(input_filename.c_str());
+	std::remove(input_filename.c_str());*/
 }
 
 }

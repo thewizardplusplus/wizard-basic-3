@@ -23,30 +23,29 @@ size_t __GetStructureFieldIndex(
 }
 //------------------------------------------------------------------------------
 
-void WriteTestFile(const Value filename) {
-	Value file = Open(filename, __CreateNumber(1));
+void WriteTestFile(const __Value filename, const __Value test_string) {
+	__Value file = Open(filename, __CreateNumber(1));
 	if (__ToBoolean(__Not(file))) {
-		fputs("Error: unable to create file \"io_test.txt\".\n", stderr);
+		fputs("Error: unable to create test file.\n", stderr);
 	}
 
-	Value result = Write(file, __CreateArrayFromString("test\n"));
+	__Value result = Write(file, test_string);
 	if (__ToBoolean(__Not(result))) {
-		fputs("Error: unable to write to file \"io_test.txt\".\n", stderr);
+		fputs("Error: unable to write to test file.\n", stderr);
 	}
 
 	Close(file);
 }
 
-Value ReadTestFile(const Value filename) {
-	Value file = Open(filename, __CreateNumber(0));
+__Value ReadTestFile(const __Value filename, const __Value test_string_length) {
+	__Value file = Open(filename, __CreateNumber(0));
 	if (__ToBoolean(__Not(file))) {
-		fputs("Error: unable to open file \"io_test.txt\".\n", stderr);
+		fputs("Error: unable to open test file.\n", stderr);
 	}
 
-	Value data_length = __CreateNumber(4);
-	Value data = Read(file, data_length);
-	if (__ToBoolean(__NotEqual(GetLength(data), data_length))) {
-		fputs("Error: unable to read to file \"io_test.txt\".\n", stderr);
+	__Value data = Read(file, test_string_length);
+	if (__ToBoolean(__NotEqual(GetLength(data), test_string_length))) {
+		fputs("Error: unable to read to test file.\n", stderr);
 	}
 
 	Close(file);
@@ -58,12 +57,12 @@ int main(void) {
 	__InitializeConstants();
 	__InitializeOpenedFileStorage();
 
-	Value test_filename = __CreateArrayFromString("io_test.txt");
-	WriteTestFile(test_filename);
-	Value data = ReadTestFile(test_filename);
+	__Value test_filename = __CreateArrayFromString("io_test.txt");
+	__Value test_string = __CreateArrayFromString("OK\n");
+	WriteTestFile(test_filename, test_string);
+	__Value data = ReadTestFile(test_filename, GetLength(test_string));
 	if (__ToBoolean(__NotEqual(GetLength(data), __CreateNumber(0)))) {
 		Write(__CreateNumber(1), data);
-		Write(__CreateNumber(1), __CreateArrayFromString("\n"));
 	}
 
 	__CleanupOpenedFileStorage();
