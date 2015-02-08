@@ -5,6 +5,7 @@
 
 using namespace boost;
 using namespace boost::program_options;
+using namespace boost::filesystem;
 
 const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
 const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
@@ -67,6 +68,10 @@ auto ProcessCommandLineArguments(
 	}
 
 	auto command_line_arguments = CommandLineArguments();
+	command_line_arguments.interpreter_base_path =
+		path(arguments[0])
+		.parent_path();
+
 	if (arguments_map.count("final-stage")) {
 		const auto final_stage = arguments_map["final-stage"].as<std::string>();
 		if (final_stage == "code") {

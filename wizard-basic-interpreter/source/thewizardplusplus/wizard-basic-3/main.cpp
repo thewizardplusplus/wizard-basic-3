@@ -95,7 +95,10 @@ int main(int number_of_arguments, char* arguments[]) try {
 		arguments
 	);
 
-	const auto code = GetCode(command_line_arguments.script_file);
+	const auto code = GetCode(
+		command_line_arguments.interpreter_base_path,
+		command_line_arguments.script_file
+	);
 	ProcessResult<FinalStage::CODE>(command_line_arguments, code);
 
 	const auto ast = Parse(code);
@@ -107,7 +110,12 @@ int main(int number_of_arguments, char* arguments[]) try {
 		FormatAnsiC(ansi_c)
 	);
 
-	Run(ansi_c, command_line_arguments);
+	auto script_arguments = command_line_arguments.script_arguments;
+	script_arguments.insert(
+		script_arguments.begin(),
+		command_line_arguments.script_file.string()
+	);
+	Run(ansi_c, command_line_arguments.interpreter_base_path, script_arguments);
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }

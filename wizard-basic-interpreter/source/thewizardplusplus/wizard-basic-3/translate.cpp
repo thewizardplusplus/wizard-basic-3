@@ -1,4 +1,5 @@
 #include "translate.h"
+#include "utils.h"
 #include <algorithm>
 #include <numeric>
 #include <set>
@@ -15,12 +16,60 @@ using namespace boost::random;
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
+const auto FUNCTION_NAME_LIST = StringGroup{
+	"ToString",
+	"GetLength",
+	"GetType",
+	"GetTime",
+	"Exit",
+	"Read",
+	"Write",
+	"Open",
+	"Close",
+	"Sin",
+	"Cos",
+	"Tg",
+	"Arcsin",
+	"Arccos",
+	"Arctg",
+	"SquareRoot",
+	"Power",
+	"Exp",
+	"Ln",
+	"Integral",
+	"GetRandom",
+	"Main"
+};
 const auto RANDOM_PREFIX_SYMBOLS = std::string(
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	"abcdefghijklmnopqrstuvwxyz"
 	"1234567890"
 );
 const auto RANDOM_PREFIX_LENGTH = 5;
+
+static auto GetRandomPrefix(void) -> std::string {
+	random_device device;
+	uniform_int_distribution<> index(0, RANDOM_PREFIX_SYMBOLS.size() - 1);
+
+	auto result = std::string("_");
+	for(size_t i = 0; i < RANDOM_PREFIX_LENGTH; i++) {
+		result += RANDOM_PREFIX_SYMBOLS[index(device)];
+	}
+	result += "_";
+
+	return result;
+}
+
+static auto WrapFunctionName(
+	const std::string& name,
+	const std::string& prefix
+) -> std::string {
+	return
+		std::find(FUNCTION_NAME_LIST.begin(), FUNCTION_NAME_LIST.end(), name)
+		== FUNCTION_NAME_LIST.end()
+			? prefix + name
+			: name;
+}
 
 static auto TranslateExpression(
 	const Node& ast,
@@ -67,9 +116,8 @@ static auto TranslateExpression(
 		);
 
 		return
-			(format("%s%s(%s)")
-				% identify_prefix
-				% ast.value
+			(format("%s(%s)")
+				% WrapFunctionName(ast.value, identify_prefix)
 				% join(arguments, ",")).str();
 	} else if (ast.name == "accessor") {
 		const auto base = TranslateExpression(
@@ -315,22 +363,6 @@ static auto TranslateStatementList(
 	);
 }
 
-auto GetRandomPrefix(
-	const std::string& symbols,
-	const size_t length
-) -> std::string {
-	random_device device;
-	uniform_int_distribution<> index(0, RANDOM_PREFIX_SYMBOLS.size() - 1);
-
-	auto result = std::string("_");
-	for(size_t i = 0; i < length; i++) {
-		result += symbols[index(device)];
-	}
-	result += "_";
-
-	return result;
-}
-
 auto Translate(const Node& ast) -> std::string {
 	auto structures_registration = std::string();
 	auto global_variables_declarations = std::string();
@@ -338,10 +370,7 @@ auto Translate(const Node& ast) -> std::string {
 	auto functions_declarations = std::string("void __Start();");
 	auto functions_implementations = std::string();
 
-	const auto identify_prefix = GetRandomPrefix(
-		RANDOM_PREFIX_SYMBOLS,
-		RANDOM_PREFIX_LENGTH
-	);
+	const auto identify_prefix = GetRandomPrefix();
 	auto structures = std::set<std::string>();
 	std::for_each(
 		ast.children.begin(),
@@ -349,7 +378,7 @@ auto Translate(const Node& ast) -> std::string {
 		[&] (const Node& node) -> std::string {
 			if (node.name == "variable_definition") {
 				global_variables_declarations +=
-					(format("Value %s%s;")
+					(format("__Value %s%s;")
 						% identify_prefix
 						% node.value).str();
 
@@ -402,15 +431,14 @@ auto Translate(const Node& ast) -> std::string {
 						return
 							function_argument_list
 							+ (!function_argument_list.empty() ? "," : "")
-							+ (format("const Value %s%s")
+							+ (format("const __Value %s%s")
 								% identify_prefix
 								% node.value).str();
 					}
 				);
 				const auto function_declaration =
-					(format("Value %s%s(%s)")
-						% identify_prefix
-						% node.value
+					(format("__Value %s(%s)")
+						% WrapFunctionName(node.value, identify_prefix)
 						% function_arguments).str();
 
 				functions_declarations += function_declaration + ";";

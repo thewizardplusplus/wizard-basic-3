@@ -88,7 +88,8 @@ static Parser CreateGrammar(void) {
 	assign(expression, disjunction);
 
 	WP_RULE(variable_definition)
-		hide(word("let"_t)) >> identifier >> hide('='_s) >> expression
+		hide(*space())
+		>> hide(word("let"_t)) >> identifier >> hide('='_s) >> expression
 	WP_END
 	WP_RULE(assignment) expression >> hide('='_s) >> expression WP_END
 	WP_RULE(condition)
@@ -140,10 +141,13 @@ static Parser CreateGrammar(void) {
 	WP_RULE(statement_list) +statement WP_END
 	assign(statement_list_copy, statement_list);
 
+	WP_RULE(structure_field_declaration)
+		hide(*space()) >> identifier >> hide(*space())
+	WP_END
 	WP_RULE(structure_declaration)
 		hide(*space())
-		>> hide(word("structure"_t)) >> identifier
-			>> +identifier
+		>> hide(word("structure"_t))
+			>> +structure_field_declaration
 		>> hide(word("end"_t))
 		>> hide(*space())
 	WP_END

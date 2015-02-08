@@ -1,0 +1,27 @@
+function NumberArrayShow(array)
+	Write(1, "[")
+
+	let i = 0
+	while i < GetLength(array) do
+		if i > 0 then
+			Write(1, ", ")
+		end
+		Write(1, ToString(array[i]))
+
+		i = i + 1
+	end
+
+	Write(1, "]")
+end
+
+function Main(arguments)
+	let array = [
+		GetRandom(),
+		GetRandom(),
+		GetRandom(),
+		GetRandom(),
+		GetRandom()
+	]
+	NumberArrayShow(array)
+	Write(1, "\n")
+end

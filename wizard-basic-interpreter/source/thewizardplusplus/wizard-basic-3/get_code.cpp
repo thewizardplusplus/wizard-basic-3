@@ -16,22 +16,23 @@ const auto INCLUDE_OPERATOR_PATTERN = regex(
 );
 
 struct CodeGetter {
+	const path interpreter_base_path;
 	const path script_base_path;
 
 	std::string operator()(const smatch& match) const {
 		const auto including_path = std::string(match[1]);
 
-		auto path_relative_to_interpreter = path(initial_path());
+		auto path_relative_to_interpreter = path(interpreter_base_path);
 		path_relative_to_interpreter /= LIBRARIES_PATH;
 		path_relative_to_interpreter /= including_path;
 
 		if (exists(path_relative_to_interpreter)) {
-			return GetCode(path_relative_to_interpreter);
+			return GetCode(interpreter_base_path, path_relative_to_interpreter);
 		} else {
 			auto path_relative_to_script = path(script_base_path);
 			path_relative_to_script /= including_path;
 
-			return GetCode(path_relative_to_script);
+			return GetCode(interpreter_base_path, path_relative_to_script);
 		}
 	}
 };
@@ -39,7 +40,10 @@ struct CodeGetter {
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-auto GetCode(const path& filename) -> std::string {
+auto GetCode(
+	const path& interpreter_base_path,
+	const path& filename
+) -> std::string {
 	static auto included_files = std::set<path>();
 
 	const auto absolute_path = canonical(filename);
@@ -69,7 +73,7 @@ auto GetCode(const path& filename) -> std::string {
 	return regex_replace(
 		code,
 		INCLUDE_OPERATOR_PATTERN,
-		CodeGetter{filename.parent_path()}
+		CodeGetter{interpreter_base_path, filename.parent_path()}
 	);
 }
 

@@ -1,8 +1,7 @@
 #ifndef WIZARD_BASIC_3_PROCESS_COMMAND_LINE_ARGUMENTS_HEADER
 #define WIZARD_BASIC_3_PROCESS_COMMAND_LINE_ARGUMENTS_HEADER
 
-#include <string>
-#include <vector>
+#include "utils.h"
 #include <boost/filesystem.hpp>
 
 namespace thewizardplusplus {
@@ -14,9 +13,9 @@ enum class FinalStage : uint8_t {
 	AST,
 	ANSI_C
 };
-using StringGroup = std::vector<std::string>;
 struct CommandLineArguments {
 	FinalStage final_stage = FinalStage::NONE;
+	boost::filesystem::path interpreter_base_path;
 	boost::filesystem::path script_file;
 	StringGroup script_arguments;
 };

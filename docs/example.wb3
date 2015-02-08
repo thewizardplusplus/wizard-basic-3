@@ -1,25 +1,7 @@
-structure Vector
-    x
-    y
+structure Test
+	test
 end
 
-let x = 10
-
-function Test()
-    if x then
-        let x = 10 * x
-        x = 10
-    else if x then
-        let x = 10
-        x = 10
-    else if x then
-        let x = 10
-        x = 10
-    else if x then
-        let x = 10
-        x = 10
-    else
-        let x = 10
-        x = 10
-    end
+function Main(arguments)
+	Write(1, "Test.\n")
 end

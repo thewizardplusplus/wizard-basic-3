@@ -7,7 +7,10 @@
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-auto GetCode(const boost::filesystem::path& filename) -> std::string;
+auto GetCode(
+	const boost::filesystem::path& interpreter_base_path,
+	const boost::filesystem::path& filename
+) -> std::string;
 
 }
 }
