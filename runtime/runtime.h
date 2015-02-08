@@ -123,12 +123,14 @@ void __InitializeOpenedFileStorage(void) {
 	__AddOpenedFile(&__opened_file_storage, stderr);
 }
 
-__Value __CreateArray(const size_t size);
+__Value __CreateNumber(const __Number number);
+__Value __CreateArray(const __Value size);
 __Value __WrapCommandLineArguments(
 	const char* arguments[],
 	const size_t number_of_arguments
 ) {
-	__Value result = __CreateArray(number_of_arguments);
+	__Value wrapped_number_of_arguments = __CreateNumber(number_of_arguments);
+	__Value result = __CreateArray(wrapped_number_of_arguments);
 	for (size_t i = 0; i < number_of_arguments; i++) {
 		result.storage.array.data[i] = __CreateArrayFromString(arguments[i]);
 	}
@@ -273,16 +275,21 @@ __ArrayData __CreateArrayData(const size_t size) {
 	return array_data;
 }
 
-__Value __CreateArray(const size_t size) {
+__Value __CreateArray(const __Value size) {
+	__TestTypeAndNotify(size, __VALUE_TYPE_NUMBER);
+
 	__Value value;
 	value.type = __VALUE_TYPE_ARRAY;
-	value.storage.array = __CreateArrayData(size);
+
+	const size_t intergal_size = __GetIntegralModule(size.storage.number);
+	value.storage.array = __CreateArrayData(intergal_size);
 
 	return value;
 }
 
 __Value __CreateArrayFromList(const size_t size, ...) {
-	__Value array = __CreateArray(size);
+	__Value wrapped_size = __CreateNumber(size);
+	__Value array = __CreateArray(wrapped_size);
 
 	va_list arguments;
 	va_start(arguments, size);
@@ -296,7 +303,8 @@ __Value __CreateArrayFromList(const size_t size, ...) {
 
 __Value __CreateArrayFromString(const char* string) {
 	const size_t length = strlen(string);
-	__Value array = __CreateArray(length);
+	__Value wrapped_length = __CreateNumber(length);
+	__Value array = __CreateArray(wrapped_length);
 	for (size_t i = 0; i < length; i++) {
 		array.storage.array.data[i] = __CreateNumber(string[i]);
 	}

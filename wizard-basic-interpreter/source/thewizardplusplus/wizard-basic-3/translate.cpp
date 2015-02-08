@@ -86,7 +86,7 @@ static auto TranslateExpression(
 	} else if (ast.name == "string_definition") {
 		const auto string = ast.value;
 		return (format(R"(__CreateArrayFromString("%s"))") % string).str();
-	} else if (ast.name == "array_definition") {
+	} else if (ast.name == "array_listed_definition") {
 		if (!ast.children.empty()) {
 			std::vector<std::string> items;
 			std::transform(
@@ -102,7 +102,7 @@ static auto TranslateExpression(
 				% items.size()
 				% join(items, ",")).str();
 		} else {
-			return "__CreateArray(0)";
+			return "__CreateArray(__CreateNumber(0))";
 		}
 	} else if (ast.name == "function_call") {
 		std::vector<std::string> arguments;
@@ -119,6 +119,13 @@ static auto TranslateExpression(
 			(format("%s(%s)")
 				% WrapFunctionName(ast.value, identify_prefix)
 				% join(arguments, ",")).str();
+	} else if (ast.name == "array_sized_definition") {
+		const auto expression = TranslateExpression(
+			ast.children.front(),
+			identify_prefix
+		);
+
+		return (format("__CreateArray(%s)") % expression).str();
 	} else if (ast.name == "accessor") {
 		const auto base = TranslateExpression(
 			ast.children.front(),

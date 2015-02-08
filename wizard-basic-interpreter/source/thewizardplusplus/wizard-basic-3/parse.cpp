@@ -54,7 +54,7 @@ static Parser CreateGrammar(void) {
 		)
 	WP_END
 
-	WP_RULE(array_definition)
+	WP_RULE(array_listed_definition)
 		hide('['_s) >> !list(expression, hide(','_s)) >> hide(']'_s)
 	WP_END
 	WP_RULE(function_call)
@@ -65,18 +65,24 @@ static Parser CreateGrammar(void) {
 		null_definition
 		| number
 		| identifier
-		| array_definition
+		| array_listed_definition
 		| string_definition
 		| function_call
 		| hide('('_s) >> expression >> hide(')'_s)
 	WP_END
 
+	WP_RULE(array_sized_definition)
+		hide(word("new"_t)) >> hide(word("array"_t)) >> hide('('_s)
+			>> expression
+		>> hide(')'_s)
+	WP_END
 	WP_RULE(item_access) hide('['_s) >> expression >> hide(']'_s) WP_END
 	WP_RULE(field_access) hide('.'_s) >> identifier WP_END
 	WP_RULE(accessor) atom >> *(item_access | field_access) WP_END
 
 	WP_RULE(unary)
 		(word("new"_t) >> identifier)
+		| array_sized_definition
 		| (*('-'_s | word("not"_t)) >> accessor)
 	WP_END
 	WP_RULE(product) list(unary, '*'_s | '/'_s | '%'_s) WP_END
@@ -247,7 +253,7 @@ static Node SimplifyAst(const Node& node) {
 				{{"", "", {first_child}}, children.back()}
 			};
 		}
-	} else if (node.name == "array_definition") {
+	} else if (node.name == "array_listed_definition") {
 		if (children.size() == 2) {
 			const auto second_child = children.back();
 			if (
@@ -502,8 +508,9 @@ auto Parse(const std::string& code) -> wizard_parser::node::Node {
 		code,
 		SimplifyLevel::AST,
 		{
-			"array_definition",
+			"array_listed_definition",
 			"function_call",
+			"array_sized_definition",
 			"item_access",
 			"field_access",
 			"function_return",

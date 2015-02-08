@@ -49,8 +49,12 @@ equality = comparison, {("==" | "/="), comparison};
 comparison = sum, {("<" | "<=" | ">" | ">="), sum};
 sum = product, {("+" | "-"), product};
 product = unary, {("*" | "/" | "%"), unary};
-unary = ("new", identifier) | ({"-" | "not"}, accessor);
+unary =
+	("new", identifier)
+	| array sized definition
+	| ({"-" | "not"}, accessor);
 
+array sized definition = "new", "array", "(", expression, ")";
 accessor = atom, {array item access | structure field access};
 array item access = "[", expression, "]";
 structure field access = ".", identifier;
@@ -59,12 +63,12 @@ atom =
 	null definition
 	| number
 	| identifier
-	| array definition
+	| array listed definition
 	| string definition
 	| function call
 	| ("(", expression, ")");
 null definition = "NULL";
-array definition = "[", [expression, {",", expression}], "]";
+array listed definition = "[", [expression, {",", expression}], "]";
 function call = identifier, "(", [expression, {",", expression}], ")";
 
 number = ? /\d+(\.\d+)?/ ?;

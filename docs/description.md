@@ -57,7 +57,10 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 * ссылки - на стеке;
 * значения - в куче.
 
-Определение: `"[", [expression, {",", expression}], "]"`.
+Определение:
+
+    "new", "array", "(", expression, ")"
+    "[", [expression, {",", expression}], "]"
 
 Доступ к элементам: `expression, "[", expression, "]"`.
 

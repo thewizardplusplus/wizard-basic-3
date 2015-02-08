@@ -142,7 +142,8 @@ TEST(Utils, TestHasAllowedTypeWithOneAllowedType) {
 }
 
 TEST(Utils, TestHasAllowedTypeWithSomeAllowedTypeAndRightValue) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto result = __HasAllowedType(
 		array,
 		__VALUE_TYPE_NULL | __VALUE_TYPE_NUMBER | __VALUE_TYPE_ARRAY
@@ -165,7 +166,8 @@ TEST(Utils, TestHasAllowedTypeWithSomeAllowedTypeAndNotRightValue) {
 TEST(Utils, TestIsValidIndexWithNegativeIndex) {
 	const auto TEST_NEGATIVE_INDEX_VALUE = -5;
 
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto index = __CreateNumber(TEST_NEGATIVE_INDEX_VALUE);
 	const auto result = __IsValidIndex(array, index);
 
@@ -175,7 +177,8 @@ TEST(Utils, TestIsValidIndexWithNegativeIndex) {
 TEST(Utils, TestIsValidIndexWithNullIndex) {
 	const auto TEST_NULL_INDEX_VALUE = 0;
 
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto index = __CreateNumber(TEST_NULL_INDEX_VALUE);
 	const auto result = __IsValidIndex(array, index);
 
@@ -185,7 +188,8 @@ TEST(Utils, TestIsValidIndexWithNullIndex) {
 TEST(Utils, TestIsValidIndexWithMiddleIndex) {
 	const auto TEST_MIDDLE_INDEX_VALUE = 5;
 
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto index = __CreateNumber(TEST_MIDDLE_INDEX_VALUE);
 	const auto result = __IsValidIndex(array, index);
 
@@ -193,7 +197,8 @@ TEST(Utils, TestIsValidIndexWithMiddleIndex) {
 }
 
 TEST(Utils, TestIsValidIndexWithSizeIndex) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto index = __CreateNumber(TEST_SIZE_VALUE);
 	const auto result = __IsValidIndex(array, index);
 
@@ -203,7 +208,8 @@ TEST(Utils, TestIsValidIndexWithSizeIndex) {
 TEST(Utils, TestIsValidIndexWithTooBigIndex) {
 	const auto TEST_TOO_BIG_INDEX_VALUE = 42;
 
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto index = __CreateNumber(TEST_TOO_BIG_INDEX_VALUE);
 	const auto result = __IsValidIndex(array, index);
 
@@ -235,7 +241,8 @@ TEST(Utils, TestToBooleanWithNotNullNumber) {
 }
 
 TEST(Utils, TestToBooleanWithArray) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto result = __ToBoolean(array);
 
 	EXPECT_TRUE(result);
@@ -411,7 +418,8 @@ TEST(TypesCreation, TestCreateArrayData) {
 }
 
 TEST(TypesCreation, TestCreateArray) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 
 	EXPECT_EQ(array.type, __VALUE_TYPE_ARRAY);
 	EXPECT_EQ(array.storage.array.size, TEST_SIZE_VALUE);
@@ -595,7 +603,8 @@ TEST(ArrayOperations, TestGetArrayItem) {
 TEST(ArrayOperations, TestSetArrayItem) {
 	const auto TEST_ARRAY_ITEM_INDEX = 12;
 
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto index = __CreateNumber(TEST_ARRAY_ITEM_INDEX);
 	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
 	__SetArrayItem(array, index, number);
@@ -611,7 +620,8 @@ TEST(ArrayOperations, TestSetArrayItem) {
 }
 
 TEST(ArrayOperations, TestGetLength) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto result = GetLength(array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
@@ -683,7 +693,8 @@ TEST(RestOperations, TestEqualWithNumbers) {
 }
 
 TEST(RestOperations, TestEqualWithEqualArrays) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto result = __Equal(array, array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
@@ -691,8 +702,9 @@ TEST(RestOperations, TestEqualWithEqualArrays) {
 }
 
 TEST(RestOperations, TestEqualWithNotEqualArrays) {
-	const auto array_1 = __CreateArray(TEST_SIZE_VALUE);
-	const auto array_2 = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array_1 = __CreateArray(size);
+	const auto array_2 = __CreateArray(size);
 	const auto result = __Equal(array_1, array_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
@@ -736,7 +748,8 @@ TEST(RestOperations, TestNotEqualWithNumbers) {
 }
 
 TEST(RestOperations, TestNotEqualWithEqualArrays) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto result = __NotEqual(array, array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
@@ -744,8 +757,9 @@ TEST(RestOperations, TestNotEqualWithEqualArrays) {
 }
 
 TEST(RestOperations, TestNotEqualWithNotEqualArrays) {
-	const auto array_1 = __CreateArray(TEST_SIZE_VALUE);
-	const auto array_2 = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array_1 = __CreateArray(size);
+	const auto array_2 = __CreateArray(size);
 	const auto result = __NotEqual(array_1, array_2);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
@@ -803,7 +817,8 @@ TEST(RestOperations, TestGetTypeWithNumber) {
 }
 
 TEST(RestOperations, TestGetTypeWithArray) {
-	const auto array = __CreateArray(TEST_SIZE_VALUE);
+	const auto size = __CreateNumber(TEST_SIZE_VALUE);
+	const auto array = __CreateArray(size);
 	const auto result = GetType(array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);

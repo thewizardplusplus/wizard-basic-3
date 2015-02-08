@@ -1,3 +1,17 @@
+let ARRAY_SIZE = 5
+
+function NumberArrayNewRandom(size)
+	let array = new array(size)
+
+	let i = 0
+	while i < size do
+		array[i] = GetRandom()
+		i = i + 1
+	end
+
+	return array
+end
+
 function NumberArrayShow(array)
 	Write(1, "[")
 
@@ -15,13 +29,8 @@ function NumberArrayShow(array)
 end
 
 function Main(arguments)
-	let array = [
-		GetRandom(),
-		GetRandom(),
-		GetRandom(),
-		GetRandom(),
-		GetRandom()
-	]
+	let array = NumberArrayNewRandom(ARRAY_SIZE)
+
 	NumberArrayShow(array)
 	Write(1, "\n")
 end

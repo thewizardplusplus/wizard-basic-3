@@ -1,7 +1,8 @@
-structure Test
-	test
-end
-
-function Main(arguments)
-	Write(1, "Test.\n")
-end
+let x = new array(10 + 3)
+let x = new array(0)
+let x = []
+let x = [1]
+let x = [1, 2, 3]
+let x = new Vector
+let x = -4
+let x = not-not 5
