@@ -1,0 +1,38 @@
+function WriteTestFile(filename, test_string)
+	let file = Open(filename, 1)
+	if not file then
+		Write(2, "Error: unable to create test file.\n")
+	end
+
+	let result = Write(file, test_string)
+	if not result then
+		Write(2, "Error: unable to write to test file.\n")
+	end
+
+	Close(file)
+end
+
+function ReadTestFile(filename, test_string_length)
+	let file = Open(filename, 0)
+	if not file then
+		Write(2, "Error: unable to open test file.\n")
+	end
+
+	let data = Read(file, test_string_length)
+	if GetLength(data) /= test_string_length then
+		Write(2, "Error: unable to read to test file.\n")
+	end
+
+	Close(file)
+	return data
+end
+
+function Main(arguments)
+	let test_filename = "io_test.txt"
+	let test_string = "OK\n"
+	WriteTestFile(test_filename, test_string)
+	let data = ReadTestFile(test_filename, GetLength(test_string))
+	if GetLength(data) then
+		Write(1, data)
+	end
+end
