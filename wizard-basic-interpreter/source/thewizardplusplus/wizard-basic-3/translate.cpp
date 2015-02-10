@@ -149,7 +149,9 @@ static auto TranslateExpression(
 		const auto first_child = ast.children.front();
 		const auto second_child = ast.children.back();
 		if (first_child.value == "new") {
-			return (format("__CreateStructure(%s)") % second_child.value).str();
+			return
+				(format(R"(__CreateStructure("%s"))")
+					% second_child.value).str();
 		} else {
 			auto expression = TranslateExpression(
 				second_child,

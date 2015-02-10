@@ -28,19 +28,70 @@
 #include "uthash.h"
 
 /*******************************************************************************
+ * StructureInfo type.
+ ******************************************************************************/
+typedef struct __StructureInfo {
+	const char* name;
+	size_t number_of_fields;
+	UT_hash_handle hash_handle;
+} __StructureInfo;
+
+typedef __StructureInfo* __StructureMap;
+
+__StructureInfo* __FindStructure(__StructureMap* structures, const char* name) {
+	__StructureInfo* structure = NULL;
+	HASH_FIND(hash_handle, *structures, name, strlen(name), structure);
+
+	return structure;
+}
+
+void __AddStructure(
+	__StructureMap* structures,
+	const char* name,
+	const size_t number_of_fields
+) {
+	__StructureInfo* structure = NULL;
+	HASH_FIND(hash_handle, *structures, name, strlen(name), structure);
+	if (structure == NULL) {
+		structure = (__StructureInfo*)malloc(sizeof(__StructureInfo));
+		structure->name = name;
+		structure->number_of_fields = number_of_fields;
+
+		HASH_ADD_KEYPTR(
+			hash_handle,
+			*structures,
+			structure->name,
+			strlen(structure->name),
+			structure
+		);
+	}
+}
+
+void __DeleteStructures(__StructureMap* structures) {
+	__StructureInfo* current_structure = NULL;
+	__StructureInfo* temporary_structure = NULL;
+	HASH_ITER(
+		hash_handle,
+		*structures,
+		current_structure,
+		temporary_structure
+	) {
+		HASH_DELETE(hash_handle, *structures, current_structure);
+		free(current_structure);
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
  * FieldInfo type.
  ******************************************************************************/
 typedef struct __FieldInfo {
-	const char* name;
+	char* name;
 	size_t index;
 	UT_hash_handle hash_handle;
 } __FieldInfo;
 
 typedef __FieldInfo* __FieldMap;
-
-size_t __GetNumberOfFields(__FieldMap* fields) {
-	return HASH_CNT(hash_handle, *fields);
-}
 
 __FieldInfo* __FindField(__FieldMap* fields, const char* name) {
 	__FieldInfo* field = NULL;
@@ -49,7 +100,7 @@ __FieldInfo* __FindField(__FieldMap* fields, const char* name) {
 	return field;
 }
 
-void __AddField(__FieldMap* fields, const char* name, const size_t index) {
+void __AddField(__FieldMap* fields, char* name, const size_t index) {
 	__FieldInfo* field = NULL;
 	HASH_FIND(hash_handle, *fields, name, strlen(name), field);
 	if (field == NULL) {
@@ -72,66 +123,8 @@ void __DeleteFields(__FieldMap* fields) {
 	__FieldInfo* temporary_field = NULL;
 	HASH_ITER(hash_handle, *fields, current_field, temporary_field) {
 		HASH_DELETE(hash_handle, *fields, current_field);
+		free(current_field->name);
 		free(current_field);
-	}
-}
-//------------------------------------------------------------------------------
-
-/*******************************************************************************
- * StructureInfo type.
- ******************************************************************************/
-typedef struct __StructureInfo {
-	const char* name;
-	__FieldMap fields;
-	UT_hash_handle hash_handle;
-} __StructureInfo;
-
-typedef __StructureInfo* __StructureMap;
-
-__StructureInfo* __FindStructure(__StructureMap* structures, const char* name) {
-	__StructureInfo* structure = NULL;
-	HASH_FIND(hash_handle, *structures, name, strlen(name), structure);
-
-	return structure;
-}
-
-void __AddStructure(
-	__StructureMap* structures,
-	const char* name,
-	__FieldMap fields
-) {
-	__StructureInfo* structure = NULL;
-	HASH_FIND(hash_handle, *structures, name, strlen(name), structure);
-	if (structure == NULL) {
-		structure = (__StructureInfo*)malloc(sizeof(__StructureInfo));
-		structure->name = name;
-		structure->fields = fields;
-
-		HASH_ADD_KEYPTR(
-			hash_handle,
-			*structures,
-			structure->name,
-			strlen(structure->name),
-			structure
-		);
-	}
-}
-
-void __DeleteStructures(__StructureMap* structures) {
-	__StructureInfo* current_structure = NULL;
-	__StructureInfo* temporary_structure = NULL;
-	HASH_ITER(
-		hash_handle,
-		*structures,
-		current_structure,
-		temporary_structure
-	) {
-		if (current_structure != NULL) {
-			__DeleteFields(&current_structure->fields);
-		}
-
-		HASH_DELETE(hash_handle, *structures, current_structure);
-		free(current_structure);
 	}
 }
 //------------------------------------------------------------------------------
@@ -140,18 +133,25 @@ void __DeleteStructures(__StructureMap* structures) {
  * Global variables.
  ******************************************************************************/
 static __StructureMap __structures = NULL;
+static __FieldMap __fields = NULL;
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Utils.
  ******************************************************************************/
-__StructureInfo* __GetStructure(__StructureMap* structures, const char* name) {
-	__StructureInfo* structure = __FindStructure(structures, name);
-	if (structure == NULL) {
-		__ProcessError("unknown structure");
-	}
+char* __ConcatenateNames(const char* structure_name, const char* field_name) {
+	const size_t result_length =
+		strlen(structure_name)
+		+ strlen(field_name)
+		// one additional symbol for middle dot and one for \0
+		+ 2;
+	char* result = (char*)malloc(result_length);
 
-	return structure;
+	strcpy(result, structure_name);
+	strcat(result, ".");
+	strcat(result, field_name);
+
+	return result;
 }
 //------------------------------------------------------------------------------
 
@@ -165,33 +165,45 @@ void __RegisterStructureField(
 	const char* field_name,
 	const size_t field_index
 ) {
+	char* name = __ConcatenateNames(structure_name, field_name);
 	__StructureInfo* structure = __FindStructure(&__structures, structure_name);
-	if (structure == NULL) {
-		__AddStructure(&__structures, structure_name, NULL);
+	if (structure != NULL) {
+		const __FieldInfo* field = __FindField(&__fields, name);
+		if (field == NULL) {
+			structure->number_of_fields++;
+		}
+	} else {
+		__AddStructure(&__structures, structure_name, 1);
 	}
 
-	__AddField(&structure->fields, field_name, field_index);
+	__AddField(&__fields, name, field_index);
 }
 
 size_t __GetStructureFieldsNumber(const char* name) {
-	__StructureInfo* structure = __GetStructure(&__structures, name);
-	return __GetNumberOfFields(&structure->fields);
+	__StructureInfo* structure = __FindStructure(&__structures, name);
+	if (structure == NULL) {
+		__ProcessError("unknown structure");
+	}
+
+	return structure->number_of_fields;
 }
 
 size_t __GetStructureFieldIndex(
 	const char* structure_name,
 	const char* field_name
 ) {
-	__StructureInfo* structure = __GetStructure(&__structures, structure_name);
-	__FieldInfo* field = __FindField(&structure->fields, field_name);
+	char* name = __ConcatenateNames(structure_name, field_name);
+	__FieldInfo* field = __FindField(&__fields, name);
+	free(name);
 	if (field == NULL) {
-		__ProcessError("unknown structure field");
+		__ProcessError("unknown structure or field");
 	}
 
 	return field->index;
 }
 
 void __CleanupStructureStorage(void) {
+	__DeleteFields(&__fields);
 	__DeleteStructures(&__structures);
 }
 //------------------------------------------------------------------------------
