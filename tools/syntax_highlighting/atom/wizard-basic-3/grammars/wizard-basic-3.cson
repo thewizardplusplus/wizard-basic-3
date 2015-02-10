@@ -40,6 +40,11 @@
 		"comment": "Symbols."
 	},
 	{
+		"match": "^#!.*$",
+		"name": "comment.line.wizard-basic",
+		"comment": "Shebang."
+	},
+	{
 		"match": "^\\s*note\\b.*$",
 		"name": "comment.line.wizard-basic",
 		"comment": "Singleline comments."

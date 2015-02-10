@@ -1,0 +1,5 @@
+#!./wb3i
+
+function Main(arguments)
+	Write(1, "Test.\n")
+end
