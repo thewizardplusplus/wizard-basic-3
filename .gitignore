@@ -1,5 +1,5 @@
 *.o
-/wbi
+/wb3i
 /wizard-basic-runtime/tests
 /wizard-basic-runtime/io_test
 /io_test.txt

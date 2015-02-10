@@ -3,44 +3,14 @@
 "fileTypes": ["wb3"],
 "patterns": [
 	{
-		"match": "\\b(end|function|include|let|new|structure)\\b",
-		"name": "keyword.other.wizard-basic-3",
+		"match": "\\b(break|continue|do|else|end|function|if|include|let|new|return|structure|then|while)\\b",
+		"name": "keyword.control.statement.wizard-basic-3",
 		"comment": "Keywords."
 	},
 	{
-		"match": "\\b(break|continue|return)\\b",
-		"name": "keyword.control.statement.wizard-basic-3",
-		"comment": "Control statements keywords."
-	},
-	{
-		"match": "\\b(else|if|then)\\b",
-		"name": "keyword.control.conditional.wizard-basic-3",
-		"comment": "Conditional statements keywords."
-	},
-	{
-		"match": "\\b(do|while)\\b",
-		"name": "keyword.control.repeat.wizard-basic-3",
-		"comment": "Repeat statements keywords."
-	},
-	{
-		"match": "\\=",
-		"name": "keyword.operator.assignment.wizard-basic-3",
-		"comment": "Assignment operators keywords."
-	},
-	{
-		"match": "\\b(and|not|or)\\b",
-		"name": "keyword.operator.logical.wizard-basic-3",
-		"comment": "Logical operators keywords."
-	},
-	{
-		"match": "<|<\\=|>|>\\=|\\=\\=|\\/\\=",
-		"name": "keyword.operator.comparison.wizard-basic-3",
-		"comment": "Comparison operators keywords."
-	},
-	{
-		"match": "\\+|\\-|\\*|/|%",
-		"name": "keyword.operator.arithmetic.python",
-		"comment": "Arithmetic operators keywords."
+		"match": "\\=|\\b(and|not|or)\\b|<|<\\=|>|>\\=|\\=\\=|\\/\\=|\\+|\\-|\\*|/|%",
+		"name": "keyword.operator.wizard-basic-3",
+		"comment": "Operators."
 	},
 	{
 		"match": "\\b(ToString|GetLength|GetType|GetTime|Exit|Read|Write|Open|Close|Sin|Cos|Tg|Arcsin|Arccos|Arctg|SquareRoot|Power|Exp|Ln|Integral|GetRandom)\\b",
@@ -59,7 +29,7 @@
 	},
 	{
 		"begin": "\"",
-		"end": "\"",
+		"end": "(?<!\\\\)\"",
 		"name": "string.quoted.double.wizard-basic-3",
 		"comment": "Strings."
 	}

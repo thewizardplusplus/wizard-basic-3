@@ -408,15 +408,22 @@ __Value __GreaterOrEqual(const __Value value_1, const __Value value_2) {
 	return __FromBoolean(result);
 }
 
-__Value ToString(const __Value value) {
+__Value ToString(const __Value number, const __Value precision) {
 	const size_t NUMBER_FORMAT_BUFFER_SIZE = 1024;
 
-	__TestTypeAndNotify(value, __VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(number, __VALUE_TYPE_NUMBER);
+	__TestTypeAndNotify(precision, __VALUE_TYPE_NUMBER);
 
-	char buffer[NUMBER_FORMAT_BUFFER_SIZE];
-	sprintf(buffer, "%f", value.storage.number);
+	char precision_buffer[NUMBER_FORMAT_BUFFER_SIZE];
+	const size_t intergal_precision = __GetIntegralModule(
+		precision.storage.number
+	);
+	sprintf(precision_buffer, "%%.%luf", intergal_precision);
 
-	return __CreateArrayFromString(buffer);
+	char result_buffer[NUMBER_FORMAT_BUFFER_SIZE];
+	sprintf(result_buffer, precision_buffer, number.storage.number);
+
+	return __CreateArrayFromString(result_buffer);
 }
 //------------------------------------------------------------------------------
 

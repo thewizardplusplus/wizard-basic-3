@@ -1,4 +1,5 @@
 let EPSILON = 0.000001
+let NUMBER_PRECISION = 5
 
 function Module(number)
 	if number >= 0 then
@@ -33,6 +34,6 @@ function Main(arguments)
 	let pi = (a + b) * (a + b) / (4 * t)
 
 	Write(1, "Pi = ")
-	Write(1, ToString(pi))
+	Write(1, ToString(pi, NUMBER_PRECISION))
 	Write(1, ".\n")
 end

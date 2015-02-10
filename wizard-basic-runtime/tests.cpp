@@ -575,12 +575,52 @@ TEST(NumberOperations, TestGreaterOrEqual) {
 	EXPECT_EQ(result.storage.number, FALSE_VALUE);
 }
 
-TEST(NumberOperations, TestToString) {
-	const auto number = __CreateNumber(TEST_NUMBER_1_VALUE);
-	const auto result = ToString(number);
+TEST(NumberOperations, TestToStringWithLargePrecision) {
+	const auto TEST_NUMBER_VALUE = 23.516;
+	const auto TEST_PRECISION_VALUE = 5;
+
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto precision = __CreateNumber(TEST_PRECISION_VALUE);
+	const auto result = ToString(number, precision);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
-	ValidateArrayContents(result, "2.300000");
+	ValidateArrayContents(result, "23.51600");
+}
+
+TEST(NumberOperations, TestToStringWithSmallPrecision) {
+	const auto TEST_NUMBER_VALUE = 23.516;
+	const auto TEST_PRECISION_VALUE = 2;
+
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto precision = __CreateNumber(TEST_PRECISION_VALUE);
+	const auto result = ToString(number, precision);
+
+	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "23.52");
+}
+
+TEST(NumberOperations, TestToStringWithNullPrecision) {
+	const auto TEST_NUMBER_VALUE = 23.516;
+	const auto TEST_PRECISION_VALUE = 0;
+
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto precision = __CreateNumber(TEST_PRECISION_VALUE);
+	const auto result = ToString(number, precision);
+
+	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "24");
+}
+
+TEST(NumberOperations, TestToStringWithNegativeNumber) {
+	const auto TEST_NUMBER_VALUE = -23.516;
+	const auto TEST_PRECISION_VALUE = 5;
+
+	const auto number = __CreateNumber(TEST_NUMBER_VALUE);
+	const auto precision = __CreateNumber(TEST_PRECISION_VALUE);
+	const auto result = ToString(number, precision);
+
+	EXPECT_EQ(result.type, __VALUE_TYPE_ARRAY);
+	ValidateArrayContents(result, "-23.51600");
 }
 //------------------------------------------------------------------------------
 
