@@ -1,0 +1,9 @@
+long note function Main(arguments)
+	note Write(1, "Test 1.\n")
+	Write(1, "Test 2.\n")
+end...
+
+function Main(arguments)
+	note Write(1, "Test 1.\n")
+	Write(1, "Test 2.\n")
+end

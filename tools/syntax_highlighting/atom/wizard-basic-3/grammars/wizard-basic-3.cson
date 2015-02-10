@@ -38,5 +38,16 @@
 		"end": "(?<!\\\\)\'",
 		"name": "string.quoted.single.wizard-basic-3",
 		"comment": "Symbols."
+	},
+	{
+		"match": "^\\s*note\\b.*$",
+		"name": "comment.line.wizard-basic",
+		"comment": "Singleline comments."
+	},
+	{
+		"begin": "^\\s*long\\s+note\\b",
+		"end": "\\.\\.\\.\\s*$",
+		"name": "comment.line.wizard-basic",
+		"comment": "Multiline comments."
 	}
 ]
