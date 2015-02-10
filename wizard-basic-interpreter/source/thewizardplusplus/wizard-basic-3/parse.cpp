@@ -39,7 +39,12 @@ static Parser CreateGrammar(void) {
 
 	WP_RULE(null_definition) hide("NULL"_t) WP_END
 	WP_RULE(number)
-		disable_separation(lexeme(+digit() >> !('.'_s >> +digit())))
+		disable_separation(
+			lexeme(
+				'\''_s >> (('\\'_s >> any()) | (any() - '\''_s)) >> '\''_s
+			)
+		)
+		| disable_separation(lexeme(+digit() >> !('.'_s >> +digit())))
 	WP_END
 	WP_RULE(identifier)
 		disable_separation(lexeme((letter() | '_'_s) >> *word()) - keywords)

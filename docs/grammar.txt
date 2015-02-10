@@ -71,7 +71,7 @@ null definition = "NULL";
 array listed definition = "[", [expression, {",", expression}], "]";
 function call = identifier, "(", [expression, {",", expression}], ")";
 
-number = ? /\d+(\.\d+)?/ ?;
+number = ? /'(\\.|[^'])'/ ? | ? /\d+(\.\d+)?/ ?;
 identifier = ? /[a-z_]\w*/i ? - key words;
 string definition = ? /"(\\.|[^"])*"/ ?;
 

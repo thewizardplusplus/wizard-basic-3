@@ -32,5 +32,11 @@
 		"end": "(?<!\\\\)\"",
 		"name": "string.quoted.double.wizard-basic-3",
 		"comment": "Strings."
+	},
+	{
+		"begin": "\'",
+		"end": "(?<!\\\\)\'",
+		"name": "string.quoted.single.wizard-basic-3",
+		"comment": "Symbols."
 	}
 ]
