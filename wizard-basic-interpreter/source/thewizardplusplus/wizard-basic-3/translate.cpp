@@ -478,6 +478,7 @@ auto Translate(const Node& ast) -> std::string {
 				+ "const char*arguments[],"
 				+ "const size_t number_of_arguments"
 			+ "){"
+				+ "__InitializeGarbageCollector();"
 				+ "__InitializeConstants();"
 				+ "__InitializeStructureStorage();"
 				+ "atexit(__CleanupStructureStorage);"

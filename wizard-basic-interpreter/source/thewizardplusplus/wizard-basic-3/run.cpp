@@ -48,7 +48,7 @@ void Run(
 
 	const auto output_filename = std::string(std::tmpnam(NULL));
 	const auto command =
-		(format("gcc -std=c99 -O2 -o %s %s -I%s -lm")
+		(format("gcc -std=c99 -O2 -o %s %s -I%s -lm -lgc")
 			% output_filename
 			% source_filename
 			% interpreter_base_path.string()).str();

@@ -24,11 +24,17 @@
 #ifndef WIZARD_BASIC_3_STRUCTURE_ALLOCATOR_HEADER
 #define WIZARD_BASIC_3_STRUCTURE_ALLOCATOR_HEADER
 
+#include <gc.h>
+
 /*******************************************************************************
  * Interpreter API mocks.
  ******************************************************************************/
+void __InitializeGarbageCollector(void) {
+	GC_INIT();
+}
+
 void* __AllocateMemory(const size_t size) {
-	return malloc(size);
+	return GC_MALLOC(size);
 }
 //------------------------------------------------------------------------------
 #endif

@@ -1,0 +1,9 @@
+let NUMBER_PRECISION = 5
+
+function Main(arguments)
+	while 1 do
+		let random_number = GetRandom()
+		Write(1, ToString(random_number, NUMBER_PRECISION))
+		Write(1, "\n")
+	end
+end

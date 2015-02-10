@@ -91,6 +91,7 @@ static __OpenedFileStorage __opened_file_storage = {NULL, 0, 0};
 /*******************************************************************************
  * Interpreter API.
  ******************************************************************************/
+void __InitializeGarbageCollector(void);
 void* __AllocateMemory(const size_t size);
 void __InitializeStructureStorage(void);
 void __RegisterStructureField(
