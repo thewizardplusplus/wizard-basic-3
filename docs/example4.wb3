@@ -1,3 +1,6 @@
+let TEST_FILENAME = "io_test.txt"
+let TEST_STRING = "OK\n"
+
 function WriteTestFile(filename, test_string)
 	let file = Open(filename, 1)
 	if not file then
@@ -8,8 +11,6 @@ function WriteTestFile(filename, test_string)
 	if not result then
 		Write(2, "Error: unable to write to test file.\n")
 	end
-
-	Close(file)
 end
 
 function ReadTestFile(filename, test_string_length)
@@ -23,16 +24,22 @@ function ReadTestFile(filename, test_string_length)
 		Write(2, "Error: unable to read to test file.\n")
 	end
 
-	Close(file)
 	return data
 end
 
 function Main(arguments)
-	let test_filename = "io_test.txt"
-	let test_string = "OK\n"
-	WriteTestFile(test_filename, test_string)
-	let data = ReadTestFile(test_filename, GetLength(test_string))
-	if GetLength(data) then
-		Write(1, data)
+	Write(1, "Write or read (w|r)? ")
+	let mode = Read(0, 1)
+	if GetLength(mode) == 0 then
+		Write(2, "Error: invalid mode.\n")
+	end
+
+	if mode[0] == 'w' then
+		WriteTestFile(TEST_FILENAME, TEST_STRING)
+	else
+		let data = ReadTestFile(TEST_FILENAME, GetLength(TEST_STRING))
+		if GetLength(data) then
+			Write(1, data)
+		end
 	end
 end

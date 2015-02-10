@@ -187,7 +187,7 @@ size_t __GetIntegralModule(const double number) {
 
 char* __ToString(const __Value array) {
 	const size_t size = __GetIntegralModule(array.storage.array.size);
-	char* buffer = (char*)malloc(size + 1);
+	char* buffer = (char*)__AllocateMemory(size + 1);
 	for (size_t i = 0; i < size; i++) {
 		const __Value symbol = array.storage.array.data[i];
 		__TestTypeAndNotify(symbol, __VALUE_TYPE_NUMBER);
@@ -245,7 +245,7 @@ void __CleanupOpenedFileStorage() {
 			continue;
 		}
 
-		fclose(file);
+		//fclose(file);
 		__opened_file_storage.files[i] = NULL;
 	}
 
@@ -607,7 +607,7 @@ __Value Read(const __Value stream, const __Value number) {
 	FILE* file = __opened_file_storage.files[file_id];
 
 	const size_t number_of_bytes = __GetIntegralModule(number.storage.number);
-	char* buffer = (char*)malloc(number_of_bytes + 1);
+	char* buffer = (char*)__AllocateMemory(number_of_bytes + 1);
 	size_t i = 0;
 	for (; i < number_of_bytes; i++) {
 		const int byte = fgetc(file);
@@ -620,7 +620,6 @@ __Value Read(const __Value stream, const __Value number) {
 	buffer[i] = '\0';
 
 	const __Value result = __CreateArrayFromString(buffer);
-	free(buffer);
 
 	return result;
 }
@@ -636,7 +635,6 @@ __Value Write(const __Value stream, const __Value bytes) {
 	char* buffer = __ToString(bytes);
 
 	int result = fputs(buffer, file);
-	free(buffer);
 	if (result == EOF) {
 		return __FALSE;
 	}
@@ -670,7 +668,6 @@ __Value Open(const __Value path, const __Value mode) {
 	}
 
 	FILE* file = fopen(path_buffer, mode_string);
-	free(path_buffer);
 	if (file == NULL) {
 		return __FALSE;
 	}
