@@ -4,7 +4,7 @@
 #include <numeric>
 #include <set>
 #include <boost/format.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/random/random_device.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
@@ -84,7 +84,10 @@ static auto TranslateExpression(
 		const auto identifier = ast.value;
 		return identify_prefix + identifier;
 	} else if (ast.name == "string_definition") {
-		const auto string = ast.value;
+		auto string = ast.value;
+		replace_all(string, "\n", "\\n");
+		replace_all(string, "\t", "\\t");
+
 		return (format(R"(__CreateArrayFromString("%s"))") % string).str();
 	} else if (ast.name == "array_listed_definition") {
 		if (!ast.children.empty()) {
