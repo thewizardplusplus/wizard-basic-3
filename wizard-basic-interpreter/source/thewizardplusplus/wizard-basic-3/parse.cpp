@@ -28,6 +28,7 @@ static Parser CreateGrammar(void) {
 			| "let"_t
 			| "new"_t
 			| "not"_t
+			| "note"_t
 			| "NULL"_t
 			| "or"_t
 			| "return"_t

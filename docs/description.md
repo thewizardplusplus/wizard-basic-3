@@ -10,9 +10,9 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 
 ### Ключевые слова
 
-18 ключевых слов:
+19 ключевых слов:
 
-    and break continue do else end function if include let new not NULL or return structure then while
+    and break continue do else end function if include let new not note NULL or return structure then while
 
 ### Типы
 
