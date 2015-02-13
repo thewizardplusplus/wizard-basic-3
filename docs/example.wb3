@@ -1,4 +1,4 @@
-include "range"
+include "range/number"
 include "io"
 
 function Main(arguments)

@@ -1,0 +1,33 @@
+include "general"
+
+structure NumberRange
+	minimum
+	maximum
+	step
+	reverse
+
+	value
+	first
+	last
+	index
+end
+
+function NumberRangeNew(minimum, maximum, step, reverse)
+	let range = new NumberRange
+	if not reverse then
+		range.minimum = minimum
+		range.maximum = maximum
+	else
+		range.minimum = maximum
+		range.maximum = minimum
+	end
+	range.step = step
+	range.reverse = reverse
+
+	range.value = range.minimum - range.step
+	range.first = FALSE
+	range.last = FALSE
+	range.index = -1
+
+	return range
+end

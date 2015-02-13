@@ -1,0 +1,19 @@
+include "general"
+include "NumberRange"
+include "utils"
+
+function RangeWithStep(minimum, maximum, step)
+	return NumberRangeNew(minimum, maximum, step, FALSE)
+end
+
+function RangeReverseWithStep(minimum, maximum, step)
+	return NumberRangeNew(minimum, maximum, -step, TRUE)
+end
+
+function RangeSimple(minimum, maximum)
+	return NumberRangeNew(minimum, maximum, 1, FALSE)
+end
+
+function RangeReverseSimple(minimum, maximum)
+	return NumberRangeNew(minimum, maximum, -1, TRUE)
+end
