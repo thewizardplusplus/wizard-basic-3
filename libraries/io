@@ -1,0 +1,17 @@
+include "general"
+
+let STANDART_STREAM_INPUT = 0
+let STANDART_STREAM_OUTPUT = 1
+let STANDART_STREAM_ERROR = 2
+let FILE_OPEN_MODE_READ = 0
+let FILE_OPEN_MODE_WRITE = 1
+let FILE_OPEN_MODE_APPEND = 2
+
+function Show(message)
+	Write(STANDART_STREAM_OUTPUT, message)
+end
+
+function Die(message)
+	Write(STANDART_STREAM_ERROR, message)
+	Exit(EXIT_CODE_FAILURE)
+end
