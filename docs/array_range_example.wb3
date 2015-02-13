@@ -8,7 +8,7 @@ function Main(arguments)
 	Show(ToString(i.size, 0))
 	Show(".\n")
 
-	while RangeArrayNext(i) do
+	while RangeNext(i) do
 		Show("#")
 		Show(ToString(i.index, 0))
 		Show(": ")

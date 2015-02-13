@@ -1,0 +1,30 @@
+include "array/utils"
+include "io"
+
+let COMPARE_RESULT_NAMES = ["less then", "equal to", "greater then"]
+
+function CompareResultToString(compare_result)
+	return COMPARE_RESULT_NAMES[compare_result + 1]
+end
+
+function Main(arguments)
+	Show("\"test\" ")
+	Show(CompareResultToString(Compare("test", "ololo")))
+	Show(" \"ololo\";\n")
+
+	Show("\"ololo\" ")
+	Show(CompareResultToString(Compare("ololo", "test")))
+	Show(" \"test\";\n")
+
+	Show("\"test\" ")
+	Show(CompareResultToString(Compare("test", "test 1")))
+	Show(" \"test 1\";\n")
+
+	Show("\"test\" ")
+	Show(CompareResultToString(Compare("test", "test")))
+	Show(" \"test\";\n")
+
+	Show("\"test\" ")
+	Show(CompareResultToString(Compare("test", "tes")))
+	Show(" \"tes\".\n")
+end
