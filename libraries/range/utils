@@ -1,5 +1,13 @@
 include "general"
 
+structure RangeInterface
+	size
+	value
+	first
+	last
+	index
+end
+
 function RangeNext(range)
 	if range.last then
 		return FALSE
@@ -13,6 +21,27 @@ function RangeNext(range)
 		range.last = range.value + range.step < range.maximum
 	end
 	range.index = range.index + 1
+
+	return TRUE
+end
+
+function RangeArrayNext(range)
+	if range.last then
+		return FALSE
+	end
+
+	if not range.reverse then
+		range.index = range.index + 1
+	else
+		range.index = range.index - 1
+	end
+	range.value = range.array[range.index]
+	range.first = range.index == range.start
+	if not range.reverse then
+		range.last = range.finish - range.index == 1
+	else
+		range.last = range.finish - range.index == -1
+	end
 
 	return TRUE
 end

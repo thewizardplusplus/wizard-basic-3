@@ -1,0 +1,19 @@
+include "general"
+include "ArrayRange"
+include "utils"
+
+function RangeFromArray(array)
+	return ArrayRangeNew(array, 0, GetLength(array), FALSE)
+end
+
+function RangeReverseFromArray(array)
+	return ArrayRangeNew(array, 0, GetLength(array), TRUE)
+end
+
+function RangeFromArraySlice(array, start, finish)
+	return ArrayRangeNew(array, start, finish, FALSE)
+end
+
+function RangeReverseFromArraySlice(array, start, finish)
+	return ArrayRangeNew(array, start, finish, TRUE)
+end

@@ -6,6 +6,7 @@ structure NumberRange
 	step
 	reverse
 
+	size
 	value
 	first
 	last
@@ -24,7 +25,8 @@ function NumberRangeNew(minimum, maximum, step, reverse)
 	range.step = step
 	range.reverse = reverse
 
-	range.value = range.minimum - range.step
+	range.size = maximum - minimum + 1
+	range.value = range.minimum - step
 	range.first = FALSE
 	range.last = FALSE
 	range.index = -1
