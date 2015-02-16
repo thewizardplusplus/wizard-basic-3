@@ -1,5 +1,50 @@
 include "range/array"
 
+function ArrayNumberToString(array, precision)
+	let result = "["
+	let i = RangeFromArray(array)
+	while RangeNext(i) do
+		if not i.first then
+			result = Append(result, ", ")
+		end
+
+		result = Append(result, ToString(i.value, precision))
+	end
+	result = Append(result, "]")
+
+	return result
+end
+
+function ArrayNumberNextIndexOf(array, value, offset)
+	let i = RangeFromArraySlice(array, offset, GetLength(array))
+	while RangeNext(i) do
+		if i.value == value then
+			return i.index
+		end
+	end
+
+	return NULL
+end
+
+function ArrayNumberIndexOf(array, value)
+	return ArrayNumberNextIndexOf(array, value, 0)
+end
+
+function ArrayNumberPreviousLastIndexOf(array, value, offset)
+	let i = RangeReverseFromArraySlice(array, 0, offset)
+	while RangeNext(i) do
+		if i.value == value then
+			return i.index
+		end
+	end
+
+	return NULL
+end
+
+function ArrayNumberLastIndexOf(array, value)
+	return ArrayNumberPreviousLastIndexOf(array, value, GetLength(array))
+end
+
 function Compare(array_1, array_2)
 	let array_1_length = GetLength(array_1)
 	let array_2_length = GetLength(array_2)
@@ -24,19 +69,4 @@ function Compare(array_1, array_2)
 	else
 		return 1
 	end
-end
-
-function ArrayNumberToString(array, precision)
-	let result = "["
-	let i = RangeFromArray(array)
-	while RangeNext(i) do
-		if not i.first then
-			result = Append(result, ", ")
-		end
-
-		result = Append(result, ToString(i.value, precision))
-	end
-	result = Append(result, "]")
-
-	return result
 end
