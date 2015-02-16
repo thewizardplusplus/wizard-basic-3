@@ -1,3 +1,5 @@
+include "io"
+
 function Compare(array_1, array_2)
 	let array_1_length = GetLength(array_1)
 	let array_2_length = GetLength(array_2)
@@ -33,6 +35,21 @@ function Append(array_1, array_2)
 			result[i] = array_2[i - array_1_length]
 		end
 
+		i = i + 1
+	end
+
+	return result
+end
+
+function Split(array, start, finish)
+	if start < 0 or finish > GetLength(array) then
+		Die("Error: out of range.")
+	end
+
+	let result = new array(finish - start)
+	let i = 0
+	while i < GetLength(result) do
+		result[i] = array[i + start]
 		i = i + 1
 	end
 
