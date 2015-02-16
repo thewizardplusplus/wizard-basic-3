@@ -32,7 +32,7 @@ function Main(arguments)
 	Show(Append("test", "ololo"))
 	Show("\";\n")
 
-	Show("Split(\"test\", 1, 4) == \"")
-	Show(Split("test", 1, 4))
+	Show("Slice(\"test\", 1, 4) == \"")
+	Show(Slice("test", 1, 4))
 	Show("\".\n")
 end

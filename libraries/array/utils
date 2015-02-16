@@ -41,7 +41,7 @@ function Append(array_1, array_2)
 	return result
 end
 
-function Split(array, start, finish)
+function Slice(array, start, finish)
 	if start < 0 or finish > GetLength(array) then
 		Die("Error: out of range.")
 	end
