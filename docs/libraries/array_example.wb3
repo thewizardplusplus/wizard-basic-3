@@ -34,5 +34,11 @@ function Main(arguments)
 
 	Show("Slice(\"test\", 1, 4) == \"")
 	Show(Slice("test", 1, 4))
-	Show("\".\n")
+	Show("\";\n")
+
+	Show(ArrayNumberToString([1.2, 3.4, 5.6, 7.8, 9.0], 1))
+	Show(";\n")
+
+	Show(ArrayStringToString(["one", "two", "three", "four", "five"]))
+	Show(".\n")
 end

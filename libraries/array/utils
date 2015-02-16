@@ -55,3 +55,44 @@ function Slice(array, start, finish)
 
 	return result
 end
+
+function ArrayNumberToString(array, precision)
+	let result = "["
+	let i = 0
+	while i < GetLength(array) do
+		if i > 0 then
+			result = Append(result, ", ")
+		end
+		result = Append(result, ToString(array[i], precision))
+
+		i = i + 1
+	end
+	result = Append(result, "]")
+
+	return result
+end
+
+function ArrayStringToString(array)
+	let result = "["
+	let array_length = GetLength(array)
+	if array_length > 0 then
+		result = Append(result, "\"")
+	end
+
+	let i = 0
+	while i < GetLength(array) do
+		if i > 0 then
+			result = Append(result, "\", \"")
+		end
+		result = Append(result, array[i])
+
+		i = i + 1
+	end
+
+	if array_length > 0 then
+		result = Append(result, "\"")
+	end
+	result = Append(result, "]")
+
+	return result
+end

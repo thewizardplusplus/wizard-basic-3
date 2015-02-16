@@ -212,7 +212,7 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 ### Рантайм
 
 * модуль `lang`:
-    * `ToString(number)`;
+    * `ToString(number, precision)`;
     * `GetLength(array)`;
     * `GetType(value)`;
 * модуль `system`:
