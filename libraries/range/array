@@ -1,6 +1,6 @@
 include "general"
-include "ArrayRange"
-include "utils"
+include "range/ArrayRange"
+include "range/utils"
 
 function RangeFromArray(array)
 	return ArrayRangeNew(array, 0, GetLength(array), FALSE)

@@ -1,6 +1,6 @@
 include "general"
-include "NumberRange"
-include "utils"
+include "range/NumberRange"
+include "range/utils"
 
 function RangeSimple(minimum, maximum)
 	return NumberRangeNew(minimum, maximum, 1, FALSE)

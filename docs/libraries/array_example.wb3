@@ -1,4 +1,6 @@
+include "array/number"
 include "array/utils"
+include "array/string"
 include "io"
 
 let COMPARE_RESULT_NAMES = ["less then", "equal to", "greater then"]

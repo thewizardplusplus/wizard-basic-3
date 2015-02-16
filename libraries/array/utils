@@ -1,41 +1,16 @@
+include "range/array"
 include "io"
-
-function Compare(array_1, array_2)
-	let array_1_length = GetLength(array_1)
-	let array_2_length = GetLength(array_2)
-
-	let i = 0
-	while i < array_1_length and i < array_2_length do
-		if array_1[i] < array_2[i] then
-			return -1
-		else if array_1[i] > array_2[i] then
-			return 1
-		end
-
-		i = i + 1
-	end
-
-	if array_1_length < array_2_length then
-		return -1
-	else if array_1_length == array_2_length then
-		return 0
-	else
-		return 1
-	end
-end
 
 function Append(array_1, array_2)
 	let array_1_length = GetLength(array_1)
 	let result = new array(array_1_length + GetLength(array_2))
-	let i = 0
-	while i < GetLength(result) do
-		if i < array_1_length then
-			result[i] = array_1[i]
+	let i = RangeFromArray(result)
+	while RangeNext(i) do
+		if i.index < array_1_length then
+			result[i.index] = array_1[i.index]
 		else
-			result[i] = array_2[i - array_1_length]
+			result[i.index] = array_2[i.index - array_1_length]
 		end
-
-		i = i + 1
 	end
 
 	return result
@@ -47,52 +22,10 @@ function Slice(array, start, finish)
 	end
 
 	let result = new array(finish - start)
-	let i = 0
-	while i < GetLength(result) do
-		result[i] = array[i + start]
-		i = i + 1
+	let i = RangeFromArray(result)
+	while RangeNext(i) do
+		result[i.index] = array[i.index + start]
 	end
-
-	return result
-end
-
-function ArrayNumberToString(array, precision)
-	let result = "["
-	let i = 0
-	while i < GetLength(array) do
-		if i > 0 then
-			result = Append(result, ", ")
-		end
-		result = Append(result, ToString(array[i], precision))
-
-		i = i + 1
-	end
-	result = Append(result, "]")
-
-	return result
-end
-
-function ArrayStringToString(array)
-	let result = "["
-	let array_length = GetLength(array)
-	if array_length > 0 then
-		result = Append(result, "\"")
-	end
-
-	let i = 0
-	while i < GetLength(array) do
-		if i > 0 then
-			result = Append(result, "\", \"")
-		end
-		result = Append(result, array[i])
-
-		i = i + 1
-	end
-
-	if array_length > 0 then
-		result = Append(result, "\"")
-	end
-	result = Append(result, "]")
 
 	return result
 end

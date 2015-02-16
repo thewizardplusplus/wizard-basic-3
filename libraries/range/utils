@@ -1,5 +1,5 @@
 include "general"
-include "array/utils"
+include "array/number"
 include "io"
 
 structure RangeInterface
