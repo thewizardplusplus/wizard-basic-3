@@ -26,5 +26,9 @@ function Main(arguments)
 
 	Show("\"test\" ")
 	Show(CompareResultToString(Compare("test", "tes")))
-	Show(" \"tes\".\n")
+	Show(" \"tes\";\n")
+
+	Show("\"test\" + \"ololo\" == \"")
+	Show(Append("test", "ololo"))
+	Show("\".\n")
 end

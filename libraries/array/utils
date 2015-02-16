@@ -21,3 +21,20 @@ function Compare(array_1, array_2)
 		return 1
 	end
 end
+
+function Append(array_1, array_2)
+	let array_1_length = GetLength(array_1)
+	let result = new array(array_1_length + GetLength(array_2))
+	let i = 0
+	while i < GetLength(result) do
+		if i < array_1_length then
+			result[i] = array_1[i]
+		else
+			result[i] = array_2[i - array_1_length]
+		end
+
+		i = i + 1
+	end
+
+	return result
+end
