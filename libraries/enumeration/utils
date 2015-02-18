@@ -1,0 +1,32 @@
+include "array/number"
+include "io"
+
+function Size(enumeration)
+	if Compare(GetType(enumeration), "array") == 0 then
+		return GetLength(enumeration)
+	else if Compare(GetType(enumeration), "__Slice") == 0 then
+		return enumeration.size
+	else
+		Die("Error: invalid type.")
+	end
+end
+
+function GetItem(enumeration, index)
+	if Compare(GetType(enumeration), "array") == 0 then
+		return enumeration[index]
+	else if Compare(GetType(enumeration), "__Slice") == 0 then
+		return enumeration.array[enumeration.start + index]
+	else
+		Die("Error: invalid type.")
+	end
+end
+
+function SetItem(enumeration, index, value)
+	if Compare(GetType(enumeration), "array") == 0 then
+		enumeration[index] = value
+	else if Compare(GetType(enumeration), "__Slice") == 0 then
+		enumeration.array[enumeration.start + index] = value
+	else
+		Die("Error: invalid type.")
+	end
+end
