@@ -1,0 +1,20 @@
+include "array/number"
+
+structure __Reference
+	value
+end
+
+function Ref(value)
+	let reference = new __Reference
+	reference.value = value
+
+	return reference
+end
+
+function Deref(reference)
+	if Compare(GetType(reference), "__Reference") == 0 then
+		return reference.value
+	else
+		return reference
+	end
+end
