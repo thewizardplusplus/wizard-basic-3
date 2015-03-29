@@ -6,15 +6,16 @@ OBJECTS = \
 	$(SOURCE)parse.o \
 	$(SOURCE)translate.o \
 	$(SOURCE)run.o
-CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2 \
-	-I../../wizard-parser/build/headers/
+CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
 LDFLAGS += \
 	-lboost_program_options \
 	-lboost_filesystem \
 	-lboost_system \
 	-lboost_regex \
 	-lboost_random \
-	-L../../wizard-parser/build/libraries/wizard_parser/ -lWizardParser
+	-lWizardParser
+
+.PHONY: clean
 
 main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o ../wb3i $(OBJECTS) $(LDFLAGS)
