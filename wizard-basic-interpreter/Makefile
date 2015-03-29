@@ -1,6 +1,7 @@
 SOURCE = source/thewizardplusplus/wizard-basic-3/
 OBJECTS = \
 	$(SOURCE)main.o \
+	$(SOURCE)version.o \
 	$(SOURCE)process_command_line_arguments.o \
 	$(SOURCE)get_code.o \
 	$(SOURCE)parse.o \

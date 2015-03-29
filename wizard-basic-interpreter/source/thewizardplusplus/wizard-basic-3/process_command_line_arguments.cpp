@@ -1,4 +1,5 @@
 #include "process_command_line_arguments.h"
+#include "version.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
@@ -55,8 +56,8 @@ auto ProcessCommandLineArguments(
 
 	if (arguments_map.count("version")) {
 		std::cout
-			<< "Wizard Basic 3 interpreter, v1.0\n"
-				"(c) thewizardplusplus, 2015\n";
+			<< "Wizard Basic 3 interpreter, " << VERSION_STRING << "\n"
+			<< "(c) thewizardplusplus, 2015\n";
 		std::exit(EXIT_SUCCESS);
 	}
 
