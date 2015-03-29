@@ -1,4 +1,4 @@
-#include "structure_storage.h"
+#include "../source/structure_storage.h"
 #include <cstring>
 #include <gtest/gtest.h>
 

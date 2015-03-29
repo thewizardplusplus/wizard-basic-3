@@ -1,4 +1,4 @@
-#include "runtime.h"
+#include "../source/runtime.h"
 #include <stdio.h>
 
 /*******************************************************************************
@@ -57,7 +57,7 @@ int main(void) {
 	__InitializeConstants();
 	__InitializeOpenedFileStorage();
 
-	__Value test_filename = __CreateArrayFromString("io_test.txt");
+	__Value test_filename = __CreateArrayFromString("io_test_result.txt");
 	__Value test_string = __CreateArrayFromString("OK\n");
 	WriteTestFile(test_filename, test_string);
 	__Value data = ReadTestFile(test_filename, GetLength(test_string));
