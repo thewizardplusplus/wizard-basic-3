@@ -1,5 +1,3 @@
-include "version.wb3"
-
 let comment = "
 	Test multiline comment.
 "
@@ -9,10 +7,6 @@ structure Test
 end
 
 function Main(arguments)
-	Write(1, "\"")
-	Write(1, VERSION)
-	Write(1, "\"\n")
-
 	Write(1, GetType(NULL))
 	Write(1, "\n")
 
