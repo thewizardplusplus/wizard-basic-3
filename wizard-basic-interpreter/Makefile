@@ -6,6 +6,7 @@ OBJECTS = \
 	$(SOURCE)parse.o \
 	$(SOURCE)translate.o \
 	$(SOURCE)run.o
+BUILD = ../build/
 CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
 LDFLAGS += \
 	-lboost_program_options \
@@ -18,7 +19,8 @@ LDFLAGS += \
 .PHONY: clean
 
 main: $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o ../wb3i $(OBJECTS) $(LDFLAGS)
+	mkdir -p $(BUILD)
+	$(CXX) $(CXXFLAGS) -o $(BUILD)wb3i $(OBJECTS) $(LDFLAGS)
 
 clean:
 	find . -name "*.o" -type f -delete

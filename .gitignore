@@ -1,5 +1,5 @@
 *.o
-/wb3i
+/build/
 /wizard-basic-runtime/runtime_tests
 /wizard-basic-runtime/structure_storage_tests
 /wizard-basic-runtime/io_test
