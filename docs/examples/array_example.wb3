@@ -1,0 +1,61 @@
+let NUMBER_PRECISION = 5
+let STANDART_STREAM_OUTPUT = 1
+let ARRAY_SIZE = 5
+
+function NewRandomNumberArray(size)
+	let array = new array(size)
+
+	let i = 0
+	while i < size do
+		array[i] = GetRandom()
+		i = i + 1
+	end
+
+	return array
+end
+
+function RandomNumberArrayToString(array)
+	let result = "["
+
+	let i = 0
+	while i < GetLength(array) do
+		if i > 0 then
+			result = Append(result, ", ")
+		end
+		result = Append(result, ToString(array[i], NUMBER_PRECISION))
+
+		i = i + 1
+	end
+
+	result = Append(result, "]")
+	return result
+end
+
+function Append(array_1, array_2)
+	let result = new array(GetLength(array_1) + GetLength(array_2))
+
+	let index = 0
+	while index < GetLength(result) do
+		if index < GetLength(array_1) then
+			result[index] = array_1[index]
+		else
+			result[index] = array_2[index - GetLength(array_1)]
+		end
+
+		index = index + 1
+	end
+
+	return result
+end
+
+function Show(text)
+	Write(STANDART_STREAM_OUTPUT, text)
+end
+
+function Main(arguments)
+	let array = NewRandomNumberArray(ARRAY_SIZE)
+
+	let message = RandomNumberArrayToString(array)
+	message = Append(message, "\n")
+	Show(message)
+end

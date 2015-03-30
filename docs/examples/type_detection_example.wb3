@@ -1,0 +1,41 @@
+let STANDART_STREAM_OUTPUT = 1
+
+structure Test
+	test
+end
+
+function Show(text)
+	Write(STANDART_STREAM_OUTPUT, text)
+end
+
+function Append(array_1, array_2)
+	let result = new array(GetLength(array_1) + GetLength(array_2))
+
+	let index = 0
+	while index < GetLength(result) do
+		if index < GetLength(array_1) then
+			result[index] = array_1[index]
+		else
+			result[index] = array_2[index - GetLength(array_1)]
+		end
+
+		index = index + 1
+	end
+
+	return result
+end
+
+function ShowType(value)
+	let type_name = GetType(value)
+	type_name = Append(type_name, "\n")
+	Show(type_name)
+end
+
+function Main(arguments)
+	ShowType(NULL)
+	ShowType(23)
+	ShowType(new array(23))
+	ShowType([1, 2, 3, 4, 5])
+	ShowType("test")
+	ShowType(new Test)
+end

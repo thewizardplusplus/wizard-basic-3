@@ -1,7 +1,0 @@
-function Main(arguments)
-	if "t"[0] == 't' then
-		Write(1, "Symbols work.\n")
-	else
-		Write(1, "Symbols don't work.\n")
-	end
-end
