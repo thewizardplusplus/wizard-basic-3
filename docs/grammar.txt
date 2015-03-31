@@ -88,6 +88,7 @@ key words =
 	| "let"
 	| "new"
 	| "not"
+	| "note"
 	| "NULL"
 	| "or"
 	| "return"
