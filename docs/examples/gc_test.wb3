@@ -2,10 +2,6 @@ let STANDART_STREAM_OUTPUT = 1
 let TRUE = 1
 let NUMBER_PRECISION = 5
 
-function Show(text)
-	Write(STANDART_STREAM_OUTPUT, text)
-end
-
 function Append(array_1, array_2)
 	let result = new array(GetLength(array_1) + GetLength(array_2))
 
@@ -21,6 +17,10 @@ function Append(array_1, array_2)
 	end
 
 	return result
+end
+
+function Show(text)
+	Write(STANDART_STREAM_OUTPUT, text)
 end
 
 function Main(arguments)

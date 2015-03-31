@@ -118,7 +118,7 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 3 | `*` | умножение | левая | числа | &mdash;
 3 | `/` | деление | левая | числа | &mdash;
 3 | `%` | остаток от деления | левая | числа | &mdash;
-4 | `+` | сложение | левая | числа и массивы | &mdash;
+4 | `+` | сложение | левая | числа | &mdash;
 4 | `-` | вычитание | левая | числа | &mdash;
 5 | `<` | меньше | левая | числа | &mdash;
 5 | `<=` | меньше или равно | левая | числа | &mdash;
@@ -181,7 +181,8 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 
 Возврат из функции: `"return", [expression]`. По умолчанию возвращается `NULL`.
 
-Вызов функции: `identifier, "(", [expression, {",", expression}], ")"`.
+Вызов функции: `identifier, "(", [expression, {",", expression}], ")"`. При
+вызове функции проверяется соответствие числа аргументов числу параметров.
 
 ### Точка входа
 
@@ -210,16 +211,19 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 ### Рантайм
 
 * модуль `lang`:
-    * `ToString(number)`;
+    * `ToString(number, precision)`;
     * `GetLength(array)`;
     * `GetType(value)`;
 * модуль `system`:
     * `GetTime()`;
     * `Exit(exit_code)`;
     * модуль `system.io`:
-        * `Read(stream, number)`;
+        * `Read(stream, number_of_bytes)`;
         * `Write(stream, bytes)`;
-        * `Open(path, mode)`;
+        * `Open(path, mode)` &mdash; режим открытия может быть:
+            * 0 (чтение);
+            * 1 (запись);
+            * 2 (дополнение);
         * `Close(stream)`;
 * модуль `maths`:
     * `Sin(number)`;
@@ -229,8 +233,8 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
     * `Arccos(number)`;
     * `Arctg(number)`;
     * `SquareRoot(number)`;
-    * `Power(number, number)`;
+    * `Power(base, exponent)`;
     * `Exp(number)`;
     * `Ln(number)`;
     * `Integral(number)`;
-    * `GetRandom()`;
+    * `GetRandom()` &mdash; возвращает случайное число в диапазоне [0; 1].
