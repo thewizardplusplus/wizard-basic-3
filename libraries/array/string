@@ -1,0 +1,113 @@
+include "range/array"
+
+function ArrayStringToString(array)
+	let result = "["
+	let array_length = GetLength(array)
+	if array_length > 0 then
+		result = Append(result, "\"")
+	end
+
+	let middle = Join(array, "\", \"")
+	result = Append(result, middle)
+
+	if array_length > 0 then
+		result = Append(result, "\"")
+	end
+	result = Append(result, "]")
+
+	return result
+end
+
+function ArrayStringNextIndexOf(array, value, offset)
+	let array_length = GetLength(array)
+	let i = RangeFromArraySlice(array, offset, array_length)
+	while RangeNext(i) do
+		let equal = TRUE
+		let j = RangeFromArray(value)
+		while RangeNext(j) do
+			let array_index = i.index + j.index
+			if
+				array_index >= array_length
+				or array[array_index] /= j.value
+			then
+				equal = FALSE
+				break
+			end
+		end
+
+		if equal then
+			return i.index
+		end
+	end
+
+	return NULL
+end
+
+function ArrayStringIndexOf(array, value)
+	return ArrayStringNextIndexOf(array, value, 0)
+end
+
+function ArrayStringPreviousLastIndexOf(array, value, offset)
+	let array_length = GetLength(array)
+	let i = RangeReverseFromArraySlice(array, 0, offset)
+	while RangeNext(i) do
+		let equal = TRUE
+		let j = RangeFromArray(value)
+		while RangeNext(j) do
+			let array_index = i.index + j.index
+			if
+				array_index >= array_length
+				or array[array_index] /= j.value
+			then
+				equal = FALSE
+				break
+			end
+		end
+
+		if equal then
+			return i.index
+		end
+	end
+
+	return NULL
+end
+
+function ArrayStringLastIndexOf(array, value)
+	return ArrayStringPreviousLastIndexOf(array, value, GetLength(array))
+end
+
+function Split(array, separator)
+	let result = []
+	let previous_offset = 0
+	let offset = 0
+	let array_length = GetLength(array)
+	let separator_length = GetLength(separator)
+	while offset < array_length do
+		previous_offset = offset
+		offset = ArrayStringNextIndexOf(array, separator, offset)
+		if offset == NULL then
+			offset = array_length
+		end
+
+		let part = Slice(array, previous_offset, offset)
+		result = Append(result, [part])
+
+		offset = offset + separator_length
+	end
+
+	return result
+end
+
+function Join(array, separator)
+	let result = []
+	let i = RangeFromArray(array)
+	while RangeNext(i) do
+		if not i.first then
+			result = Append(result, separator)
+		end
+
+		result = Append(result, i.value)
+	end
+
+	return result
+end

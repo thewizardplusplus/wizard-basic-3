@@ -1,0 +1,14 @@
+function Arg(args)
+	let array = args[0]
+	let index = args[1]
+	let default = NULL
+	if GetLength(args) > 2 then
+		default = args[2]
+	end
+
+	if index < GetLength(array) then
+		return array[index]
+	else
+		return default
+	end
+end

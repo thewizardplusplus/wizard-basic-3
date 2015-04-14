@@ -1,0 +1,5 @@
+let FALSE = 0
+let TRUE = 1
+
+let EXIT_CODE_SUCCESS = 0
+let EXIT_CODE_FAILURE = 1

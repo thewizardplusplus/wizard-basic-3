@@ -1,0 +1,31 @@
+include "range/array"
+include "io"
+
+function Append(array_1, array_2)
+	let array_1_length = GetLength(array_1)
+	let result = new array(array_1_length + GetLength(array_2))
+	let i = RangeFromArray(result)
+	while RangeNext(i) do
+		if i.index < array_1_length then
+			result[i.index] = array_1[i.index]
+		else
+			result[i.index] = array_2[i.index - array_1_length]
+		end
+	end
+
+	return result
+end
+
+function Slice(array, start, finish)
+	if start < 0 or finish > GetLength(array) then
+		Die("Error: out of range.")
+	end
+
+	let result = new array(finish - start)
+	let i = RangeFromArray(result)
+	while RangeNext(i) do
+		result[i.index] = array[i.index + start]
+	end
+
+	return result
+end
