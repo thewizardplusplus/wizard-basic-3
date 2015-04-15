@@ -1,20 +1,12 @@
 include "general"
 include "array/number"
 
-structure RangeInterface
-	size
-	value
-	first
-	last
-	index
-end
-
 function RangeNext(range)
 	if range.last then
 		return FALSE
 	end
 
-	if Compare(GetType(range), "NumberRange") == 0 then
+	if Compare(GetType(range), "NumberRange") == COMPARE_RESULT_EQUAL then
 		range.value = range.value + range.step
 		range.first = range.value == range.minimum
 		if not range.reverse then
@@ -23,7 +15,7 @@ function RangeNext(range)
 			range.last = range.value + range.step < range.maximum
 		end
 		range.index = range.index + 1
-	else if Compare(GetType(range), "ArrayRange") == 0 then
+	else if Compare(GetType(range), "ArrayRange") == COMPARE_RESULT_EQUAL then
 		if not range.reverse then
 			range.index = range.index + 1
 		else

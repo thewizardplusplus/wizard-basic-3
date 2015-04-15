@@ -1,4 +1,6 @@
 include "range/array"
+include "array/utils"
+include "args"
 
 function ArrayStringToString(array)
 	let result = "["
@@ -18,12 +20,17 @@ function ArrayStringToString(array)
 	return result
 end
 
-function ArrayStringNextIndexOf(array, value, offset)
+note ArrayStringIndexOf(array, value, offset)
+function ArrayStringIndexOf(args)
+	let array = Arg([args, 0])
+	let value = Arg([args, 1])
+	let offset = Arg([args, 2, 0])
+
 	let array_length = GetLength(array)
-	let i = RangeFromArraySlice(array, offset, array_length)
+	let i = ArrayRangeNew([array, offset])
 	while RangeNext(i) do
 		let equal = TRUE
-		let j = RangeFromArray(value)
+		let j = ArrayRangeNew([value])
 		while RangeNext(j) do
 			let array_index = i.index + j.index
 			if
@@ -43,16 +50,17 @@ function ArrayStringNextIndexOf(array, value, offset)
 	return NULL
 end
 
-function ArrayStringIndexOf(array, value)
-	return ArrayStringNextIndexOf(array, value, 0)
-end
+note ArrayStringLastIndexOf(array, value, offset)
+function ArrayStringLastIndexOf(args)
+	let array = Arg([args, 0])
+	let value = Arg([args, 1])
+	let offset = Arg([args, 2, GetLength(array)])
 
-function ArrayStringPreviousLastIndexOf(array, value, offset)
 	let array_length = GetLength(array)
-	let i = RangeReverseFromArraySlice(array, 0, offset)
+	let i = ArrayRangeNew([array, 0, offset, TRUE])
 	while RangeNext(i) do
 		let equal = TRUE
-		let j = RangeFromArray(value)
+		let j = ArrayRangeNew([value])
 		while RangeNext(j) do
 			let array_index = i.index + j.index
 			if
@@ -70,10 +78,6 @@ function ArrayStringPreviousLastIndexOf(array, value, offset)
 	end
 
 	return NULL
-end
-
-function ArrayStringLastIndexOf(array, value)
-	return ArrayStringPreviousLastIndexOf(array, value, GetLength(array))
 end
 
 function Split(array, separator)
@@ -100,7 +104,7 @@ end
 
 function Join(array, separator)
 	let result = []
-	let i = RangeFromArray(array)
+	let i = ArrayRangeNew([array])
 	while RangeNext(i) do
 		if not i.first then
 			result = Append(result, separator)

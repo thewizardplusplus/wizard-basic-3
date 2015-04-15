@@ -1,8 +1,14 @@
 include "range/array"
+include "array/utils"
+include "args"
+
+let COMPARE_RESULT_LESS = -1
+let COMPARE_RESULT_EQUAL = 0
+let COMPARE_RESULT_GREATER = 1
 
 function ArrayNumberToString(array, precision)
 	let result = "["
-	let i = RangeFromArray(array)
+	let i = ArrayRangeNew([array])
 	while RangeNext(i) do
 		if not i.first then
 			result = Append(result, ", ")
@@ -15,8 +21,13 @@ function ArrayNumberToString(array, precision)
 	return result
 end
 
-function ArrayNumberNextIndexOf(array, value, offset)
-	let i = RangeFromArraySlice(array, offset, GetLength(array))
+note ArrayNumberIndexOf(array, value, offset)
+function ArrayNumberIndexOf(args)
+	let array = Arg([args, 0])
+	let value = Arg([args, 1])
+	let offset = Arg([args, 2, 0])
+
+	let i = ArrayRangeNew([array, offset])
 	while RangeNext(i) do
 		if i.value == value then
 			return i.index
@@ -26,12 +37,13 @@ function ArrayNumberNextIndexOf(array, value, offset)
 	return NULL
 end
 
-function ArrayNumberIndexOf(array, value)
-	return ArrayNumberNextIndexOf(array, value, 0)
-end
+note ArrayNumberLastIndexOf(array, value, offset)
+function ArrayNumberLastIndexOf(args)
+	let array = Arg([args, 0])
+	let value = Arg([args, 1])
+	let offset = Arg([args, 2, GetLength(array)])
 
-function ArrayNumberPreviousLastIndexOf(array, value, offset)
-	let i = RangeReverseFromArraySlice(array, 0, offset)
+	let i = ArrayRangeNew([array, 0, offset, TRUE])
 	while RangeNext(i) do
 		if i.value == value then
 			return i.index
@@ -39,18 +51,16 @@ function ArrayNumberPreviousLastIndexOf(array, value, offset)
 	end
 
 	return NULL
-end
-
-function ArrayNumberLastIndexOf(array, value)
-	return ArrayNumberPreviousLastIndexOf(array, value, GetLength(array))
 end
 
 function Compare(array_1, array_2)
 	let array_1_length = GetLength(array_1)
 	let array_2_length = GetLength(array_2)
 
-	note can't use ranges because RangeNext() uses this function
-	note and it'll create recursion
+	long note
+		Can't use ranges because RangeNext() uses this function
+		and it'll create recursion.
+	...
 	let i = 0
 	while i < array_1_length and i < array_2_length do
 		if array_1[i] < array_2[i] then
@@ -63,10 +73,10 @@ function Compare(array_1, array_2)
 	end
 
 	if array_1_length < array_2_length then
-		return -1
+		return COMPARE_RESULT_LESS
 	else if array_1_length == array_2_length then
-		return 0
+		return COMPARE_RESULT_EQUAL
 	else
-		return 1
+		return COMPARE_RESULT_GREATER
 	end
 end
