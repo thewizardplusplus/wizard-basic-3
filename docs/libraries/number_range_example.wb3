@@ -1,8 +1,8 @@
 include "range/number"
 include "io"
 
-function Main(arguments)
-	let i = RangeReverseSimple(1, 12)
+function Main(_)
+	let i = NumberRangeNew([1, 12])
 	Show("Range size: ")
 	Show(ToString(i.size, 0))
 	Show(".\n")

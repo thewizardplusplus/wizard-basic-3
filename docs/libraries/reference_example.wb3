@@ -1,45 +1,15 @@
-include "reference"
+include "ref"
 include "array/utils"
 include "io"
 
-long note function ChangeNumberValue(value)
-    value = 42
-end...
-
-function ChangeNumberReference(reference)
-    reference.value = 42
+function ChangeReference(reference)
+	reference.value = 42
 end
 
-long note function ChangeStringValue(value)
-    value = "ololo"
-end...
+function Main(_)
+	let value = Ref(23)
+	Show(Append(ToString(Deref(value), 0), "\n"))
 
-function ChangeStringReference(reference)
-    reference.value = "ololo"
-end
-
-function Main(arguments)
-    long note let value_1 = 23
-    Show(Append(ToString(value_1, 0), "\n"))
-
-    ChangeNumberValue(value_1)
-    Show(Append(ToString(value_1, 0), "\n"))...
-
-    let value_2 = Ref(23)
-    Show(Append(ToString(Deref(value_2), 0), "\n"))
-
-    ChangeNumberReference(value_2)
-    Show(Append(ToString(Deref(value_2), 0), "\n"))
-
-    long note let value_3 = "test"
-    Show(Append(value_3, "\n"))
-
-    ChangeStringValue(value_3)
-    Show(Append(value_3, "\n"))...
-
-    let value_4 = Ref("test")
-    Show(Append(Deref(value_4), "\n"))
-
-    ChangeStringReference(value_4)
-    Show(Append(Deref(value_4), "\n"))
+	ChangeReference(value)
+	Show(Append(ToString(Deref(value), 0), "\n"))
 end

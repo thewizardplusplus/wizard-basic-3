@@ -1,9 +1,9 @@
 include "range/array"
 include "io"
 
-function Main(arguments)
+function Main(_)
 	let array = [11, 12, 13, 14, 15]
-	let i = RangeReverseFromArraySlice(array, 1, 4)
+	let i = ArrayRangeNew([array, 1, 4])
 	Show("Range size: ")
 	Show(ToString(i.size, 0))
 	Show(".\n")

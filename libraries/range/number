@@ -1,19 +1,45 @@
+include "args"
 include "general"
-include "range/NumberRange"
-include "range/utils"
 
-function RangeSimple(minimum, maximum)
-	return NumberRangeNew(minimum, maximum, 1, FALSE)
+structure NumberRange
+	minimum
+	maximum
+	step
+	reverse
+
+	size
+	value
+	first
+	last
+	index
 end
 
-function RangeWithStep(minimum, maximum, step)
-	return NumberRangeNew(minimum, maximum, step, FALSE)
-end
+note NumberRangeNew(minimum, maximum, step = 1, reverse = FALSE)
+function NumberRangeNew(args)
+	let minimum = Arg([args, 0])
+	let maximum = Arg([args, 1])
+	let step = Arg([args, 2, 1])
+	let reverse = Arg([args, 3, FALSE])
+	if reverse then
+		step = -step
+	end
 
-function RangeReverseSimple(minimum, maximum)
-	return NumberRangeNew(minimum, maximum, -1, TRUE)
-end
+	let range = new NumberRange
+	if not reverse then
+		range.minimum = minimum
+		range.maximum = maximum
+	else
+		range.minimum = maximum
+		range.maximum = minimum
+	end
+	range.step = step
+	range.reverse = reverse
 
-function RangeReverseWithStep(minimum, maximum, step)
-	return NumberRangeNew(minimum, maximum, -step, TRUE)
+	range.size = maximum - minimum + 1
+	range.value = range.minimum - step
+	range.first = FALSE
+	range.last = FALSE
+	range.index = -1
+
+	return range
 end

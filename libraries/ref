@@ -1,18 +1,18 @@
 include "array/number"
 
-structure __Reference
+structure Reference
 	value
 end
 
 function Ref(value)
-	let reference = new __Reference
+	let reference = new Reference
 	reference.value = value
 
 	return reference
 end
 
 function Deref(reference)
-	if Compare(GetType(reference), "__Reference") == 0 then
+	if Compare(GetType(reference), "Reference") == 0 then
 		return reference.value
 	else
 		return reference

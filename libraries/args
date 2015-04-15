@@ -1,3 +1,4 @@
+note Arg(array, index, default = NULL)
 function Arg(args)
 	let array = args[0]
 	let index = args[1]

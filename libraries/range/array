@@ -1,19 +1,45 @@
+include "args"
 include "general"
-include "range/ArrayRange"
-include "range/utils"
 
-function RangeFromArray(array)
-	return ArrayRangeNew(array, 0, GetLength(array), FALSE)
+structure ArrayRange
+	array
+	start
+	finish
+	reverse
+
+	size
+	value
+	first
+	last
+	index
 end
 
-function RangeReverseFromArray(array)
-	return ArrayRangeNew(array, 0, GetLength(array), TRUE)
-end
+note ArrayRangeNew(array, start, finish, reverse = FALSE)
+function ArrayRangeNew(args)
+	let array = Arg([args, 0])
+	let start = Arg([args, 1, 0])
+	let finish = Arg([args, 2, GetLength(array)])
+	let reverse = Arg([args, 3, FALSE])
 
-function RangeFromArraySlice(array, start, finish)
-	return ArrayRangeNew(array, start, finish, FALSE)
-end
+	let range = new ArrayRange
+	range.array = array
+	if not reverse then
+		range.start = start
+		range.finish = finish
+	else
+		range.start = finish - 1
+		range.finish = start - 1
+	end
+	range.reverse = reverse
 
-function RangeReverseFromArraySlice(array, start, finish)
-	return ArrayRangeNew(array, start, finish, TRUE)
+	range.size = finish - start
+	range.first = FALSE
+	range.last = FALSE
+	if not reverse then
+		range.index = range.start - 1
+	else
+		range.index = range.start + 1
+	end
+
+	return range
 end
