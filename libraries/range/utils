@@ -3,6 +3,8 @@ include "range/number"
 include "range/array"
 include "general"
 
+note Range(minimum, maximum, step = 1, reverse = FALSE)
+note Range(array, start = 0, finish = GetLength(array), reverse = FALSE)
 function Range(args)
 	if Compare(GetType(args[0]), "number") == COMPARE_RESULT_EQUAL then
 		return NumberRangeNew(args)

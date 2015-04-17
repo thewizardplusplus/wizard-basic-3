@@ -1,18 +1,18 @@
-include "range/array"
 include "array/utils"
 include "args"
+include "range/utils"
+include "array/number"
 
 function ArrayStringToString(array)
 	let result = "["
-	let array_length = GetLength(array)
-	if array_length > 0 then
+	if GetLength(array) > 0 then
 		result = Append(result, "\"")
 	end
 
 	let middle = Join(array, "\", \"")
 	result = Append(result, middle)
 
-	if array_length > 0 then
+	if GetLength(array) > 0 then
 		result = Append(result, "\"")
 	end
 	result = Append(result, "]")
@@ -20,67 +20,41 @@ function ArrayStringToString(array)
 	return result
 end
 
-note ArrayStringIndexOf(array, value, offset)
+note ArrayStringIndexOf(array, value, offset = 0)
 function ArrayStringIndexOf(args)
 	let array = Arg([args, 0])
 	let value = Arg([args, 1])
 	let offset = Arg([args, 2, 0])
 
-	let array_length = GetLength(array)
-	let i = Range([array, offset])
-	while Next(i) do
-		let equal = TRUE
-		let j = Range([value])
-		while Next(j) do
-			let array_index = i.index + j.index
-			if
-				array_index >= array_length
-				or array[array_index] /= j.value
-			then
-				equal = FALSE
-				break
-			end
-		end
+	let range = Range([array, offset])
+	return ArrayStringSearch(range, value)
+end
 
-		if equal then
-			return i.index
+function ArrayStringSearch(range, value)
+	return ArrayStringSearchItem(range, value)
+end
+
+function ArrayStringSearchItem(range, value)
+	while Next(range) do
+		if Compare(range.value, value) == COMPARE_RESULT_EQUAL then
+			return range.index
 		end
 	end
 
 	return NULL
 end
 
-note ArrayStringLastIndexOf(array, value, offset)
+note ArrayStringLastIndexOf(array, value, offset = GetLength(array))
 function ArrayStringLastIndexOf(args)
 	let array = Arg([args, 0])
 	let value = Arg([args, 1])
 	let offset = Arg([args, 2, GetLength(array)])
 
-	let array_length = GetLength(array)
-	let i = Range([array, 0, offset, TRUE])
-	while Next(i) do
-		let equal = TRUE
-		let j = Range([value])
-		while Next(j) do
-			let array_index = i.index + j.index
-			if
-				array_index >= array_length
-				or array[array_index] /= j.value
-			then
-				equal = FALSE
-				break
-			end
-		end
-
-		if equal then
-			return i.index
-		end
-	end
-
-	return NULL
+	let range = Range([array, 0, offset, TRUE])
+	return ArrayStringSearch(range, value)
 end
 
-function Split(array, separator)
+long note function Split(array, separator)
 	let result = []
 	let previous_offset = 0
 	let offset = 0
@@ -88,7 +62,7 @@ function Split(array, separator)
 	let separator_length = GetLength(separator)
 	while offset < array_length do
 		previous_offset = offset
-		offset = ArrayStringNextIndexOf(array, separator, offset)
+		offset = ArrayStringIndexOf(array, separator, offset)
 		if offset == NULL then
 			offset = array_length
 		end
@@ -100,10 +74,10 @@ function Split(array, separator)
 	end
 
 	return result
-end
+end...
 
 function Join(array, separator)
-	let result = []
+	let result = ""
 	let i = Range([array])
 	while Next(i) do
 		if not i.first then

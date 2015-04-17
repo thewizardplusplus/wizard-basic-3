@@ -14,7 +14,7 @@ structure ArrayRange
 	index
 end
 
-note ArrayRangeNew(array, start, finish, reverse = FALSE)
+note ArrayRangeNew(array, start = 0, finish = GetLength(array), reverse = FALSE)
 function ArrayRangeNew(args)
 	let array = Arg([args, 0])
 	let start = Arg([args, 1, 0])
