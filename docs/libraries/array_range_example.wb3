@@ -1,14 +1,14 @@
-include "range/array"
+include "range/utils"
 include "io"
 
 function Main(_)
 	let array = [11, 12, 13, 14, 15]
-	let i = ArrayRangeNew([array, 1, 4])
+	let i = Range([array, 1, 4])
 	Show("Range size: ")
 	Show(ToString(i.size, 0))
 	Show(".\n")
 
-	while RangeNext(i) do
+	while Next(i) do
 		Show("#")
 		Show(ToString(i.index, 0))
 		Show(": ")

@@ -1,13 +1,13 @@
-include "range/number"
+include "range/utils"
 include "io"
 
 function Main(_)
-	let i = NumberRangeNew([1, 12])
+	let i = Range([1, 12])
 	Show("Range size: ")
 	Show(ToString(i.size, 0))
 	Show(".\n")
 
-	while RangeNext(i) do
+	while Next(i) do
 		Show("#")
 		Show(ToString(i.index, 0))
 		Show(": ")

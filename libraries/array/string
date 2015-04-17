@@ -27,11 +27,11 @@ function ArrayStringIndexOf(args)
 	let offset = Arg([args, 2, 0])
 
 	let array_length = GetLength(array)
-	let i = ArrayRangeNew([array, offset])
-	while RangeNext(i) do
+	let i = Range([array, offset])
+	while Next(i) do
 		let equal = TRUE
-		let j = ArrayRangeNew([value])
-		while RangeNext(j) do
+		let j = Range([value])
+		while Next(j) do
 			let array_index = i.index + j.index
 			if
 				array_index >= array_length
@@ -57,11 +57,11 @@ function ArrayStringLastIndexOf(args)
 	let offset = Arg([args, 2, GetLength(array)])
 
 	let array_length = GetLength(array)
-	let i = ArrayRangeNew([array, 0, offset, TRUE])
-	while RangeNext(i) do
+	let i = Range([array, 0, offset, TRUE])
+	while Next(i) do
 		let equal = TRUE
-		let j = ArrayRangeNew([value])
-		while RangeNext(j) do
+		let j = Range([value])
+		while Next(j) do
 			let array_index = i.index + j.index
 			if
 				array_index >= array_length
@@ -104,8 +104,8 @@ end
 
 function Join(array, separator)
 	let result = []
-	let i = ArrayRangeNew([array])
-	while RangeNext(i) do
+	let i = Range([array])
+	while Next(i) do
 		if not i.first then
 			result = Append(result, separator)
 		end

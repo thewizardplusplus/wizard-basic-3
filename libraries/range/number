@@ -1,8 +1,6 @@
 include "args"
 include "general"
 
-include "range/utils"
-
 structure NumberRange
 	minimum
 	maximum
@@ -21,6 +19,7 @@ function NumberRangeNew(args)
 	let minimum = Arg([args, 0])
 	let maximum = Arg([args, 1])
 	let step = Arg([args, 2, 1])
+
 	let reverse = Arg([args, 3, FALSE])
 	if reverse then
 		step = -step
@@ -34,6 +33,7 @@ function NumberRangeNew(args)
 		range.minimum = maximum
 		range.maximum = minimum
 	end
+
 	range.step = step
 	range.reverse = reverse
 

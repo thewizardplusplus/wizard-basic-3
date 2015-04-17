@@ -8,8 +8,8 @@ let COMPARE_RESULT_GREATER = 1
 
 function ArrayNumberToString(array, precision)
 	let result = "["
-	let i = ArrayRangeNew([array])
-	while RangeNext(i) do
+	let i = Range([array])
+	while Next(i) do
 		if not i.first then
 			result = Append(result, ", ")
 		end
@@ -27,8 +27,8 @@ function ArrayNumberIndexOf(args)
 	let value = Arg([args, 1])
 	let offset = Arg([args, 2, 0])
 
-	let i = ArrayRangeNew([array, offset])
-	while RangeNext(i) do
+	let i = Range([array, offset])
+	while Next(i) do
 		if i.value == value then
 			return i.index
 		end
@@ -43,8 +43,8 @@ function ArrayNumberLastIndexOf(args)
 	let value = Arg([args, 1])
 	let offset = Arg([args, 2, GetLength(array)])
 
-	let i = ArrayRangeNew([array, 0, offset, TRUE])
-	while RangeNext(i) do
+	let i = Range([array, 0, offset, TRUE])
+	while Next(i) do
 		if i.value == value then
 			return i.index
 		end
@@ -58,7 +58,7 @@ function Compare(array_1, array_2)
 	let array_2_length = GetLength(array_2)
 
 	long note
-		Can't use ranges because RangeNext() uses this function
+		Can't use ranges because Next() uses this function
 		and it'll create recursion.
 	...
 	let i = 0

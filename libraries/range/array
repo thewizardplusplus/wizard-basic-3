@@ -1,8 +1,6 @@
 include "args"
 include "general"
 
-include "range/utils"
-
 structure ArrayRange
 	array
 	start
@@ -25,6 +23,7 @@ function ArrayRangeNew(args)
 
 	let range = new ArrayRange
 	range.array = array
+
 	if not reverse then
 		range.start = start
 		range.finish = finish
@@ -32,11 +31,13 @@ function ArrayRangeNew(args)
 		range.start = finish - 1
 		range.finish = start - 1
 	end
+
 	range.reverse = reverse
 
 	range.size = finish - start
 	range.first = FALSE
 	range.last = FALSE
+
 	if not reverse then
 		range.index = range.start - 1
 	else

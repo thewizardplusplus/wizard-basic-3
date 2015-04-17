@@ -4,8 +4,8 @@ include "io"
 function Append(array_1, array_2)
 	let array_1_length = GetLength(array_1)
 	let result = new array(array_1_length + GetLength(array_2))
-	let i = ArrayRangeNew([result])
-	while RangeNext(i) do
+	let i = Range([result])
+	while Next(i) do
 		if i.index < array_1_length then
 			result[i.index] = array_1[i.index]
 		else
@@ -22,8 +22,8 @@ function Slice(array, start, finish)
 	end
 
 	let result = new array(finish - start)
-	let i = ArrayRangeNew([result])
-	while RangeNext(i) do
+	let i = Range([result])
+	while Next(i) do
 		result[i.index] = array[i.index + start]
 	end
 
