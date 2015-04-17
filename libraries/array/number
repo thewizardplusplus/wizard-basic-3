@@ -6,6 +6,31 @@ let COMPARE_RESULT_LESS = -1
 let COMPARE_RESULT_EQUAL = 0
 let COMPARE_RESULT_GREATER = 1
 
+function Compare(array_1, array_2)
+	long note
+		Can't use ranges because Next() uses this function
+		and it'll create recursion.
+	...
+	let i = 0
+	while i < GetLength(array_1) and i < GetLength(array_2) do
+		if array_1[i] < array_2[i] then
+			return COMPARE_RESULT_LESS
+		else if array_1[i] > array_2[i] then
+			return COMPARE_RESULT_GREATER
+		end
+
+		i = i + 1
+	end
+
+	if GetLength(array_1) < GetLength(array_2) then
+		return COMPARE_RESULT_LESS
+	else if GetLength(array_1) == GetLength(array_2) then
+		return COMPARE_RESULT_EQUAL
+	else
+		return COMPARE_RESULT_GREATER
+	end
+end
+
 function ArrayNumberToString(array, precision)
 	let result = "["
 	let i = Range([array])
@@ -51,32 +76,4 @@ function ArrayNumberLastIndexOf(args)
 	end
 
 	return NULL
-end
-
-function Compare(array_1, array_2)
-	let array_1_length = GetLength(array_1)
-	let array_2_length = GetLength(array_2)
-
-	long note
-		Can't use ranges because Next() uses this function
-		and it'll create recursion.
-	...
-	let i = 0
-	while i < array_1_length and i < array_2_length do
-		if array_1[i] < array_2[i] then
-			return -1
-		else if array_1[i] > array_2[i] then
-			return 1
-		end
-
-		i = i + 1
-	end
-
-	if array_1_length < array_2_length then
-		return COMPARE_RESULT_LESS
-	else if array_1_length == array_2_length then
-		return COMPARE_RESULT_EQUAL
-	else
-		return COMPARE_RESULT_GREATER
-	end
 end
