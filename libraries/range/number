@@ -40,7 +40,7 @@ function NumberRangeNew(args)
 	range.size = maximum - minimum + 1
 	range.value = range.minimum - step
 	range.first = FALSE
-	range.last = FALSE
+	range.last = not range.size > 0
 	range.index = -1
 
 	return range

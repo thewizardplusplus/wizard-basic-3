@@ -36,7 +36,7 @@ function ArrayRangeNew(args)
 
 	range.size = finish - start
 	range.first = FALSE
-	range.last = FALSE
+	range.last = not range.size > 0
 
 	if not reverse then
 		range.index = range.start - 1

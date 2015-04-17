@@ -1,15 +1,14 @@
-include "range/array"
+include "range/utils"
 include "io"
 
 function Append(array_1, array_2)
-	let array_1_length = GetLength(array_1)
-	let result = new array(array_1_length + GetLength(array_2))
+	let result = new array(GetLength(array_1) + GetLength(array_2))
 	let i = Range([result])
 	while Next(i) do
-		if i.index < array_1_length then
+		if i.index < GetLength(array_1) then
 			result[i.index] = array_1[i.index]
 		else
-			result[i.index] = array_2[i.index - array_1_length]
+			result[i.index] = array_2[i.index - GetLength(array_1)]
 		end
 	end
 
