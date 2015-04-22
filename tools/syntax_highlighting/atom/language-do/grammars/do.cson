@@ -3,7 +3,7 @@
 "fileTypes": ["do"],
 "patterns": [
 	{
-		"match": "\\b(and|break|continue|do|else|end|function|if|include|let|new|not|or|return|structure|then|while)\\b",
+		"match": "\\b(and|break|continue|do|else|end|if|include|let|new|not|or|return|structure|then|while)\\b",
 		"name": "keyword.control.statement.do",
 		"comment": "Keywords."
 	},
@@ -14,8 +14,20 @@
 	},
 	{
 		"match": "\\b(ToString|GetLength|GetType|GetTime|Exit|Read|Write|Open|Close|Sin|Cos|Tg|Arcsin|Arccos|Arctg|SquareRoot|Power|Exp|Ln|Integral|GetRandom)\\b",
-		"name": "entity.name.function.do",
+		"name": "entity.name.function.built-in.do",
 		"comment": "Built-in functions."
+	},
+	{
+		"match": "(function)|([A-Za-z_]\\w*)(?=\\()",
+		"captures": {
+			"1": {
+				"name": "keyword.control.statement.do"
+			},
+			"2": {
+				"name": "entity.name.function.do"
+			}
+		},
+		"comment": "Functions."
 	},
 	{
 		"match": "\\bNULL\\b",
