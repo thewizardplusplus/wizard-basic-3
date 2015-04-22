@@ -31,8 +31,8 @@
 	},
 	{
 		"match": "\\.[A-Za-z_]\\w*",
-		"name": "entity.other.do",
-		"comment": "Access to field."
+		"name": "variable.accessor.structure-field.do",
+		"comment": "Access to structure field."
 	},
 	{
 		"match": "\\bNULL\\b",
