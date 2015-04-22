@@ -41,13 +41,13 @@
 	},
 	{
 		"match": "^\\s*note\\b.*$",
-		"name": "comment.line.wizard-basic",
+		"name": "comment.line.do",
 		"comment": "Singleline comments."
 	},
 	{
 		"begin": "^\\s*long\\s+note\\b",
 		"end": "\\.\\.\\.\\s*$",
-		"name": "comment.line.wizard-basic",
+		"name": "comment.block.do",
 		"comment": "Multiline comments."
 	}
 ]
