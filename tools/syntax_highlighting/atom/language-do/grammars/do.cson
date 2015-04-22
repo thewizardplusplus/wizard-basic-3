@@ -30,6 +30,11 @@
 		"comment": "Functions."
 	},
 	{
+		"match": "\\.[A-Za-z_]\\w*",
+		"name": "entity.other.do",
+		"comment": "Access to field."
+	},
+	{
 		"match": "\\bNULL\\b",
 		"name": "constant.language.do",
 		"comment": "Constants."
