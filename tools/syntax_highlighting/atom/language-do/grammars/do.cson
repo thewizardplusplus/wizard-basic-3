@@ -1,42 +1,42 @@
-"name": "Wizard BASIC 3",
-"scopeName": "source.wizard-basic-3",
-"fileTypes": ["wb3"],
+"name": "Do",
+"scopeName": "source.do",
+"fileTypes": ["do"],
 "patterns": [
 	{
 		"match": "\\b(break|continue|do|else|end|function|if|include|let|new|return|structure|then|while)\\b",
-		"name": "keyword.control.statement.wizard-basic-3",
+		"name": "keyword.control.statement.do",
 		"comment": "Keywords."
 	},
 	{
 		"match": "\\=|\\b(and|not|or)\\b|<|<\\=|>|>\\=|\\=\\=|\\/\\=|\\+|\\-|\\*|/|%",
-		"name": "keyword.operator.wizard-basic-3",
+		"name": "keyword.operator.do",
 		"comment": "Operators."
 	},
 	{
 		"match": "\\b(ToString|GetLength|GetType|GetTime|Exit|Read|Write|Open|Close|Sin|Cos|Tg|Arcsin|Arccos|Arctg|SquareRoot|Power|Exp|Ln|Integral|GetRandom)\\b",
-		"name": "entity.name.function.wizard-basic-3",
+		"name": "entity.name.function.do",
 		"comment": "Built-in functions."
 	},
 	{
 		"match": "\\bNULL\\b",
-		"name": "constant.language.wizard-basic-3",
+		"name": "constant.language.do",
 		"comment": "Constants."
 	},
 	{
 		"match": "\\b\\d+(\\.\\d+)?\\b",
-		"name": "constant.numeric.wizard-basic-3",
+		"name": "constant.numeric.do",
 		"comment": "Numbers."
 	},
 	{
 		"begin": "\"",
 		"end": "(?<!\\\\)\"",
-		"name": "string.quoted.double.wizard-basic-3",
+		"name": "string.quoted.double.do",
 		"comment": "Strings."
 	},
 	{
 		"begin": "\'",
 		"end": "(?<!\\\\)\'",
-		"name": "string.quoted.single.wizard-basic-3",
+		"name": "string.quoted.single.do",
 		"comment": "Symbols."
 	},
 	{
