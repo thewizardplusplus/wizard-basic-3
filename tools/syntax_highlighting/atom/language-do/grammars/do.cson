@@ -3,12 +3,12 @@
 "fileTypes": ["do"],
 "patterns": [
 	{
-		"match": "\\b(break|continue|do|else|end|function|if|include|let|new|return|structure|then|while)\\b",
+		"match": "\\b(and|break|continue|do|else|end|function|if|include|let|new|not|or|return|structure|then|while)\\b",
 		"name": "keyword.control.statement.do",
 		"comment": "Keywords."
 	},
 	{
-		"match": "\\=|\\b(and|not|or)\\b|<|<\\=|>|>\\=|\\=\\=|\\/\\=|\\+|\\-|\\*|/|%",
+		"match": "\\=|<|<\\=|>|>\\=|\\=\\=|\\/\\=|\\+|\\-|\\*|/|%",
 		"name": "keyword.operator.do",
 		"comment": "Operators."
 	},
