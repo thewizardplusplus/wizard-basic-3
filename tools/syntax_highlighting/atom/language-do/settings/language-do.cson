@@ -1,0 +1,17 @@
+'.source.do':
+	'editor':
+		'increaseIndentPattern': '(?x)
+				\\bthen\\s*$ |
+				\\belse\\s*$ |
+				\\bdo\\s*$ |
+				\\bstructure\\b.*$ |
+				\\bfunction\\b.*$ |
+				\\(\\s*$ |
+				\\[\\s*$
+			'
+		'decreaseIndentPattern': '(?x)
+				^\\s*end\\b |
+				^\\s*else\\b |
+				^\\s*\\) |
+				^\\s*\\]
+			'
