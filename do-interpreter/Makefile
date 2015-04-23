@@ -1,4 +1,4 @@
-SOURCE = source/thewizardplusplus/wizard-basic-3/
+SOURCE = source/thewizardplusplus/language_do/
 OBJECTS = \
 	$(SOURCE)main.o \
 	$(SOURCE)version.o \
@@ -21,7 +21,7 @@ LDFLAGS += \
 
 main: $(OBJECTS)
 	mkdir -p $(BUILD)
-	$(CXX) $(CXXFLAGS) -o $(BUILD)wb3i $(OBJECTS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $(BUILD)do $(OBJECTS) $(LDFLAGS)
 
 clean:
 	find . -name "*.o" -type f -delete

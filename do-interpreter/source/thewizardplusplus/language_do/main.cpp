@@ -11,7 +11,7 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
-using namespace thewizardplusplus::wizard_basic_3;
+using namespace thewizardplusplus::language_do;
 using namespace thewizardplusplus::wizard_parser::node;
 using namespace boost;
 using namespace boost::property_tree;

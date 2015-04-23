@@ -12,7 +12,7 @@ const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
 const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 auto ProcessCommandLineArguments(
 	const int number_of_arguments,
@@ -56,14 +56,14 @@ auto ProcessCommandLineArguments(
 
 	if (arguments_map.count("version")) {
 		std::cout
-			<< "Wizard Basic 3 interpreter, " << VERSION_STRING << "\n"
+			<< "Do interpreter, " << VERSION_STRING << "\n"
 			<< "(c) thewizardplusplus, 2015\n";
 		std::exit(EXIT_SUCCESS);
 	}
 
 	if (arguments_map.count("help")) {
 		std::cout
-			<< "Usage: wb3i [options] <script-file> [<script-arguments>]\n"
+			<< "Usage: do [options] <script-file> [<script-arguments>]\n"
 			<< interpreter_arguments_description;
 		std::exit(EXIT_SUCCESS);
 	}

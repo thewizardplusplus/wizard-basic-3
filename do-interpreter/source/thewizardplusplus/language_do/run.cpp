@@ -9,7 +9,7 @@ using namespace boost::algorithm;
 using namespace boost::filesystem;
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 int Run(
 	const std::string& ansi_c,

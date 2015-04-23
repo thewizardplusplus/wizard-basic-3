@@ -14,7 +14,7 @@ using namespace boost::algorithm;
 using namespace boost::random;
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 const auto FUNCTION_NAME_LIST = StringGroup{
 	"ToString",

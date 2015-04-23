@@ -5,7 +5,7 @@
 #include <boost/filesystem.hpp>
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 int Run(
 	const std::string& ansi_c,

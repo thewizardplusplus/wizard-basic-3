@@ -8,7 +8,7 @@ using namespace thewizardplusplus::wizard_parser::parser;
 using namespace thewizardplusplus::wizard_parser::node;
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 static Parser CreateGrammar(void) {
 	const auto expression = dummy();

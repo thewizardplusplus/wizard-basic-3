@@ -4,7 +4,7 @@
 #include <boost/regex.hpp>
 #include <boost/format.hpp>
 
-using namespace thewizardplusplus::wizard_basic_3;
+using namespace thewizardplusplus::language_do;
 using namespace boost;
 using namespace boost::filesystem;
 
@@ -42,7 +42,7 @@ struct CodeGetter {
 };
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 auto GetCode(
 	const path& interpreter_base_path,

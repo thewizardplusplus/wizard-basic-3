@@ -4,7 +4,7 @@
 #include <string>
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 extern const std::string VERSION_STRING;
 

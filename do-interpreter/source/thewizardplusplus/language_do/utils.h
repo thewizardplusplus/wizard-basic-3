@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 using StringGroup = std::vector<std::string>;
 

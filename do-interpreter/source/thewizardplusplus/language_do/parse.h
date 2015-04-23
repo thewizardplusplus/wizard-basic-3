@@ -4,7 +4,7 @@
 #include <wizard_parser/node/Node.h>
 
 namespace thewizardplusplus {
-namespace wizard_basic_3 {
+namespace language_do {
 
 auto Parse(const std::string& code) -> wizard_parser::node::Node;
 
