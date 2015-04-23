@@ -27,6 +27,12 @@ auto ProcessCommandLineArguments(
 			value<std::string>(),
 			R"(- set final stage (allowed: "code", "ast" and "c");)"
 		)
+		(
+			"output-file,o",
+			value<std::string>(),
+			"- output file for compiling result;"
+		)
+		("use-output,u", "- output any final stage result to output file;")
 		("script-file", value<std::string>(), "- script file;")
 		(
 			"script-arguments",
@@ -87,6 +93,14 @@ auto ProcessCommandLineArguments(
 			);
 		}
 	}
+
+	if (arguments_map.count("output-file")) {
+		command_line_arguments.output_file =
+			arguments_map["output-file"].as<std::string>();
+	}
+	command_line_arguments.use_output =
+		arguments_map.count("use-output")
+		&& !command_line_arguments.output_file.string().empty();
 
 	if (arguments_map.count("script-file")) {
 		command_line_arguments.script_file =

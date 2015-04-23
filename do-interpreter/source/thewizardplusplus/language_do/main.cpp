@@ -4,6 +4,7 @@
 #include "parse.h"
 #include "translate.h"
 #include "run.h"
+#include <fstream>
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -51,7 +52,7 @@ auto FormatCode(const std::string& code) -> std::string {
 		}
 	);
 
-	return join(numbered_lines, "\n");
+	return join(numbered_lines, "\n") + "\n";
 }
 
 auto FormatAst(const Node& ast) -> std::string {
@@ -118,7 +119,24 @@ void ProcessResult(
 	ResultType result
 ) {
 	if (command_line_arguments.final_stage == final_stage) {
-		std::cout << result << '\n';
+		if (!command_line_arguments.use_output) {
+			std::cout << result << '\n';
+		} else {
+			std::ofstream file;
+			file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+
+			try {
+				file.open(command_line_arguments.output_file.string());
+				file << result;
+			} catch(const std::ofstream::failure& exception) {
+				throw std::runtime_error(
+					(format(R"(unable to write output to %s (%s))")
+						% command_line_arguments.output_file
+						% exception.what()).str()
+				);
+			}
+		}
+
 		std::exit(EXIT_SUCCESS);
 	}
 }
@@ -152,6 +170,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 	const auto exit_code = Run(
 		ansi_c,
 		command_line_arguments.interpreter_base_path,
+		command_line_arguments.output_file,
 		script_arguments
 	);
 

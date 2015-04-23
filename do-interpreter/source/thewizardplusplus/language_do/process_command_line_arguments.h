@@ -14,8 +14,10 @@ enum class FinalStage : uint8_t {
 	ANSI_C
 };
 struct CommandLineArguments {
-	FinalStage final_stage = FinalStage::NONE;
 	boost::filesystem::path interpreter_base_path;
+	FinalStage final_stage = FinalStage::NONE;
+	boost::filesystem::path output_file;
+	bool use_output;
 	boost::filesystem::path script_file;
 	StringGroup script_arguments;
 };

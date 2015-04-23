@@ -14,6 +14,7 @@ namespace language_do {
 int Run(
 	const std::string& ansi_c,
 	const path& interpreter_base_path,
+	const path& output_file,
 	const StringGroup& script_arguments
 ) {
 	const auto full_code =
@@ -46,10 +47,14 @@ int Run(
 	out << full_code;
 	out.close();
 
-	const auto output_filename = std::string(std::tmpnam(NULL));
+	const auto output_filename = output_file.string();
+	const auto final_output_filename =
+		!output_filename.empty()
+			? output_filename
+			: std::tmpnam(NULL);
 	const auto command =
 		(format("gcc -std=c99 -O2 -o %s %s -I%s -lm -lgc")
-			% output_filename
+			% final_output_filename
 			% source_filename
 			% interpreter_base_path.string()).str();
 	const auto compiling_status_code = std::system(command.c_str());
@@ -58,8 +63,12 @@ int Run(
 	}
 	std::remove(source_filename.c_str());
 
-	const auto executing_status_code = std::system(output_filename.c_str());
-	std::remove(output_filename.c_str());
+	const auto executing_status_code = std::system(
+		final_output_filename.c_str()
+	);
+	if (output_filename.empty()) {
+		std::remove(final_output_filename.c_str());
+	}
 
 	return executing_status_code;
 }
