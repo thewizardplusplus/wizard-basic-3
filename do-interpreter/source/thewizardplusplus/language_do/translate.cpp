@@ -443,7 +443,7 @@ auto Translate(const Node& ast) -> std::string {
 						return
 							function_argument_list
 							+ (!function_argument_list.empty() ? "," : "")
-							+ (format("const __Value %s%s")
+							+ (format("__Value %s%s")
 								% identify_prefix
 								% node.value).str();
 					}
