@@ -10,7 +10,7 @@
 		'body': 'function $1(${2:args})\n\t$3\nend'
 	'main':
 		'prefix': 'ma'
-		'body': 'function Main(args)\n\t$1\nend'
+		'body': 'function Main(${1:args})\n\t$2\nend'
 	'return':
 		'prefix': 're'
 		'body': 'return$1'

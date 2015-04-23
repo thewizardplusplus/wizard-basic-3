@@ -1,5 +1,5 @@
 include "io"
 
-function Main(args)
+function Main(_)
 	Show("Test.\n")
 end
