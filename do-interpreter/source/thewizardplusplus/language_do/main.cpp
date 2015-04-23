@@ -1,3 +1,4 @@
+#include "utils.h"
 #include "process_command_line_arguments.h"
 #include "get_code.h"
 #include "parse.h"
@@ -18,7 +19,40 @@ using namespace boost::property_tree;
 
 const auto XML_INDENT_SYMBOL = ' ';
 const auto XML_INDENT_SIZE = 4;
-const auto ANSI_C_INDENT_STRING = "    ";
+const auto INDENT_STRING = "    ";
+
+auto FormatCode(const std::string& code) -> std::string {
+	auto lines = StringGroup();
+	split(lines, code, is_any_of("\n"));
+
+	const auto number_of_lines = lines.size();
+	const auto length_of_maximal_number =
+		std::to_string(number_of_lines)
+		.size();
+
+	auto numbered_lines = StringGroup(number_of_lines);
+	auto number_of_line = size_t(1);
+	std::transform(
+		lines.begin(),
+		lines.end(),
+		numbered_lines.begin(),
+		[=, &number_of_line] (const std::string& line) -> std::string {
+			auto string_number_of_line = std::to_string(number_of_line++);
+			const auto indent_length =
+				length_of_maximal_number
+				- string_number_of_line.size();
+			for (size_t i = 0; i < indent_length; i++) {
+				string_number_of_line = " " + string_number_of_line;
+			}
+
+			auto line_copy = std::string(line);
+			replace_all(line_copy, "\t", INDENT_STRING);
+			return string_number_of_line + " " + line_copy;
+		}
+	);
+
+	return join(numbered_lines, "\n");
+}
 
 auto FormatAst(const Node& ast) -> std::string {
 	std::stringstream source;
@@ -67,7 +101,7 @@ auto FormatAnsiC(const std::string& ansi_c) -> std::string {
 			prefix_size--;
 		}
 		for (size_t i = 0; i < prefix_size; i++) {
-			line = ANSI_C_INDENT_STRING + line;
+			line = INDENT_STRING + line;
 		}
 		if (line.back() == '{') {
 			prefix_size++;
@@ -99,7 +133,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 		command_line_arguments.interpreter_base_path,
 		command_line_arguments.script_file
 	);
-	ProcessResult<FinalStage::CODE>(command_line_arguments, code);
+	ProcessResult<FinalStage::CODE>(command_line_arguments, FormatCode(code));
 
 	const auto ast = Parse(code);
 	ProcessResult<FinalStage::AST>(command_line_arguments, FormatAst(ast));
