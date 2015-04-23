@@ -25,7 +25,7 @@ auto ProcessCommandLineArguments(
 		(
 			"final-stage,s",
 			value<std::string>(),
-			R"(- set final stage (allowed: "code", "ast" and "ansi-c");)"
+			R"(- set final stage (allowed: "code", "ast" and "c");)"
 		)
 		("script-file", value<std::string>(), "- script file;")
 		(
@@ -79,7 +79,7 @@ auto ProcessCommandLineArguments(
 			command_line_arguments.final_stage = FinalStage::CODE;
 		} else if (final_stage == "ast") {
 			command_line_arguments.final_stage = FinalStage::AST;
-		} else if (final_stage == "ansi-c") {
+		} else if (final_stage == "c") {
 			command_line_arguments.final_stage = FinalStage::ANSI_C;
 		} else {
 			throw std::runtime_error(
