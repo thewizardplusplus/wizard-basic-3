@@ -115,7 +115,13 @@ int main(int number_of_arguments, char* arguments[]) try {
 		script_arguments.begin(),
 		command_line_arguments.script_file.string()
 	);
-	Run(ansi_c, command_line_arguments.interpreter_base_path, script_arguments);
+	const auto exit_code = Run(
+		ansi_c,
+		command_line_arguments.interpreter_base_path,
+		script_arguments
+	);
+
+	return exit_code;
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }

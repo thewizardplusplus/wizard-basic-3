@@ -379,7 +379,7 @@ auto Translate(const Node& ast) -> std::string {
 	auto structures_registration = std::string();
 	auto global_variables_declarations = std::string();
 	auto global_variables_initializations = std::string();
-	auto functions_declarations = std::string("void __Start();");
+	auto functions_declarations = std::string("int __Start();");
 	auto functions_implementations = std::string();
 
 	const auto identify_prefix = GetRandomPrefix();
@@ -474,7 +474,7 @@ auto Translate(const Node& ast) -> std::string {
 		+ functions_declarations
 		+ functions_implementations
 		+ (format(
-			std::string("void __Start(")
+			std::string("int __Start(")
 				+ "const char*arguments[],"
 				+ "const size_t number_of_arguments"
 			+ "){"
@@ -486,12 +486,13 @@ auto Translate(const Node& ast) -> std::string {
 				+ "atexit(__CleanupOpenedFileStorage);"
 				+ "%s"
 				+ "%s"
-				+ "Main("
+				+ "__Value exit_code=Main("
 					+ "__WrapCommandLineArguments("
 						+ "arguments,"
 						+ "number_of_arguments"
 					+ ")"
 				+ ");"
+				+ "return __GetExitCode(exit_code);"
 			+ "}"
 		)
 			% structures_registration

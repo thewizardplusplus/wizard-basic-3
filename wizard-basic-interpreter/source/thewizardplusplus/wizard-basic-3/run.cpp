@@ -1,7 +1,6 @@
 #include "run.h"
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/format.hpp>
 
@@ -12,7 +11,7 @@ using namespace boost::filesystem;
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-void Run(
+int Run(
 	const std::string& ansi_c,
 	const path& interpreter_base_path,
 	const StringGroup& script_arguments
@@ -25,11 +24,12 @@ void Run(
 			"%s"
 			"int main(){"
 				"const char*command_line_arguments[]={\"%s\"};"
-				"__Start("
+				"int exit_code=__Start("
 					"command_line_arguments,"
 					"sizeof(command_line_arguments)"
 						"/sizeof(command_line_arguments[0])"
 				");"
+				"return exit_code;"
 			"}"
 		)
 			% ansi_c
@@ -59,10 +59,9 @@ void Run(
 	std::remove(source_filename.c_str());
 
 	const auto executing_status_code = std::system(output_filename.c_str());
-	if (executing_status_code != 0) {
-		throw std::runtime_error("executing failure");
-	}
 	std::remove(output_filename.c_str());
+
+	return executing_status_code;
 }
 
 }

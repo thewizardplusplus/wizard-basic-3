@@ -7,7 +7,7 @@
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
 
-void Run(
+int Run(
 	const std::string& ansi_c,
 	const boost::filesystem::path& interpreter_base_path,
 	const StringGroup& script_file

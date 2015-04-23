@@ -199,6 +199,15 @@ char* __ToString(const __Value array) {
 	return buffer;
 }
 
+int __GetExitCode(const __Value exit_code) {
+	if (!__ToBoolean(exit_code)) {
+		return 0;
+	}
+
+	__TestTypeAndNotify(exit_code, __VALUE_TYPE_NUMBER);
+	return (int)__GetIntegralModule(exit_code.storage.number);
+}
+
 bool __IsValidFileId(const __OpenedFileStorage* storage, const size_t file_id) {
 	return file_id < storage->number && storage->files[file_id] != NULL;
 }
