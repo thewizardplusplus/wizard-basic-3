@@ -462,7 +462,7 @@ void __SetArrayItem(
 	array.storage.array.data[integral_index] = value;
 }
 
-__Value GetLength(const __Value array) {
+__Value GetSize(const __Value array) {
 	__TestTypeAndNotify(array, __VALUE_TYPE_ARRAY);
 	return __CreateNumber(array.storage.array.size);
 }

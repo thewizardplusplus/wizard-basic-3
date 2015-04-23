@@ -5,14 +5,14 @@ include "array/number"
 
 function ArrayStringToString(array)
 	let result = "["
-	if GetLength(array) > 0 then
+	if GetSize(array) > 0 then
 		result = Append(result, "\"")
 	end
 
 	let middle = Join(array, "\", \"")
 	result = Append(result, middle)
 
-	if GetLength(array) > 0 then
+	if GetSize(array) > 0 then
 		result = Append(result, "\"")
 	end
 	result = Append(result, "]")
@@ -44,11 +44,11 @@ function ArrayStringSearchItem(range, value)
 	return NULL
 end
 
-note ArrayStringLastIndexOf(array, value, offset = GetLength(array))
+note ArrayStringLastIndexOf(array, value, offset = GetSize(array))
 function ArrayStringLastIndexOf(args)
 	let array = Arg([args, 0])
 	let value = Arg([args, 1])
-	let offset = Arg([args, 2, GetLength(array)])
+	let offset = Arg([args, 2, GetSize(array)])
 
 	let range = Range([array, 0, offset, TRUE])
 	return ArrayStringSearch(range, value)
@@ -58,8 +58,8 @@ long note function Split(array, separator)
 	let result = []
 	let previous_offset = 0
 	let offset = 0
-	let array_length = GetLength(array)
-	let separator_length = GetLength(separator)
+	let array_length = GetSize(array)
+	let separator_length = GetSize(separator)
 	while offset < array_length do
 		previous_offset = offset
 		offset = ArrayStringIndexOf(array, separator, offset)

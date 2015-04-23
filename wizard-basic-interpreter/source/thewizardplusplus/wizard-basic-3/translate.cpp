@@ -18,7 +18,7 @@ namespace wizard_basic_3 {
 
 const auto FUNCTION_NAME_LIST = StringGroup{
 	"ToString",
-	"GetLength",
+	"GetSize",
 	"GetType",
 	"GetTime",
 	"Exit",

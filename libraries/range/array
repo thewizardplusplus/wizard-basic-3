@@ -14,11 +14,11 @@ structure ArrayRange
 	index
 end
 
-note ArrayRangeNew(array, start = 0, finish = GetLength(array), reverse = FALSE)
+note ArrayRangeNew(array, start = 0, finish = GetSize(array), reverse = FALSE)
 function ArrayRangeNew(args)
 	let array = Arg([args, 0])
 	let start = Arg([args, 1, 0])
-	let finish = Arg([args, 2, GetLength(array)])
+	let finish = Arg([args, 2, GetSize(array)])
 	let reverse = Arg([args, 3, FALSE])
 
 	let range = new ArrayRange

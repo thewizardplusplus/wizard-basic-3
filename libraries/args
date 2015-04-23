@@ -4,11 +4,11 @@ function Arg(args)
 	let index = args[1]
 
 	let default = NULL
-	if GetLength(args) > 2 then
+	if GetSize(args) > 2 then
 		default = args[2]
 	end
 
-	if index < GetLength(array) then
+	if index < GetSize(array) then
 		return array[index]
 	else
 		return default

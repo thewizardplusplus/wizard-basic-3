@@ -18,7 +18,7 @@ function RandomNumberArrayToString(array)
 	let result = "["
 
 	let i = 0
-	while i < GetLength(array) do
+	while i < GetSize(array) do
 		if i > 0 then
 			result = Append(result, ", ")
 		end
@@ -32,14 +32,14 @@ function RandomNumberArrayToString(array)
 end
 
 function Append(array_1, array_2)
-	let result = new array(GetLength(array_1) + GetLength(array_2))
+	let result = new array(GetSize(array_1) + GetSize(array_2))
 
 	let index = 0
-	while index < GetLength(result) do
-		if index < GetLength(array_1) then
+	while index < GetSize(result) do
+		if index < GetSize(array_1) then
 			result[index] = array_1[index]
 		else
-			result[index] = array_2[index - GetLength(array_1)]
+			result[index] = array_2[index - GetSize(array_1)]
 		end
 
 		index = index + 1

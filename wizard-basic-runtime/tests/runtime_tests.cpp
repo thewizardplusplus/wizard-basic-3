@@ -662,7 +662,7 @@ TEST(ArrayOperations, TestSetArrayItem) {
 TEST(ArrayOperations, TestGetLength) {
 	const auto size = __CreateNumber(TEST_SIZE_VALUE);
 	const auto array = __CreateArray(size);
-	const auto result = GetLength(array);
+	const auto result = GetSize(array);
 
 	EXPECT_EQ(result.type, __VALUE_TYPE_NUMBER);
 	EXPECT_EQ(result.storage.number, TEST_SIZE_VALUE);

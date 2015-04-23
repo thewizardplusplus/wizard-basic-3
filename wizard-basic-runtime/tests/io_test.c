@@ -44,7 +44,7 @@ __Value ReadTestFile(const __Value filename, const __Value test_string_length) {
 	}
 
 	__Value data = Read(file, test_string_length);
-	if (__ToBoolean(__NotEqual(GetLength(data), test_string_length))) {
+	if (__ToBoolean(__NotEqual(GetSize(data), test_string_length))) {
 		fputs("Error: unable to read to test file.\n", stderr);
 	}
 
@@ -60,8 +60,8 @@ int main(void) {
 	__Value test_filename = __CreateArrayFromString("io_test_result.txt");
 	__Value test_string = __CreateArrayFromString("OK\n");
 	WriteTestFile(test_filename, test_string);
-	__Value data = ReadTestFile(test_filename, GetLength(test_string));
-	if (__ToBoolean(__NotEqual(GetLength(data), __CreateNumber(0)))) {
+	__Value data = ReadTestFile(test_filename, GetSize(test_string));
+	if (__ToBoolean(__NotEqual(GetSize(data), __CreateNumber(0)))) {
 		Write(__CreateNumber(1), data);
 	}
 

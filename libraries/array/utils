@@ -2,13 +2,13 @@ include "range/utils"
 include "io"
 
 function Append(array_1, array_2)
-	let result = new array(GetLength(array_1) + GetLength(array_2))
+	let result = new array(GetSize(array_1) + GetSize(array_2))
 	let i = Range([result])
 	while Next(i) do
-		if i.index < GetLength(array_1) then
+		if i.index < GetSize(array_1) then
 			result[i.index] = array_1[i.index]
 		else
-			result[i.index] = array_2[i.index - GetLength(array_1)]
+			result[i.index] = array_2[i.index - GetSize(array_1)]
 		end
 	end
 
@@ -16,7 +16,7 @@ function Append(array_1, array_2)
 end
 
 function Slice(array, start, finish)
-	if start < 0 or finish > GetLength(array) then
+	if start < 0 or finish > GetSize(array) then
 		Die("Error: out of range.")
 	end
 

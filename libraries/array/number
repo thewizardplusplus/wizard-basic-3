@@ -12,7 +12,7 @@ function Compare(array_1, array_2)
 		and it'll create recursion.
 	...
 	let i = 0
-	while i < GetLength(array_1) and i < GetLength(array_2) do
+	while i < GetSize(array_1) and i < GetSize(array_2) do
 		if array_1[i] < array_2[i] then
 			return COMPARE_RESULT_LESS
 		else if array_1[i] > array_2[i] then
@@ -22,9 +22,9 @@ function Compare(array_1, array_2)
 		i = i + 1
 	end
 
-	if GetLength(array_1) < GetLength(array_2) then
+	if GetSize(array_1) < GetSize(array_2) then
 		return COMPARE_RESULT_LESS
-	else if GetLength(array_1) == GetLength(array_2) then
+	else if GetSize(array_1) == GetSize(array_2) then
 		return COMPARE_RESULT_EQUAL
 	else
 		return COMPARE_RESULT_GREATER
@@ -95,11 +95,11 @@ function ArrayNumberSearchSubarray(range, value)
 	return NULL
 end
 
-note ArrayNumberLastIndexOf(array, value, offset = GetLength(array))
+note ArrayNumberLastIndexOf(array, value, offset = GetSize(array))
 function ArrayNumberLastIndexOf(args)
 	let array = Arg([args, 0])
 	let value = Arg([args, 1])
-	let offset = Arg([args, 2, GetLength(array)])
+	let offset = Arg([args, 2, GetSize(array)])
 
 	let range = Range([array, 0, offset, TRUE])
 	return ArrayNumberSearch(range, value)

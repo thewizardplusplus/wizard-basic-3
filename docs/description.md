@@ -210,7 +210,7 @@ Do &mdash; интерпретируемый высокоуровневый яз�
 
 * модуль `lang`:
     * `ToString(number, precision)`;
-    * `GetLength(array)`;
+    * `GetSize(array)`;
     * `GetType(value)`;
 * модуль `system`:
     * `GetTime()`;
