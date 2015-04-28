@@ -21,7 +21,7 @@ LDFLAGS += \
 
 main: $(OBJECTS)
 	mkdir -p $(BUILD)
-	$(CXX) $(CXXFLAGS) -o $(BUILD)do $(OBJECTS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $(BUILD)doi $(OBJECTS) $(LDFLAGS)
 
 clean:
 	find . -name "*.o" -type f -delete
