@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_RUN_HEADER
-#define WIZARD_BASIC_3_RUN_HEADER
+#ifndef DO_RUN_HEADER
+#define DO_RUN_HEADER
 
 #include "utils.h"
 #include <boost/filesystem.hpp>

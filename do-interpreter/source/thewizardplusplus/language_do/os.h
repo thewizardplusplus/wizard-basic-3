@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_OS_HEADER
-#define WIZARD_BASIC_3_OS_HEADER
+#ifndef DO_OS_HEADER
+#define DO_OS_HEADER
 
 // http://sourceforge.net/p/predef/wiki/OperatingSystems/
 #if \

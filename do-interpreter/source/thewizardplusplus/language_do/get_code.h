@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_GET_CODE_HEADER
-#define WIZARD_BASIC_3_GET_CODE_HEADER
+#ifndef DO_GET_CODE_HEADER
+#define DO_GET_CODE_HEADER
 
 #include <string>
 #include <boost/filesystem.hpp>

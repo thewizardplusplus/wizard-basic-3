@@ -21,8 +21,8 @@
  * SOFTWARE.
  */
 
-#ifndef WIZARD_BASIC_3_RUNTIME_HEADER
-#define WIZARD_BASIC_3_RUNTIME_HEADER
+#ifndef DO_RUNTIME_HEADER
+#define DO_RUNTIME_HEADER
 
 #include <stdio.h>
 #include <stdlib.h>

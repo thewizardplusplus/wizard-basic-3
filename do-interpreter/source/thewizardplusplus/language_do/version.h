@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_VERSION_HEADER
-#define WIZARD_BASIC_3_VERSION_HEADER
+#ifndef DO_VERSION_HEADER
+#define DO_VERSION_HEADER
 
 #include <string>
 

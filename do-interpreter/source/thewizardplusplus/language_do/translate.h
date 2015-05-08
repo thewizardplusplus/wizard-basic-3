@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_TRANSLATE_HEADER
-#define WIZARD_BASIC_3_TRANSLATE_HEADER
+#ifndef DO_TRANSLATE_HEADER
+#define DO_TRANSLATE_HEADER
 
 #include <unordered_map>
 #include <wizard_parser/node/Node.h>

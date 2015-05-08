@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_UTILS_HEADER
-#define WIZARD_BASIC_3_UTILS_HEADER
+#ifndef DO_UTILS_HEADER
+#define DO_UTILS_HEADER
 
 #include <string>
 #include <vector>

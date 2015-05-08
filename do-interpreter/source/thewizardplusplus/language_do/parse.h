@@ -1,5 +1,5 @@
-#ifndef WIZARD_BASIC_3_PARSE_HEADER
-#define WIZARD_BASIC_3_PARSE_HEADER
+#ifndef DO_PARSE_HEADER
+#define DO_PARSE_HEADER
 
 #include <wizard_parser/node/Node.h>
 
