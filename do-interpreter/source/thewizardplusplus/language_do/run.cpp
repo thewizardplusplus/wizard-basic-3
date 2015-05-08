@@ -1,8 +1,12 @@
 #include "run.h"
+#include "os.h"
 #include <algorithm>
 #include <fstream>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/format.hpp>
+#ifdef DO_OS_LINUX
+	#include <sys/wait.h>
+#endif
 
 using namespace boost;
 using namespace boost::algorithm;
@@ -63,9 +67,14 @@ int Run(
 	}
 	std::remove(source_filename.c_str());
 
-	const auto executing_status_code = std::system(
-		final_output_filename.c_str()
-	);
+	auto executing_status_code = std::system(final_output_filename.c_str());
+	#ifdef DO_OS_LINUX
+		if (WIFEXITED(executing_status_code)) {
+			executing_status_code = WEXITSTATUS(executing_status_code);
+		} else {
+			executing_status_code = EXIT_FAILURE;
+		}
+	#endif
 	if (output_filename.empty()) {
 		std::remove(final_output_filename.c_str());
 	}
