@@ -4,6 +4,7 @@ OBJECTS = \
 	$(SOURCE)version.o \
 	$(SOURCE)process_command_line_arguments.o \
 	$(SOURCE)get_code.o \
+	$(SOURCE)GrammarRule.o \
 	$(SOURCE)parse.o \
 	$(SOURCE)translate.o \
 	$(SOURCE)run.o
