@@ -1,5 +1,5 @@
 #include "translate.h"
-#include "utils.h"
+#include "../utils/utils.h"
 #include <algorithm>
 #include <numeric>
 #include <set>
@@ -8,13 +8,13 @@
 #include <boost/random/random_device.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 
+using namespace thewizardplusplus::language_do::utils;
 using namespace thewizardplusplus::wizard_parser::node;
 using namespace boost;
 using namespace boost::algorithm;
 using namespace boost::random;
 
-namespace thewizardplusplus {
-namespace language_do {
+namespace {
 
 const auto FUNCTION_NAME_LIST = StringGroup{
 	"ToString",
@@ -40,6 +40,7 @@ const auto FUNCTION_NAME_LIST = StringGroup{
 	"GetRandom",
 	"Main"
 };
+
 const auto RANDOM_PREFIX_SYMBOLS = std::string(
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	"abcdefghijklmnopqrstuvwxyz"
@@ -47,7 +48,7 @@ const auto RANDOM_PREFIX_SYMBOLS = std::string(
 );
 const auto RANDOM_PREFIX_LENGTH = 5;
 
-static auto GetRandomPrefix(void) -> std::string {
+auto GetRandomPrefix(void) -> std::string {
 	random_device device;
 	uniform_int_distribution<> index(0, RANDOM_PREFIX_SYMBOLS.size() - 1);
 
@@ -60,7 +61,7 @@ static auto GetRandomPrefix(void) -> std::string {
 	return result;
 }
 
-static auto WrapFunctionName(
+auto WrapFunctionName(
 	const std::string& name,
 	const std::string& prefix
 ) -> std::string {
@@ -71,7 +72,7 @@ static auto WrapFunctionName(
 			: name;
 }
 
-static auto TranslateExpression(
+auto TranslateExpression(
 	const Node& ast,
 	const std::string& identify_prefix
 ) -> std::string {
@@ -235,7 +236,7 @@ static auto TranslateExpression(
 	return "";
 }
 
-static auto TranslateStatementList(
+auto TranslateStatementList(
 	const Node& ast,
 	const std::string& identify_prefix
 ) -> std::string {
@@ -375,6 +376,12 @@ static auto TranslateStatementList(
 	);
 }
 
+}
+
+namespace thewizardplusplus {
+namespace language_do {
+namespace translator {
+
 auto Translate(const Node& ast) -> std::string {
 	auto structures_registration = std::string();
 	auto global_variables_declarations = std::string();
@@ -499,5 +506,6 @@ auto Translate(const Node& ast) -> std::string {
 			% global_variables_initializations).str();
 }
 
+}
 }
 }

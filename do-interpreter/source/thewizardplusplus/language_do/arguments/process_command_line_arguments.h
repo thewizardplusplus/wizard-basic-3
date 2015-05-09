@@ -1,17 +1,18 @@
 #ifndef DO_PROCESS_COMMAND_LINE_ARGUMENTS_HEADER
 #define DO_PROCESS_COMMAND_LINE_ARGUMENTS_HEADER
 
-#include "utils.h"
+#include "../utils/utils.h"
 #include <boost/filesystem.hpp>
 
 namespace thewizardplusplus {
 namespace language_do {
+namespace arguments {
 
 enum class FinalStage : uint8_t {
 	NONE,
 	CODE,
 	AST,
-	ANSI_C
+	C
 };
 struct CommandLineArguments {
 	boost::filesystem::path interpreter_base_path;
@@ -19,7 +20,7 @@ struct CommandLineArguments {
 	boost::filesystem::path output_file;
 	bool use_output;
 	boost::filesystem::path script_file;
-	StringGroup script_arguments;
+	utils::StringGroup script_arguments;
 };
 
 auto ProcessCommandLineArguments(
@@ -27,6 +28,7 @@ auto ProcessCommandLineArguments(
 	char* arguments[]
 ) -> CommandLineArguments;
 
+}
 }
 }
 #endif

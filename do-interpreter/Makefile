@@ -1,13 +1,13 @@
 SOURCE = source/thewizardplusplus/language_do/
 OBJECTS = \
 	$(SOURCE)main.o \
-	$(SOURCE)version.o \
-	$(SOURCE)process_command_line_arguments.o \
-	$(SOURCE)get_code.o \
-	$(SOURCE)GrammarRule.o \
-	$(SOURCE)parse.o \
-	$(SOURCE)translate.o \
-	$(SOURCE)run.o
+	$(SOURCE)utils/version.o \
+	$(SOURCE)arguments/process_command_line_arguments.o \
+	$(SOURCE)preprocessor/get_code.o \
+	$(SOURCE)parser/GrammarRule.o \
+	$(SOURCE)parser/parse.o \
+	$(SOURCE)translator/translate.o \
+	$(SOURCE)runner/run.o
 BUILD = ../build/
 CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
 LDFLAGS += \

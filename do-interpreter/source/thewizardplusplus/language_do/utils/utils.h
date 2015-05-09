@@ -6,9 +6,11 @@
 
 namespace thewizardplusplus {
 namespace language_do {
+namespace utils {
 
 using StringGroup = std::vector<std::string>;
 
+}
 }
 }
 #endif

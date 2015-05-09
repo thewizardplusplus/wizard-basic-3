@@ -6,6 +6,7 @@
 
 namespace thewizardplusplus {
 namespace language_do {
+namespace parser {
 
 enum class GrammarRule : uint8_t {
 	ROOT,
@@ -36,6 +37,7 @@ using GrammarRuleMap = std::map<boost::spirit::classic::parser_id, std::string>;
 
 extern const GrammarRuleMap GRAMMAR_RULE_NAMES;
 
+}
 }
 }
 #endif

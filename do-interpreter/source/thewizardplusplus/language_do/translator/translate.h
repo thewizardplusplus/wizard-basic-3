@@ -6,9 +6,11 @@
 
 namespace thewizardplusplus {
 namespace language_do {
+namespace translator {
 
 auto Translate(const wizard_parser::node::Node& ast) -> std::string;
 
+}
 }
 }
 #endif

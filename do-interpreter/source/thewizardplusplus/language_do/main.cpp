@@ -1,9 +1,9 @@
-#include "utils.h"
-#include "process_command_line_arguments.h"
-#include "get_code.h"
-#include "parse.h"
-#include "translate.h"
-#include "run.h"
+#include "utils/utils.h"
+#include "arguments/process_command_line_arguments.h"
+#include "preprocessor/get_code.h"
+#include "parser/parse.h"
+#include "translator/translate.h"
+#include "runner/run.h"
 #include <fstream>
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
@@ -14,6 +14,12 @@
 #include <boost/algorithm/string.hpp>
 
 using namespace thewizardplusplus::language_do;
+using namespace thewizardplusplus::language_do::utils;
+using namespace thewizardplusplus::language_do::arguments;
+using namespace thewizardplusplus::language_do::preprocessor;
+using namespace thewizardplusplus::language_do::parser;
+using namespace thewizardplusplus::language_do::translator;
+using namespace thewizardplusplus::language_do::runner;
 using namespace thewizardplusplus::wizard_parser::node;
 using namespace boost;
 using namespace boost::property_tree;
@@ -157,7 +163,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 	ProcessResult<FinalStage::AST>(command_line_arguments, FormatAst(ast));
 
 	/*const auto ansi_c = Translate(ast);
-	ProcessResult<FinalStage::ANSI_C>(
+	ProcessResult<FinalStage::C>(
 		command_line_arguments,
 		FormatAnsiC(ansi_c)
 	);

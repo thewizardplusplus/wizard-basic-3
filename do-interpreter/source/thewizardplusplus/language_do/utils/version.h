@@ -5,9 +5,11 @@
 
 namespace thewizardplusplus {
 namespace language_do {
+namespace utils {
 
 extern const std::string VERSION_STRING;
 
+}
 }
 }
 #endif

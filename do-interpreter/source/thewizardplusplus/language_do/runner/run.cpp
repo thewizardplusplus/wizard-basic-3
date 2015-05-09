@@ -1,5 +1,5 @@
 #include "run.h"
-#include "os.h"
+#include "../utils/os.h"
 #include <algorithm>
 #include <fstream>
 #include <boost/algorithm/string/join.hpp>
@@ -8,12 +8,14 @@
 	#include <sys/wait.h>
 #endif
 
+using namespace thewizardplusplus::language_do::utils;
 using namespace boost;
 using namespace boost::algorithm;
 using namespace boost::filesystem;
 
 namespace thewizardplusplus {
 namespace language_do {
+namespace runner {
 
 int Run(
 	const std::string& ansi_c,
@@ -82,5 +84,6 @@ int Run(
 	return executing_status_code;
 }
 
+}
 }
 }

@@ -1,18 +1,24 @@
 #include "process_command_line_arguments.h"
-#include "version.h"
+#include "../utils/version.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/format.hpp>
 
+using namespace thewizardplusplus::language_do::utils;
 using namespace boost;
 using namespace boost::program_options;
 using namespace boost::filesystem;
 
+namespace {
+
 const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
 const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
 
+}
+
 namespace thewizardplusplus {
 namespace language_do {
+namespace arguments {
 
 auto ProcessCommandLineArguments(
 	const int number_of_arguments,
@@ -86,7 +92,7 @@ auto ProcessCommandLineArguments(
 		} else if (final_stage == "ast") {
 			command_line_arguments.final_stage = FinalStage::AST;
 		} else if (final_stage == "c") {
-			command_line_arguments.final_stage = FinalStage::ANSI_C;
+			command_line_arguments.final_stage = FinalStage::C;
 		} else {
 			throw std::runtime_error(
 				(format(R"(unknown final stage "%s")") % final_stage).str()
@@ -117,5 +123,6 @@ auto ProcessCommandLineArguments(
 	return command_line_arguments;
 }
 
+}
 }
 }
