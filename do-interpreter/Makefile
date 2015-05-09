@@ -4,7 +4,6 @@ OBJECTS = \
 	$(SOURCE)utils/version.o \
 	$(SOURCE)arguments/process_command_line_arguments.o \
 	$(SOURCE)preprocessor/get_code.o \
-	$(SOURCE)parser/GrammarRule.o \
 	$(SOURCE)parser/parse.o \
 	$(SOURCE)translator/translate.o \
 	$(SOURCE)runner/run.o
