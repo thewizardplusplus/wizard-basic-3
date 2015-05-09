@@ -56,6 +56,11 @@ auto GetCode(
 ) -> std::string {
 	static auto included_files = std::set<path>();
 
+	if (!exists(filename)) {
+		throw std::runtime_error(
+			(format(R"(script %s doesn't exist)") % filename).str()
+		);
+	}
 	const auto absolute_path = canonical(filename);
 	if (included_files.count(absolute_path)) {
 		return "";
