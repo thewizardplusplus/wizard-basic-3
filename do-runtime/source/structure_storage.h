@@ -158,7 +158,7 @@ char* __ConcatenateNames(const char* structure_name, const char* field_name) {
 /*******************************************************************************
  * Interpreter API.
  ******************************************************************************/
-void __InitializeStructureStorage(void) {}
+void __InitializeStructureStorage() {}
 
 void __RegisterStructureField(
 	const char* structure_name,
@@ -202,7 +202,7 @@ size_t __GetStructureFieldIndex(
 	return field->index;
 }
 
-void __CleanupStructureStorage(void) {
+void __CleanupStructureStorage() {
 	__DeleteFields(&__fields);
 	__DeleteStructures(&__structures);
 }

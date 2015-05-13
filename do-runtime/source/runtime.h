@@ -91,9 +91,9 @@ static __OpenedFileStorage __opened_file_storage = {NULL, 0, 0};
 /*******************************************************************************
  * Interpreter API.
  ******************************************************************************/
-void __InitializeGarbageCollector(void);
+void __InitializeGarbageCollector();
 void* __AllocateMemory(const size_t size);
-void __InitializeStructureStorage(void);
+void __InitializeStructureStorage();
 void __RegisterStructureField(
 	const char* structure_name,
 	const char* field_name,
@@ -104,21 +104,21 @@ size_t __GetStructureFieldIndex(
 	const char* structure_name,
 	const char* field_name
 );
-void __CleanupStructureStorage(void);
+void __CleanupStructureStorage();
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
  * Utils.
  ******************************************************************************/
 __Value __CreateArrayFromString(const char* string);
-void __InitializeConstants(void) {
+void __InitializeConstants() {
 	__TYPE_NAME_NULL = __CreateArrayFromString("null");
 	__TYPE_NAME_NUMBER = __CreateArrayFromString("number");
 	__TYPE_NAME_ARRAY = __CreateArrayFromString("array");
 }
 
 size_t __AddOpenedFile(__OpenedFileStorage* storage, FILE* file);
-void __InitializeOpenedFileStorage(void) {
+void __InitializeOpenedFileStorage() {
 	__AddOpenedFile(&__opened_file_storage, stdin);
 	__AddOpenedFile(&__opened_file_storage, stdout);
 	__AddOpenedFile(&__opened_file_storage, stderr);
@@ -590,7 +590,7 @@ __Value GetType(const __Value value) {
 /*******************************************************************************
  * System module.
  ******************************************************************************/
-__Value GetTime(void) {
+__Value GetTime() {
 	const time_t current_time = time(NULL);
 	return __CreateNumber(current_time);
 }
@@ -785,7 +785,7 @@ __Value Integral(const __Value number) {
 	return __CreateNumber(result);
 }
 
-__Value GetRandom(void) {
+__Value GetRandom() {
 	static bool prng_initialized = false;
 
 	if (!prng_initialized) {

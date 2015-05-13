@@ -118,7 +118,7 @@ public:
 		}
 		inline const boost::spirit::classic::rule<ScannerType, boost::spirit::
 			classic::parser_tag<static_cast<int>(GrammarRule::
-			ROOT)> >& start(void) const {
+			ROOT)> >& start() const {
 				return root;
 			}
 

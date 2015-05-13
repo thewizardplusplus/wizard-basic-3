@@ -29,7 +29,7 @@
 /*******************************************************************************
  * Interpreter API mocks.
  ******************************************************************************/
-void __InitializeGarbageCollector(void) {
+void __InitializeGarbageCollector() {
 	GC_INIT();
 }
 

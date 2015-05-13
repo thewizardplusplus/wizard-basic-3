@@ -48,7 +48,7 @@ const auto RANDOM_PREFIX_SYMBOLS = std::string(
 );
 const auto RANDOM_PREFIX_LENGTH = 5;
 
-auto GetRandomPrefix(void) -> std::string {
+auto GetRandomPrefix() -> std::string {
 	random_device device;
 	uniform_int_distribution<> index(0, RANDOM_PREFIX_SYMBOLS.size() - 1);
 

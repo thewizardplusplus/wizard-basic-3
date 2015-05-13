@@ -53,7 +53,7 @@ __Value ReadTestFile(const __Value filename, const __Value test_string_length) {
 	return data;
 }
 
-int main(void) {
+int main() {
 	__InitializeConstants();
 	__InitializeOpenedFileStorage();
 
