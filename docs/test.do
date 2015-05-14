@@ -1,1 +1,1 @@
-[test]
+new array(NULL)

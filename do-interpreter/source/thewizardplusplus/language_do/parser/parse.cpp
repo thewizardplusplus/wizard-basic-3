@@ -16,6 +16,11 @@ enum class GrammarRule : uint8_t {
 	PROGRAM,
 
 	EXPRESSION,
+	ARRAY_SIZED_DEFINITION,
+	ACCESSOR,
+	ARRAY_ITEM_ACCESS,
+	STRUCTURE_FIELD_ACCESS,
+
 	ATOM,
 	NULL_DEFINITION,
 	ARRAY_LISTED_DEFINITION,
@@ -57,7 +62,20 @@ public:
 			root = program;
 			program = expression >> end_p;
 
-			expression = atom;
+			expression = gen_pt_node_d[array_sized_definition] | accessor;
+			array_sized_definition =
+				discard_node_d[str_p("new")]
+				>> discard_node_d[str_p("array")]
+				>> inner_node_d[ch_p('(') >> expression >> ')'];
+			accessor =
+				atom
+				>> *(
+					gen_pt_node_d[array_item_access]
+					| gen_pt_node_d[structure_field_access]
+				);
+			array_item_access = inner_node_d[ch_p('[') >> expression >> ']'];
+			structure_field_access = discard_node_d[ch_p('.')] >> identifier;
+
 			atom = longest_d[
 				null_definition
 				| number
@@ -122,6 +140,23 @@ public:
 			ScannerType,
 			parser_tag<static_cast<int>(GrammarRule::EXPRESSION)>
 		> expression;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::ARRAY_SIZED_DEFINITION)>
+		> array_sized_definition;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::ACCESSOR)>
+		> accessor;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::ARRAY_ITEM_ACCESS)>
+		> array_item_access;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::STRUCTURE_FIELD_ACCESS)>
+		> structure_field_access;
+
 		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::ATOM)>> atom;
 		rule<
 			ScannerType,
@@ -157,6 +192,11 @@ const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::PROGRAM), "program"},
 
 		{ToId(GrammarRule::EXPRESSION), "expression"},
+		{ToId(GrammarRule::ARRAY_SIZED_DEFINITION), "array-sized-definition"},
+		{ToId(GrammarRule::ACCESSOR), "accessor"},
+		{ToId(GrammarRule::ARRAY_ITEM_ACCESS), "array-item-access"},
+		{ToId(GrammarRule::STRUCTURE_FIELD_ACCESS), "structure-field-access"},
+
 		{ToId(GrammarRule::ATOM), "atom"},
 		{ToId(GrammarRule::NULL_DEFINITION), "null-definition"},
 		{ToId(GrammarRule::ARRAY_LISTED_DEFINITION), "array-listed-definition"},
