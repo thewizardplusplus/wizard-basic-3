@@ -5,16 +5,15 @@
 #include <boost/spirit/home/classic/utility.hpp>
 #include <boost/spirit/home/classic/core.hpp>
 #include <boost/spirit/home/classic/tree/tree_to_xml.hpp>
-#include <boost/algorithm/string.hpp>
 
 using namespace thewizardplusplus::wizard_parser::node;
-using namespace boost;
 using namespace boost::spirit::classic;
 
 namespace {
 
 enum class GrammarRule : uint8_t {
 	ROOT,
+	PROGRAM,
 
 	EXPRESSION,
 	ATOM,
@@ -55,7 +54,8 @@ public:
 		inline definition(const DoGrammar& grammar) {
 			(void)grammar;
 
-			root = expression;
+			root = program;
+			program = expression >> end_p;
 
 			expression = atom;
 			atom = longest_d[
@@ -113,6 +113,10 @@ public:
 
 	private:
 		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::ROOT)>> root;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::PROGRAM)>
+		> program;
 
 		rule<
 			ScannerType,
@@ -150,6 +154,7 @@ public:
 auto ToId(const GrammarRule& rule) -> parser_id;
 const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::ROOT), "root"},
+		{ToId(GrammarRule::PROGRAM), "program"},
 
 		{ToId(GrammarRule::EXPRESSION), "expression"},
 		{ToId(GrammarRule::ATOM), "atom"},
@@ -173,13 +178,12 @@ namespace language_do {
 namespace parser {
 
 auto Parse(const std::string& code) -> Node {
-	const auto trimmed_code = trim_copy(code);
 	tree_parse_info<
 		std::string::const_iterator,
 		node_iter_data_factory<>
 	> parse_tree_info = ast_parse<node_iter_data_factory<>>(
-		trimmed_code.begin(),
-		trimmed_code.end(),
+		code.begin(),
+		code.end(),
 		DoGrammar(),
 		space_p
 	);
