@@ -16,6 +16,12 @@ namespace {
 enum class GrammarRule : uint8_t {
 	ROOT,
 
+	EXPRESSION,
+	ATOM,
+	NULL_DEFINITION,
+	ARRAY_LISTED_DEFINITION,
+	FUNCTION_CALL,
+
 	NUMBER,
 	IDENTIFIER,
 	STRING_DEFINITION,
@@ -49,7 +55,28 @@ public:
 		inline definition(const DoGrammar& grammar) {
 			(void)grammar;
 
-			root = number | identifier | string_definition;
+			root = expression;
+
+			expression = atom;
+			atom = longest_d[
+				null_definition
+				| number
+				| identifier
+				| gen_pt_node_d[array_listed_definition]
+				| string_definition
+				| gen_pt_node_d[function_call]
+				| inner_node_d[ch_p('(') >> expression >> ')']
+			];
+			null_definition = str_p("NULL");
+			array_listed_definition = inner_node_d[
+				ch_p('[') >> !infix_node_d[expression % ','] >> ']'
+			];
+			function_call =
+				identifier
+				>> inner_node_d[
+					ch_p('(') >> !infix_node_d[expression % ','] >> ')'
+				];
+
 			number = real_parser<double, UnsignedRealParserPolicies>();
 			identifier =
 				lexeme_d[token_node_d[(alpha_p ^ '_') >> *(alnum_p ^ '_')]]
@@ -73,10 +100,8 @@ public:
 				- "then"
 				- "while";
 			string_definition = lexeme_d[
-					discard_node_d[ch_p('"')]
-						>> token_node_d[*(c_escape_ch_p - '"')]
-					>> discard_node_d[ch_p('"')]
-				];
+				token_node_d[ch_p('"') >>  *(c_escape_ch_p - '"') >> '"']
+			];
 		}
 
 		inline const rule<
@@ -88,6 +113,24 @@ public:
 
 	private:
 		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::ROOT)>> root;
+
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::EXPRESSION)>
+		> expression;
+		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::ATOM)>> atom;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::NULL_DEFINITION)>
+		> null_definition;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::ARRAY_LISTED_DEFINITION)>
+		> array_listed_definition;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::FUNCTION_CALL)>
+		> function_call;
 
 		rule<
 			ScannerType,
@@ -107,6 +150,12 @@ public:
 auto ToId(const GrammarRule& rule) -> parser_id;
 const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::ROOT), "root"},
+
+		{ToId(GrammarRule::EXPRESSION), "expression"},
+		{ToId(GrammarRule::ATOM), "atom"},
+		{ToId(GrammarRule::NULL_DEFINITION), "null-definition"},
+		{ToId(GrammarRule::ARRAY_LISTED_DEFINITION), "array-listed-definition"},
+		{ToId(GrammarRule::FUNCTION_CALL), "function-call"},
 
 		{ToId(GrammarRule::NUMBER), "number"},
 		{ToId(GrammarRule::IDENTIFIER), "identifier"},
