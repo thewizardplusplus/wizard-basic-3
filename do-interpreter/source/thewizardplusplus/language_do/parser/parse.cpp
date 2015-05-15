@@ -24,8 +24,8 @@ enum class GrammarRule : uint8_t {
 	PRODUCT,
 	UNARY,
 
-	STRUCTURE_DEFINITION,
 	ARRAY_SIZED_DEFINITION,
+	STRUCTURE_DEFINITION,
 	ACCESSOR,
 	ARRAY_ITEM_ACCESS,
 	STRUCTURE_FIELD_ACCESS,
@@ -60,6 +60,8 @@ public:
 		return scan.no_match();
 	}
 };
+template<typename ScannerType, GrammarRule rule_id>
+using DoRule = rule<ScannerType, parser_tag<static_cast<int>(rule_id)>>;
 class DoGrammar : public grammar<DoGrammar> {
 public:
 	template <typename ScannerType>
@@ -154,89 +156,44 @@ public:
 		}
 
 	private:
-		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::ROOT)>> root;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::PROGRAM)>
-		> program;
+		DoRule<ScannerType, GrammarRule::ROOT> root;
+		DoRule<ScannerType, GrammarRule::PROGRAM> program;
 
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::EXPRESSION)>
-		> expression;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::DISJUNCTION)>
-		> disjunction;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::CONJUNCTION)>
-		> conjunction;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::EQUALITY)>
-		> equality;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::COMPARISON)>
-		> comparison;
-		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::SUM)>> sum;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::PRODUCT)>
-		> product;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::UNARY)>
-		> unary;
+		DoRule<ScannerType, GrammarRule::EXPRESSION> expression;
+		DoRule<ScannerType, GrammarRule::DISJUNCTION> disjunction;
+		DoRule<ScannerType, GrammarRule::CONJUNCTION> conjunction;
+		DoRule<ScannerType, GrammarRule::EQUALITY> equality;
+		DoRule<ScannerType, GrammarRule::COMPARISON> comparison;
+		DoRule<ScannerType, GrammarRule::SUM> sum;
+		DoRule<ScannerType, GrammarRule::PRODUCT> product;
+		DoRule<ScannerType, GrammarRule::UNARY> unary;
 
-		rule<
+		DoRule<
 			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::STRUCTURE_DEFINITION)>
-		> structure_definition;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::ARRAY_SIZED_DEFINITION)>
+			GrammarRule::ARRAY_SIZED_DEFINITION
 		> array_sized_definition;
-		rule<
+		DoRule<
 			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::ACCESSOR)>
-		> accessor;
-		rule<
+			GrammarRule::STRUCTURE_DEFINITION
+		> structure_definition;
+		DoRule<ScannerType, GrammarRule::ACCESSOR> accessor;
+		DoRule<ScannerType, GrammarRule::ARRAY_ITEM_ACCESS> array_item_access;
+		DoRule<
 			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::ARRAY_ITEM_ACCESS)>
-		> array_item_access;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::STRUCTURE_FIELD_ACCESS)>
+			GrammarRule::STRUCTURE_FIELD_ACCESS
 		> structure_field_access;
 
-		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::ATOM)>> atom;
-		rule<
+		DoRule<ScannerType, GrammarRule::ATOM> atom;
+		DoRule<ScannerType, GrammarRule::NULL_DEFINITION> null_definition;
+		DoRule<
 			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::NULL_DEFINITION)>
-		> null_definition;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::ARRAY_LISTED_DEFINITION)>
+			GrammarRule::ARRAY_LISTED_DEFINITION
 		> array_listed_definition;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::FUNCTION_CALL)>
-		> function_call;
+		DoRule<ScannerType, GrammarRule::FUNCTION_CALL> function_call;
 
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::NUMBER)>
-		> number;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::IDENTIFIER)>
-		> identifier;
-		rule<
-			ScannerType,
-			parser_tag<static_cast<int>(GrammarRule::STRING_DEFINITION)>
-		> string_definition;
+		DoRule<ScannerType, GrammarRule::NUMBER> number;
+		DoRule<ScannerType, GrammarRule::IDENTIFIER> identifier;
+		DoRule<ScannerType, GrammarRule::STRING_DEFINITION> string_definition;
 	};
 };
 
@@ -254,8 +211,8 @@ const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::PRODUCT), "product"},
 		{ToId(GrammarRule::UNARY), "unary"},
 
-		{ToId(GrammarRule::STRUCTURE_DEFINITION), "structure-definition"},
 		{ToId(GrammarRule::ARRAY_SIZED_DEFINITION), "array-sized-definition"},
+		{ToId(GrammarRule::STRUCTURE_DEFINITION), "structure-definition"},
 		{ToId(GrammarRule::ACCESSOR), "accessor"},
 		{ToId(GrammarRule::ARRAY_ITEM_ACCESS), "array-item-access"},
 		{ToId(GrammarRule::STRUCTURE_FIELD_ACCESS), "structure-field-access"},

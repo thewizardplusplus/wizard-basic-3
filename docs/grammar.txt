@@ -50,12 +50,12 @@ comparison = sum, {("<" | "<=" | ">" | ">="), sum};
 sum = product, {("+" | "-"), product};
 product = unary, {("*" | "/" | "%"), unary};
 unary =
-	structure definition
-	| array sized definition
+	array sized definition
+	| structure definition
 	| ({"-" | "not"}, accessor);
 
-structure definition = "new", identifier;
 array sized definition = "new", "array", "(", expression, ")";
+structure definition = "new", identifier;
 accessor = atom, {array item access | structure field access};
 array item access = "[", expression, "]";
 structure field access = ".", identifier;
