@@ -1,1 +1,1 @@
-new array(NULL)
+2 == 5 /= 4

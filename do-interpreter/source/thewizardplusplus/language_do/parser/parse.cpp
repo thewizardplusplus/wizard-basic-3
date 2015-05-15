@@ -16,6 +16,15 @@ enum class GrammarRule : uint8_t {
 	PROGRAM,
 
 	EXPRESSION,
+	DISJUNCTION,
+	CONJUNCTION,
+	EQUALITY,
+	COMPARISON,
+	SUM,
+	PRODUCT,
+	UNARY,
+
+	STRUCTURE_DEFINITION,
 	ARRAY_SIZED_DEFINITION,
 	ACCESSOR,
 	ARRAY_ITEM_ACCESS,
@@ -62,7 +71,22 @@ public:
 			root = program;
 			program = expression >> end_p;
 
-			expression = gen_pt_node_d[array_sized_definition] | accessor;
+			expression = disjunction;
+			disjunction = infix_node_d[conjunction % "or"];
+			conjunction = infix_node_d[equality % "and"];
+			equality = comparison % root_node_d[str_p("==") | "/="];
+			comparison =
+				sum
+				% root_node_d[longest_d[ch_p('<') | "<=" | '>' | ">="]];
+			sum = product % root_node_d[ch_p('+') | '-'];
+			product = unary % root_node_d[ch_p('*') | '/' | '%'];
+			unary = longest_d[
+				gen_pt_node_d[structure_definition]
+				| gen_pt_node_d[array_sized_definition]
+				| (*(ch_p('-') | "not") >> accessor)
+			];
+
+			structure_definition = discard_node_d[str_p("new")] >> identifier;
 			array_sized_definition =
 				discard_node_d[str_p("new")]
 				>> discard_node_d[str_p("array")]
@@ -142,6 +166,36 @@ public:
 		> expression;
 		rule<
 			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::DISJUNCTION)>
+		> disjunction;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::CONJUNCTION)>
+		> conjunction;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::EQUALITY)>
+		> equality;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::COMPARISON)>
+		> comparison;
+		rule<ScannerType, parser_tag<static_cast<int>(GrammarRule::SUM)>> sum;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::PRODUCT)>
+		> product;
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::UNARY)>
+		> unary;
+
+		rule<
+			ScannerType,
+			parser_tag<static_cast<int>(GrammarRule::STRUCTURE_DEFINITION)>
+		> structure_definition;
+		rule<
+			ScannerType,
 			parser_tag<static_cast<int>(GrammarRule::ARRAY_SIZED_DEFINITION)>
 		> array_sized_definition;
 		rule<
@@ -192,6 +246,15 @@ const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::PROGRAM), "program"},
 
 		{ToId(GrammarRule::EXPRESSION), "expression"},
+		{ToId(GrammarRule::DISJUNCTION), "disjunction"},
+		{ToId(GrammarRule::CONJUNCTION), "conjunction"},
+		{ToId(GrammarRule::EQUALITY), "equality"},
+		{ToId(GrammarRule::COMPARISON), "comparison"},
+		{ToId(GrammarRule::SUM), "sum"},
+		{ToId(GrammarRule::PRODUCT), "product"},
+		{ToId(GrammarRule::UNARY), "unary"},
+
+		{ToId(GrammarRule::STRUCTURE_DEFINITION), "structure-definition"},
 		{ToId(GrammarRule::ARRAY_SIZED_DEFINITION), "array-sized-definition"},
 		{ToId(GrammarRule::ACCESSOR), "accessor"},
 		{ToId(GrammarRule::ARRAY_ITEM_ACCESS), "array-item-access"},
