@@ -1,7 +1,10 @@
 program =
-	variable definition
-	| structure declaration
-	| function declaration;
+	(variable definition
+		| structure declaration
+		| function declaration)
+	{variable definition
+		| structure declaration
+		| function declaration};
 
 variable definition = "let", identifier, "=", expression;
 structure declaration =

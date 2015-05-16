@@ -15,6 +15,10 @@ enum class GrammarRule : uint8_t {
 	ROOT,
 	PROGRAM,
 
+	VARIABLE_DEFINITION,
+	STRUCTURE_DECLARATION,
+	FUNCTION_DECLARATION,
+
 	STATEMENT_LIST,
 	STATEMENT,
 	ASSIGNMENT,
@@ -80,7 +84,29 @@ public:
 			(void)grammar;
 
 			root = program;
-			program = statement_list >> end_p;
+			program =
+				+(variable_definition
+					| structure_declaration
+					| function_declaration)
+				>> end_p;
+
+			variable_definition =
+				discard_node_d[str_p("let")]
+					>> identifier
+				>> discard_node_d[ch_p('=')]
+					>> expression;
+			structure_declaration =
+				discard_node_d[str_p("structure")] >> identifier
+					>> +identifier
+				>> discard_node_d[str_p("end")];
+			function_declaration =
+				discard_node_d[str_p("function")]
+					>> identifier
+					>> inner_node_d[
+						ch_p('(') >> !infix_node_d[identifier % ','] >> ')'
+					]
+					>> gen_pt_node_d[statement_list]
+				>> discard_node_d[str_p("end")];
 
 			statement_list = +statement;
 			statement = longest_d[
@@ -196,6 +222,19 @@ public:
 		DoRule<ScannerType, GrammarRule::ROOT> root;
 		DoRule<ScannerType, GrammarRule::PROGRAM> program;
 
+		DoRule<
+			ScannerType,
+			GrammarRule::VARIABLE_DEFINITION
+		> variable_definition;
+		DoRule<
+			ScannerType,
+			GrammarRule::STRUCTURE_DECLARATION
+		> structure_declaration;
+		DoRule<
+			ScannerType,
+			GrammarRule::FUNCTION_DECLARATION
+		> function_declaration;
+
 		DoRule<ScannerType, GrammarRule::STATEMENT_LIST> statement_list;
 		DoRule<ScannerType, GrammarRule::STATEMENT> statement;
 		DoRule<ScannerType, GrammarRule::ASSIGNMENT> assignment;
@@ -247,6 +286,10 @@ auto ToId(const GrammarRule& rule) -> parser_id;
 const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::ROOT), "root"},
 		{ToId(GrammarRule::PROGRAM), "program"},
+
+		{ToId(GrammarRule::VARIABLE_DEFINITION), "variable-definition"},
+		{ToId(GrammarRule::STRUCTURE_DECLARATION), "structure-declaration"},
+		{ToId(GrammarRule::FUNCTION_DECLARATION), "function-declaration"},
 
 		{ToId(GrammarRule::STATEMENT_LIST), "statement-list"},
 		{ToId(GrammarRule::STATEMENT), "statement"},
