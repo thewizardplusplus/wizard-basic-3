@@ -24,7 +24,6 @@ statement =
 	| loop break
 	| function return
 	| expression;
-
 assignment = expression, "=", expression;
 condition =
 	"if", expression, "then",

@@ -15,6 +15,15 @@ enum class GrammarRule : uint8_t {
 	ROOT,
 	PROGRAM,
 
+	STATEMENT_LIST,
+	STATEMENT,
+	ASSIGNMENT,
+	CONDITION,
+	LOOP,
+	LOOP_CONTINUE,
+	LOOP_BREAK,
+	FUNCTION_RETURN,
+
 	EXPRESSION,
 	DISJUNCTION,
 	CONJUNCTION,
@@ -71,7 +80,35 @@ public:
 			(void)grammar;
 
 			root = program;
-			program = expression >> end_p;
+			program = statement_list >> end_p;
+
+			statement_list = +statement;
+			statement = longest_d[
+				assignment
+				| condition
+				| loop
+				| loop_continue
+				| loop_break
+				| gen_pt_node_d[function_return]
+				| expression
+			];
+			assignment = expression >> discard_node_d[ch_p('=')] >> expression;
+			condition =
+				inner_node_d[str_p("if") >> expression >> "then"]
+					>> gen_pt_node_d[statement_list]
+				>> *(discard_node_d[str_p("else")]
+					>> inner_node_d[str_p("if") >> expression >> "then"]
+					>> gen_pt_node_d[statement_list])
+				>> !(discard_node_d[str_p("else")]
+					>> gen_pt_node_d[statement_list])
+				>> discard_node_d[str_p("end")];
+			loop =
+				inner_node_d[str_p("while") >> expression >> "do"]
+					>> gen_pt_node_d[statement_list]
+				>> discard_node_d[str_p("end")];
+			loop_continue = str_p("continue");
+			loop_break = str_p("break");
+			function_return = discard_node_d[str_p("return")] >> !expression;
 
 			expression = disjunction;
 			disjunction = infix_node_d[conjunction % "or"];
@@ -159,6 +196,15 @@ public:
 		DoRule<ScannerType, GrammarRule::ROOT> root;
 		DoRule<ScannerType, GrammarRule::PROGRAM> program;
 
+		DoRule<ScannerType, GrammarRule::STATEMENT_LIST> statement_list;
+		DoRule<ScannerType, GrammarRule::STATEMENT> statement;
+		DoRule<ScannerType, GrammarRule::ASSIGNMENT> assignment;
+		DoRule<ScannerType, GrammarRule::CONDITION> condition;
+		DoRule<ScannerType, GrammarRule::LOOP> loop;
+		DoRule<ScannerType, GrammarRule::LOOP_CONTINUE> loop_continue;
+		DoRule<ScannerType, GrammarRule::LOOP_BREAK> loop_break;
+		DoRule<ScannerType, GrammarRule::FUNCTION_RETURN> function_return;
+
 		DoRule<ScannerType, GrammarRule::EXPRESSION> expression;
 		DoRule<ScannerType, GrammarRule::DISJUNCTION> disjunction;
 		DoRule<ScannerType, GrammarRule::CONJUNCTION> conjunction;
@@ -201,6 +247,15 @@ auto ToId(const GrammarRule& rule) -> parser_id;
 const std::map<parser_id, std::string> GRAMMAR_RULE_NAMES = {
 		{ToId(GrammarRule::ROOT), "root"},
 		{ToId(GrammarRule::PROGRAM), "program"},
+
+		{ToId(GrammarRule::STATEMENT_LIST), "statement-list"},
+		{ToId(GrammarRule::STATEMENT), "statement"},
+		{ToId(GrammarRule::ASSIGNMENT), "assignment"},
+		{ToId(GrammarRule::CONDITION), "condition"},
+		{ToId(GrammarRule::LOOP), "loop"},
+		{ToId(GrammarRule::LOOP_CONTINUE), "loop-continue"},
+		{ToId(GrammarRule::LOOP_BREAK), "loop-break"},
+		{ToId(GrammarRule::FUNCTION_RETURN), "function-return"},
 
 		{ToId(GrammarRule::EXPRESSION), "expression"},
 		{ToId(GrammarRule::DISJUNCTION), "disjunction"},
