@@ -21,7 +21,14 @@ function Main(x, y, z)
     end
     return 4 + 5
     continue
+    long note ololo_1
+        ololo_2
+    ololo_3 ...
+    long note...
     break
+    de note ololo
+    note
+    -5
     return
     return 4 + 5
 end

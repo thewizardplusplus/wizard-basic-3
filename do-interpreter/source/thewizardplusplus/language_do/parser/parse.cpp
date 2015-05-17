@@ -336,6 +336,9 @@ namespace language_do {
 namespace parser {
 
 auto Parse(const std::string& code) -> Node {
+	const auto line_comment = comment_p("note");
+	const auto block_comment = comment_p(str_p("long") >> "note", "...");
+	const auto space_grammar = space_p | line_comment | block_comment;
 	tree_parse_info<
 		std::string::const_iterator,
 		node_iter_data_factory<>
@@ -343,7 +346,7 @@ auto Parse(const std::string& code) -> Node {
 		code.begin(),
 		code.end(),
 		DoGrammar(),
-		space_p
+		space_grammar
 	);
 	if (!parse_tree_info.full) {
 		throw std::runtime_error("parsing error");
