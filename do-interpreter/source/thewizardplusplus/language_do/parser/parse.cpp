@@ -337,7 +337,7 @@ namespace parser {
 
 auto Parse(const std::string& code) -> Node {
 	const auto line_comment = comment_p("note");
-	const auto block_comment = comment_p(str_p("long") >> "note", "...");
+	const auto block_comment = comment_p(str_p("long") >> +space_p >> "note", "...");
 	const auto space_grammar = space_p | line_comment | block_comment;
 	tree_parse_info<
 		std::string::const_iterator,

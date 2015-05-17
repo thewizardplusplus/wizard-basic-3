@@ -23,8 +23,9 @@ function Main(x, y, z)
     continue
     long note ololo_1
         ololo_2
-    ololo_3 ...
-    long note...
+    ololo_3 ... -5
+    x = 5
+    long note fg ...
     break
     de note ololo
     note
