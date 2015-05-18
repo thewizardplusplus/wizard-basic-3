@@ -132,7 +132,7 @@ void ProcessResult(
 			file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 			try {
-				file.open(command_line_arguments.output_file.string());
+				file.open(command_line_arguments.output_file);
 				file << result;
 			} catch(const std::ofstream::failure& exception) {
 				throw std::runtime_error(

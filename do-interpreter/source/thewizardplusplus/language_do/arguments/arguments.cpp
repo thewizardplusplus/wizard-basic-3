@@ -2,6 +2,7 @@
 #include "../utils/version.h"
 #include <iostream>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
 using namespace thewizardplusplus::language_do::utils;
@@ -9,12 +10,8 @@ using namespace boost;
 using namespace boost::program_options;
 using namespace boost::filesystem;
 
-namespace {
-
 const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
 const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
-
-}
 
 namespace thewizardplusplus {
 namespace language_do {
@@ -87,7 +84,8 @@ auto ProcessArguments(
 	auto command_line_arguments = CommandLineArguments();
 	command_line_arguments.interpreter_base_path =
 		path(arguments[0])
-		.parent_path();
+		.parent_path()
+		.string();
 
 	if (arguments_map.count("final-stage")) {
 		const auto final_stage = arguments_map["final-stage"].as<std::string>();
@@ -110,7 +108,7 @@ auto ProcessArguments(
 	}
 	command_line_arguments.use_output =
 		arguments_map.count("use-output")
-		&& !command_line_arguments.output_file.string().empty();
+		&& !command_line_arguments.output_file.empty();
 
 	if (arguments_map.count("script-file")) {
 		command_line_arguments.script_file =
