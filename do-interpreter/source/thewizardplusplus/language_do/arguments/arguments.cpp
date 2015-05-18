@@ -21,8 +21,7 @@ namespace language_do {
 namespace arguments {
 
 auto ProcessArguments(
-	const int number_of_arguments,
-	char* arguments[]
+	const std::vector<std::string>& arguments
 ) -> CommandLineArguments {
 	auto interpreter_arguments_description = options_description("Options");
 	interpreter_arguments_description.add_options()
@@ -42,7 +41,7 @@ auto ProcessArguments(
 		("script-file", value<std::string>(), "- script file;")
 		(
 			"script-arguments",
-			value<StringGroup>()->composing(),
+			value<std::vector<std::string>>()->composing(),
 			"- script arguments."
 		);
 
@@ -58,7 +57,12 @@ auto ProcessArguments(
 
 	auto arguments_map = variables_map();
 	store(
-		command_line_parser(number_of_arguments, arguments)
+		command_line_parser(
+			std::vector<std::string>(
+				std::begin(arguments) + 1,
+				std::end(arguments)
+			)
+		)
 			.options(interpreter_arguments_description)
 			.positional(script_arguments_description)
 			.run(),
@@ -117,7 +121,7 @@ auto ProcessArguments(
 
 	if (arguments_map.count("script-arguments")) {
 		command_line_arguments.script_arguments =
-			arguments_map["script-arguments"].as<StringGroup>();
+			arguments_map["script-arguments"].as<std::vector<std::string>>();
 	}
 
 	return command_line_arguments;

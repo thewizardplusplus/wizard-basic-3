@@ -149,8 +149,10 @@ void ProcessResult(
 
 int main(int number_of_arguments, char* arguments[]) try {
 	const auto command_line_arguments = ProcessArguments(
-		number_of_arguments,
-		arguments
+		std::vector<std::string>(
+			arguments,
+			arguments + number_of_arguments
+		)
 	);
 
 	const auto code = GetCode(
