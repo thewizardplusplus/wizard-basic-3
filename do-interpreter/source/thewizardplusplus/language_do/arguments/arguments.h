@@ -23,7 +23,7 @@ struct CommandLineArguments {
 	utils::StringGroup script_arguments;
 };
 
-auto ProcessCommandLineArguments(
+auto ProcessArguments(
 	const int number_of_arguments,
 	char* arguments[]
 ) -> CommandLineArguments;

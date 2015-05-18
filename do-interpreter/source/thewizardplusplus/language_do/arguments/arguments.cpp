@@ -1,4 +1,4 @@
-#include "process_command_line_arguments.h"
+#include "arguments.h"
 #include "../utils/version.h"
 #include <iostream>
 #include <boost/program_options.hpp>
@@ -20,7 +20,7 @@ namespace thewizardplusplus {
 namespace language_do {
 namespace arguments {
 
-auto ProcessCommandLineArguments(
+auto ProcessArguments(
 	const int number_of_arguments,
 	char* arguments[]
 ) -> CommandLineArguments {

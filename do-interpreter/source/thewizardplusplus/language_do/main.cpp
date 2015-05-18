@@ -1,5 +1,5 @@
 #include "utils/utils.h"
-#include "arguments/process_command_line_arguments.h"
+#include "arguments/arguments.h"
 #include "preprocessor/get_code.h"
 #include "parser/parse.h"
 #include "translator/translate.h"
@@ -148,7 +148,7 @@ void ProcessResult(
 }
 
 int main(int number_of_arguments, char* arguments[]) try {
-	const auto command_line_arguments = ProcessCommandLineArguments(
+	const auto command_line_arguments = ProcessArguments(
 		number_of_arguments,
 		arguments
 	);
