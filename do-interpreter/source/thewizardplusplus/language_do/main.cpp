@@ -120,24 +120,21 @@ auto FormatAnsiC(const std::string& ansi_c) -> std::string {
 }
 
 template<FinalStage final_stage, typename ResultType>
-void ProcessResult(
-	CommandLineArguments command_line_arguments,
-	ResultType result
-) {
-	if (command_line_arguments.final_stage == final_stage) {
-		if (!command_line_arguments.use_output) {
+void ProcessResult(Parameters parameters, ResultType result) {
+	if (parameters.final_stage == final_stage) {
+		if (!parameters.use_output) {
 			std::cout << result << '\n';
 		} else {
 			std::ofstream file;
 			file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
 			try {
-				file.open(command_line_arguments.output_file);
+				file.open(parameters.output_file);
 				file << result;
 			} catch(const std::ofstream::failure& exception) {
 				throw std::runtime_error(
 					(format(R"(unable to write output to %s (%s))")
-						% command_line_arguments.output_file
+						% parameters.output_file
 						% exception.what()).str()
 				);
 			}
@@ -148,7 +145,7 @@ void ProcessResult(
 }
 
 int main(int number_of_arguments, char* arguments[]) try {
-	const auto command_line_arguments = ProcessArguments(
+	const auto parameters = ProcessArguments(
 		std::vector<std::string>(
 			arguments,
 			arguments + number_of_arguments
@@ -156,29 +153,23 @@ int main(int number_of_arguments, char* arguments[]) try {
 	);
 
 	const auto code = GetCode(
-		command_line_arguments.interpreter_base_path,
-		command_line_arguments.script_file
+		parameters.interpreter_base_path,
+		parameters.script_file
 	);
-	ProcessResult<FinalStage::CODE>(command_line_arguments, FormatCode(code));
+	ProcessResult<FinalStage::CODE>(parameters, FormatCode(code));
 
 	const auto ast = Parse(code);
-	ProcessResult<FinalStage::AST>(command_line_arguments, FormatAst(ast));
+	ProcessResult<FinalStage::AST>(parameters, FormatAst(ast));
 
 	/*const auto ansi_c = Translate(ast);
-	ProcessResult<FinalStage::C>(
-		command_line_arguments,
-		FormatAnsiC(ansi_c)
-	);
+	ProcessResult<FinalStage::C>(parameters, FormatAnsiC(ansi_c));
 
-	auto script_arguments = command_line_arguments.script_arguments;
-	script_arguments.insert(
-		script_arguments.begin(),
-		command_line_arguments.script_file.string()
-	);
+	auto script_arguments = parameters.script_arguments;
+	script_arguments.insert(script_arguments.begin(), parameters.script_file);
 	const auto exit_code = Run(
 		ansi_c,
-		command_line_arguments.interpreter_base_path,
-		command_line_arguments.output_file,
+		parameters.interpreter_base_path,
+		parameters.output_file,
 		script_arguments
 	);
 

@@ -1,5 +1,5 @@
-#ifndef DO_PROCESS_COMMAND_LINE_ARGUMENTS_HEADER
-#define DO_PROCESS_COMMAND_LINE_ARGUMENTS_HEADER
+#ifndef DO_ARGUMENTS_ARGUMENTS_HEADER
+#define DO_ARGUMENTS_ARGUMENTS_HEADER
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@ enum class FinalStage: uint8_t {
 	C
 };
 
-struct CommandLineArguments {
+struct Parameters {
 	std::string interpreter_base_path;
 	FinalStage final_stage = FinalStage::NONE;
 	std::string output_file;
@@ -24,9 +24,7 @@ struct CommandLineArguments {
 	std::vector<std::string> script_arguments;
 };
 
-auto ProcessArguments(
-	const std::vector<std::string>& arguments
-) -> CommandLineArguments;
+auto ProcessArguments(const std::vector<std::string>& arguments) -> Parameters;
 
 }
 }
