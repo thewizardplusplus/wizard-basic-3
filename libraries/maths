@@ -1,0 +1,29 @@
+include "args"
+
+function Module(number)
+	if number < 0 then
+		number = -number
+	end
+
+	return number
+end
+
+note Clamp(number, minimum = NULL, maximum = NULL)
+function Clamp(args)
+	let number = Arg([args, 0])
+	let minimum = Arg([args, 1])
+	let maximum = Arg([args, 2])
+
+	if minimum /= NULL then
+		if number < minimum then
+			number = minimum
+		end
+	end
+	if maximum /= NULL then
+		if number > maximum then
+			number = maximum
+		end
+	end
+
+	return number
+end
