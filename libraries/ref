@@ -12,12 +12,9 @@ function Ref(value)
 end
 
 function Deref(reference)
-	let value = NULL
 	if Compare(GetType(reference), "Reference") == COMPARE_RESULT_EQUAL then
-		value = reference.value
+		return reference.value
 	else
-		value = reference
+		return reference
 	end
-
-	return value
 end
