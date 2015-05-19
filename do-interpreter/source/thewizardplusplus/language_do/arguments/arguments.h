@@ -16,7 +16,7 @@ enum class FinalStage: uint8_t {
 };
 
 struct Parameters {
-	std::string interpreter_base_path;
+	std::string interpreter_path;
 	FinalStage final_stage = FinalStage::NONE;
 	std::string output_file;
 	bool use_output;

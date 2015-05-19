@@ -153,7 +153,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 	);
 
 	const auto code = GetCode(
-		parameters.interpreter_base_path,
+		parameters.interpreter_path,
 		parameters.script_file
 	);
 	ProcessResult<FinalStage::CODE>(parameters, FormatCode(code));
@@ -168,7 +168,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 	script_arguments.insert(script_arguments.begin(), parameters.script_file);
 	const auto exit_code = Run(
 		ansi_c,
-		parameters.interpreter_base_path,
+		parameters.interpreter_path,
 		parameters.output_file,
 		script_arguments
 	);
