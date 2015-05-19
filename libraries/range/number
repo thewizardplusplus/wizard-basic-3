@@ -37,7 +37,13 @@ function NumberRangeNew(args)
 	range.step = step
 	range.reverse = reverse
 
-	range.size = maximum - minimum + 1
+	range.size = Integral((maximum - minimum) / step)
+	if not reverse then
+		range.size = range.size + 1
+	else
+		range.size = range.size - 1
+	end
+
 	range.value = range.minimum - step
 	range.first = FALSE
 	range.last = not range.size > 0
