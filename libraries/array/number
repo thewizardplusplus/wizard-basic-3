@@ -1,5 +1,7 @@
 include "range/utils"
 include "array/utils"
+include "general"
+include "args"
 
 let COMPARE_RESULT_LESS = -1
 let COMPARE_RESULT_EQUAL = 0
@@ -30,7 +32,11 @@ function Compare(array_1, array_2)
 	end
 end
 
-function ArrayNumberToString(array, precision)
+note ArrayNumberToString(array, precision = DEFAULT_NUMBER_PRECISION)
+function ArrayNumberToString(args)
+	let array = Arg([args, 0])
+	let precision = Arg([args, 1, DEFAULT_NUMBER_PRECISION])
+
 	let result = "["
 	let i = Range([array])
 	while Next(i) do
