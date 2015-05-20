@@ -1,5 +1,30 @@
 include "range/utils"
+include "array/number"
 include "io"
+
+function Copy(array)
+	let copy = new array(GetSize(array))
+	let i = Range([array])
+	while Next(i) do
+		copy[i.index] = i.value
+	end
+
+	return copy
+end
+
+function DeepCopy(array)
+	let copy = new array(GetSize(array))
+	let i = Range([array])
+	while Next(i) do
+		if Compare(GetType(i.value), "array") == COMPARE_RESULT_EQUAL then
+			copy[i.index] = DeepCopy(i.value)
+		else
+			copy[i.index] = i.value
+		end
+	end
+
+	return copy
+end
 
 function Append(array_1, array_2)
 	let result = new array(GetSize(array_1) + GetSize(array_2))
