@@ -23,7 +23,7 @@ function Slice(array, start, finish)
 	let result = new array(finish - start)
 	let i = Range([result])
 	while Next(i) do
-		result[i.index] = array[i.index + start]
+		result[i.index] = array[start + i.index]
 	end
 
 	return result

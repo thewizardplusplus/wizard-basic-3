@@ -16,7 +16,7 @@ function TestCompare(string_1, string_2)
 	msg = Append(msg, CompareResultToString(compare_result))
 	msg = Append(msg, " \"")
 	msg = Append(msg, string_2)
-	msg = Append(msg, "\";\n")
+	msg = Append(msg, "\"\n")
 
 	Show(msg)
 end

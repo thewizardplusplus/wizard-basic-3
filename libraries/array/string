@@ -1,7 +1,5 @@
-include "array/utils"
-include "args"
 include "range/utils"
-include "array/number"
+include "array/utils"
 
 function Join(array, separator)
 	let result = ""
@@ -29,7 +27,5 @@ function ArrayStringToString(array)
 	if GetSize(array) > 0 then
 		result = Append(result, "\"")
 	end
-	result = Append(result, "]")
-
-	return result
+	return Append(result, "]")
 end
