@@ -12,6 +12,11 @@ function Show(message)
 	Write(STANDART_STREAM_OUTPUT, message)
 end
 
+function ShowLn(message)
+	message = Append(message, "\n")
+	Show(message)
+end
+
 function Die(message)
 	Write(STANDART_STREAM_ERROR, message)
 	Exit(EXIT_CODE_FAILURE)

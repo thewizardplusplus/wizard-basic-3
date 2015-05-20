@@ -40,6 +40,16 @@ function Append(array_1, array_2)
 	return result
 end
 
+function MultiAppend(arrays)
+	let result = []
+	let i = Range([arrays])
+	while Next(i) do
+		result = Append(result, i.value)
+	end
+
+	return result
+end
+
 function Slice(array, start, finish)
 	if start < 0 or finish > GetSize(array) then
 		Die("Error: out of range.")
