@@ -1,6 +1,7 @@
 include "range/utils"
 include "array/number"
 include "io"
+include "args"
 
 function Copy(array)
 	let copy = new array(GetSize(array))
@@ -50,7 +51,12 @@ function MultiAppend(arrays)
 	return result
 end
 
-function Slice(array, start, finish)
+note Slice(array, start = 0, finish = GetSize(array))
+function Slice(args)
+	let array = Arg([args, 0])
+	let start = Arg([args, 1, 0])
+	let finish = Arg([args, 2, GetSize(array)])
+
 	if start < 0 or finish > GetSize(array) then
 		Die("Error: out of range.")
 	end
