@@ -58,7 +58,7 @@ function Slice(args)
 	let finish = Arg([args, 2, GetSize(array)])
 
 	if start < 0 or finish > GetSize(array) then
-		Die("Error: out of range.")
+		Error("out of range")
 	end
 
 	let result = new array(finish - start)

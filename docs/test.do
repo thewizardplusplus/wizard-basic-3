@@ -1,5 +1,5 @@
 include "io"
 
 function Main(_)
-	ShowLn("Test.")
+	Error("test")
 end

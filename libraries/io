@@ -22,3 +22,8 @@ function Die(message)
 	Write(STANDART_STREAM_ERROR, message)
 	Exit(EXIT_CODE_FAILURE)
 end
+
+function Error(message)
+	message = MultiAppend(["Error: ", message, ".\n"])
+	Die(message)
+end
