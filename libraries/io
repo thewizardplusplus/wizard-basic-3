@@ -1,3 +1,4 @@
+include "array/utils"
 include "general"
 
 let STANDART_STREAM_INPUT = 0
