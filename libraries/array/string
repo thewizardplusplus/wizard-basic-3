@@ -3,6 +3,20 @@ include "args"
 include "range/utils"
 include "array/number"
 
+function Join(array, separator)
+	let result = ""
+	let i = Range([array])
+	while Next(i) do
+		if not i.first then
+			result = Append(result, separator)
+		end
+
+		result = Append(result, i.value)
+	end
+
+	return result
+end
+
 function ArrayStringToString(array)
 	let result = "["
 	if GetSize(array) > 0 then
@@ -16,76 +30,6 @@ function ArrayStringToString(array)
 		result = Append(result, "\"")
 	end
 	result = Append(result, "]")
-
-	return result
-end
-
-note ArrayStringIndexOf(array, value, offset = 0)
-function ArrayStringIndexOf(args)
-	let array = Arg([args, 0])
-	let value = Arg([args, 1])
-	let offset = Arg([args, 2, 0])
-
-	let range = Range([array, offset])
-	return ArrayStringSearch(range, value)
-end
-
-function ArrayStringSearch(range, value)
-	return ArrayStringSearchItem(range, value)
-end
-
-function ArrayStringSearchItem(range, value)
-	while Next(range) do
-		if Compare(range.value, value) == COMPARE_RESULT_EQUAL then
-			return range.index
-		end
-	end
-
-	return NULL
-end
-
-note ArrayStringLastIndexOf(array, value, offset = GetSize(array))
-function ArrayStringLastIndexOf(args)
-	let array = Arg([args, 0])
-	let value = Arg([args, 1])
-	let offset = Arg([args, 2, GetSize(array)])
-
-	let range = Range([array, 0, offset, TRUE])
-	return ArrayStringSearch(range, value)
-end
-
-long note function Split(array, separator)
-	let result = []
-	let previous_offset = 0
-	let offset = 0
-	let array_length = GetSize(array)
-	let separator_length = GetSize(separator)
-	while offset < array_length do
-		previous_offset = offset
-		offset = ArrayStringIndexOf(array, separator, offset)
-		if offset == NULL then
-			offset = array_length
-		end
-
-		let part = Slice(array, previous_offset, offset)
-		result = Append(result, [part])
-
-		offset = offset + separator_length
-	end
-
-	return result
-end...
-
-function Join(array, separator)
-	let result = ""
-	let i = Range([array])
-	while Next(i) do
-		if not i.first then
-			result = Append(result, separator)
-		end
-
-		result = Append(result, i.value)
-	end
 
 	return result
 end
