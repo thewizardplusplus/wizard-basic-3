@@ -1,6 +1,5 @@
 include "range/utils"
 include "array/utils"
-include "args"
 
 let COMPARE_RESULT_LESS = -1
 let COMPARE_RESULT_EQUAL = 0
@@ -33,7 +32,6 @@ end
 
 function ArrayNumberToString(array, precision)
 	let result = "["
-
 	let i = Range([array])
 	while Next(i) do
 		if not i.first then
@@ -43,6 +41,5 @@ function ArrayNumberToString(array, precision)
 		result = Append(result, ToString(i.value, precision))
 	end
 
-	result = Append(result, "]")
-	return result
+	return Append(result, "]")
 end
