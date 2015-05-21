@@ -1,7 +1,7 @@
 include "range/utils"
-include "array/number"
-include "io"
+include "type"
 include "args"
+include "io"
 
 function Copy(array)
 	let copy = new array(GetSize(array))
@@ -17,7 +17,7 @@ function DeepCopy(array)
 	let copy = new array(GetSize(array))
 	let i = Range([array])
 	while Next(i) do
-		if Compare(GetType(i.value), "array") == COMPARE_RESULT_EQUAL then
+		if HasType(i.value, "array") then
 			copy[i.index] = DeepCopy(i.value)
 		else
 			copy[i.index] = i.value

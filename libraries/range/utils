@@ -1,4 +1,4 @@
-include "array/number"
+include "type"
 include "range/number"
 include "range/array"
 include "general"
@@ -6,9 +6,9 @@ include "general"
 note Range(minimum, maximum, step = 1, reverse = FALSE)
 note Range(array, start = 0, finish = GetSize(array), reverse = FALSE)
 function Range(args)
-	if Compare(GetType(args[0]), "number") == COMPARE_RESULT_EQUAL then
+	if HasType(args[0], "number") then
 		return NumberRangeNew(args)
-	else if Compare(GetType(args[0]), "array") == COMPARE_RESULT_EQUAL then
+	else if HasType(args[0], "array") then
 		return ArrayRangeNew(args)
 	end
 end
@@ -18,7 +18,7 @@ function Next(range)
 		return FALSE
 	end
 
-	if Compare(GetType(range), "NumberRange") == COMPARE_RESULT_EQUAL then
+	if HasType(range, "NumberRange") then
 		range.value = range.value + range.step
 		range.first = range.value == range.minimum
 
@@ -29,7 +29,7 @@ function Next(range)
 		end
 
 		range.index = range.index + 1
-	else if Compare(GetType(range), "ArrayRange") == COMPARE_RESULT_EQUAL then
+	else if HasType(range, "ArrayRange") then
 		if not range.reverse then
 			range.index = range.index + 1
 		else

@@ -32,6 +32,10 @@ function Compare(array_1, array_2)
 	end
 end
 
+function IsEqual(array_1, array_2)
+	return Compare(array_1, array_2) == COMPARE_RESULT_EQUAL
+end
+
 note ArrayNumberToString(array, precision = DEFAULT_NUMBER_PRECISION)
 function ArrayNumberToString(args)
 	let array = Arg([args, 0])

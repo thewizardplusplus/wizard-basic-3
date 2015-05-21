@@ -1,4 +1,4 @@
-include "array/number"
+include "type"
 
 structure Reference
 	value
@@ -12,7 +12,7 @@ function Ref(value)
 end
 
 function Deref(reference)
-	if Compare(GetType(reference), "Reference") == COMPARE_RESULT_EQUAL then
+	if HasType(reference, "Reference") then
 		return reference.value
 	else
 		return reference
