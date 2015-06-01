@@ -1,80 +1,5 @@
-include "array/utils"
-include "args"
 include "range/utils"
-include "array/number"
-
-function ArrayStringToString(array)
-	let result = "["
-	if GetSize(array) > 0 then
-		result = Append(result, "\"")
-	end
-
-	let middle = Join(array, "\", \"")
-	result = Append(result, middle)
-
-	if GetSize(array) > 0 then
-		result = Append(result, "\"")
-	end
-	result = Append(result, "]")
-
-	return result
-end
-
-note ArrayStringIndexOf(array, value, offset = 0)
-function ArrayStringIndexOf(args)
-	let array = Arg([args, 0])
-	let value = Arg([args, 1])
-	let offset = Arg([args, 2, 0])
-
-	let range = Range([array, offset])
-	return ArrayStringSearch(range, value)
-end
-
-function ArrayStringSearch(range, value)
-	return ArrayStringSearchItem(range, value)
-end
-
-function ArrayStringSearchItem(range, value)
-	while Next(range) do
-		if Compare(range.value, value) == COMPARE_RESULT_EQUAL then
-			return range.index
-		end
-	end
-
-	return NULL
-end
-
-note ArrayStringLastIndexOf(array, value, offset = GetSize(array))
-function ArrayStringLastIndexOf(args)
-	let array = Arg([args, 0])
-	let value = Arg([args, 1])
-	let offset = Arg([args, 2, GetSize(array)])
-
-	let range = Range([array, 0, offset, TRUE])
-	return ArrayStringSearch(range, value)
-end
-
-long note function Split(array, separator)
-	let result = []
-	let previous_offset = 0
-	let offset = 0
-	let array_length = GetSize(array)
-	let separator_length = GetSize(separator)
-	while offset < array_length do
-		previous_offset = offset
-		offset = ArrayStringIndexOf(array, separator, offset)
-		if offset == NULL then
-			offset = array_length
-		end
-
-		let part = Slice(array, previous_offset, offset)
-		result = Append(result, [part])
-
-		offset = offset + separator_length
-	end
-
-	return result
-end...
+include "array/utils"
 
 function Join(array, separator)
 	let result = ""
@@ -88,4 +13,64 @@ function Join(array, separator)
 	end
 
 	return result
+end
+
+function Escape(string)
+	let escaped_string = ""
+	let i = Range([string])
+	while Next(i) do
+		if
+			i.value >= ' '
+			and i.value <= '~'
+			and i.value /= '\''
+			and i.value /= '"'
+			and i.value /= '\\'
+		then
+			escaped_string = Append(escaped_string, [i.value])
+		else
+			escaped_string = Append(escaped_string, "\\")
+			if i.value == '\'' or i.value == '"' or i.value == '\\' then
+				escaped_string = Append(escaped_string, [i.value])
+			else if i.value == '\a' then
+				escaped_string = Append(escaped_string, "a")
+			else if i.value == '\b' then
+				escaped_string = Append(escaped_string, "b")
+			else if i.value == '\f' then
+				escaped_string = Append(escaped_string, "f")
+			else if i.value == '\n' then
+				escaped_string = Append(escaped_string, "n")
+			else if i.value == '\r' then
+				escaped_string = Append(escaped_string, "r")
+			else if i.value == '\t' then
+				escaped_string = Append(escaped_string, "t")
+			else if i.value == '\v' then
+				escaped_string = Append(escaped_string, "v")
+			else
+				escaped_string[GetSize(escaped_string) - 1] = '?'
+			end
+		end
+	end
+
+	return escaped_string
+end
+
+function ArrayStringToString(array)
+	let result = "["
+	if GetSize(array) > 0 then
+		result = Append(result, "\"")
+	end
+
+	let i = Range([array])
+	while Next(i) do
+		if not i.first then
+			result = Append(result, "\", \"")
+		end
+
+		result = Append(result, Escape(i.value))
+	end
+
+	if GetSize(array) > 0 then
+		result = Append(result, "\"")
+	end
+	return Append(result, "]")
 end

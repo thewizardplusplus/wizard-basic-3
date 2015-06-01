@@ -1,5 +1,6 @@
 include "range/utils"
 include "array/utils"
+include "general"
 include "args"
 
 let COMPARE_RESULT_LESS = -1
@@ -31,9 +32,16 @@ function Compare(array_1, array_2)
 	end
 end
 
-function ArrayNumberToString(array, precision)
-	let result = "["
+function IsEqual(array_1, array_2)
+	return Compare(array_1, array_2) == COMPARE_RESULT_EQUAL
+end
 
+note ArrayNumberToString(array, precision = DEFAULT_NUMBER_PRECISION)
+function ArrayNumberToString(args)
+	let array = Arg([args, 0])
+	let precision = Arg([args, 1, DEFAULT_NUMBER_PRECISION])
+
+	let result = "["
 	let i = Range([array])
 	while Next(i) do
 		if not i.first then
@@ -43,64 +51,5 @@ function ArrayNumberToString(array, precision)
 		result = Append(result, ToString(i.value, precision))
 	end
 
-	result = Append(result, "]")
-	return result
-end
-
-note ArrayNumberIndexOf(array, value, offset = 0)
-function ArrayNumberIndexOf(args)
-	let array = Arg([args, 0])
-	let value = Arg([args, 1])
-	let offset = Arg([args, 2, 0])
-
-	let range = Range([array, offset])
-	return ArrayNumberSearch(range, value)
-end
-
-function ArrayNumberSearch(range, value)
-	if Compare(GetType(value), "number") == COMPARE_RESULT_EQUAL then
-		return ArrayNumberSearchItem(range, value)
-	else if Compare(GetType(value), "array") == COMPARE_RESULT_EQUAL then
-		return ArrayNumberSearchSubarray(range, value)
-	end
-end
-
-function ArrayNumberSearchItem(range, value)
-	while Next(range) do
-		if range.value == value then
-			return range.index
-		end
-	end
-
-	return NULL
-end
-
-function ArrayNumberSearchSubarray(range, value)
-	while Next(range) do
-		let equal = TRUE
-		let i = Range([value])
-		while Next(i) do
-			let index = range.index + i.index
-			if index >= range.size or range.array[index] /= i.value then
-				equal = FALSE
-				break
-			end
-		end
-
-		if equal then
-			return range.index
-		end
-	end
-
-	return NULL
-end
-
-note ArrayNumberLastIndexOf(array, value, offset = GetSize(array))
-function ArrayNumberLastIndexOf(args)
-	let array = Arg([args, 0])
-	let value = Arg([args, 1])
-	let offset = Arg([args, 2, GetSize(array)])
-
-	let range = Range([array, 0, offset, TRUE])
-	return ArrayNumberSearch(range, value)
+	return Append(result, "]")
 end

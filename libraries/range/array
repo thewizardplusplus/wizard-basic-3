@@ -33,7 +33,6 @@ function ArrayRangeNew(args)
 	end
 
 	range.reverse = reverse
-
 	range.size = finish - start
 	range.first = FALSE
 	range.last = not range.size > 0
