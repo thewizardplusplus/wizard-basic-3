@@ -46,15 +46,25 @@
 	},
 	{
 		"begin": "\"",
-		"end": "(?<!\\\\)\"",
+		"end": "\"",
 		"name": "string.quoted.double.do",
-		"comment": "Strings."
+		"comment": "Strings.",
+		"patterns": [
+			{
+				"include": "#escaped_symbol"
+			}
+		]
 	},
 	{
 		"begin": "\'",
-		"end": "(?<!\\\\)\'",
+		"end": "\'",
 		"name": "string.quoted.single.do",
-		"comment": "Symbols."
+		"comment": "Symbols.",
+		"patterns": [
+			{
+				"include": "#escaped_symbol"
+			}
+		]
 	},
 	{
 		"match": "^\\s*note\\b.*$",
@@ -67,4 +77,11 @@
 		"name": "comment.block.do",
 		"comment": "Multiline comments."
 	}
-]
+],
+"repository": {
+	"escaped_symbol": {
+		"match": "\\\\.",
+		"name": "constant.character.escape.do",
+		"comment": "Escaped symbol."
+	}
+}
