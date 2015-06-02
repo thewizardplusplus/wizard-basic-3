@@ -5,8 +5,10 @@
 #include <boost/spirit/home/classic/utility.hpp>
 #include <boost/spirit/home/classic/core.hpp>
 #include <boost/spirit/home/classic/tree/tree_to_xml.hpp>
+#include <boost/format.hpp>
 
 using namespace thewizardplusplus::wizard_parser::node;
+using namespace boost;
 using namespace boost::spirit::classic;
 
 namespace {
@@ -356,7 +358,31 @@ auto Parse(const std::string& code) -> Node {
 		space_grammar
 	);
 	if (!parse_tree_info.full) {
-		throw std::runtime_error("parsing error");
+		const auto valid_code = code.substr(
+			0,
+			std::distance(code.begin(), parse_tree_info.stop)
+		);
+
+		const auto line =
+			std::count(
+				valid_code.begin(),
+				valid_code.end(),
+				'\n'
+			)
+			+ 1;
+
+		const auto index = valid_code.find_last_of('\n');
+		const auto column =
+			(index != std::string::npos
+				? valid_code.substr(index + 1).length()
+				: valid_code.length())
+			+ 1;
+
+		throw std::runtime_error(
+			(format("parsing error on line %1% in column %2%")
+				% line
+				% column).str()
+		);
 	}
 
 	tree_to_xml(std::cout, parse_tree_info.trees, "", GRAMMAR_RULE_NAMES);
