@@ -8,8 +8,6 @@ using namespace thewizardplusplus::language_do::preprocessor;
 using namespace boost;
 using namespace boost::filesystem;
 
-namespace {
-
 const auto LIBRARIES_PATH = std::string("libraries");
 
 const auto SINGLELINE_COMMENT_PATTERN = regex("^\\s*note\\b[^\n]*\n");
@@ -21,6 +19,8 @@ const auto INCLUDE_OPERATOR_PATTERN = regex(
 	// comment with closing quote for bugfix stupid syntax highlighter in Atom
 	// "
 );
+
+namespace {
 
 struct CodeGetter {
 	const path interpreter_base_path;
