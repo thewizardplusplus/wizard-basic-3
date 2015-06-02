@@ -1,5 +1,5 @@
-#ifndef DO_OS_HEADER
-#define DO_OS_HEADER
+#ifndef DO_RUNNER_OS_HEADER
+#define DO_RUNNER_OS_HEADER
 
 // http://sourceforge.net/p/predef/wiki/OperatingSystems/
 #if \

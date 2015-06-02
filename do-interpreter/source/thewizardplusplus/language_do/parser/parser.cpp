@@ -1,4 +1,4 @@
-#include "parse.h"
+#include "parser.h"
 #include <boost/spirit/home/classic/tree/common.hpp>
 #include <boost/spirit/home/classic/tree/parse_tree.hpp>
 #include <boost/spirit/home/classic/tree/ast.hpp>
@@ -52,9 +52,10 @@ enum class GrammarRule : uint8_t {
 	IDENTIFIER,
 	STRING_DEFINITION,
 };
+
 class UnsignedRealParserPolicies : public ureal_parser_policies<double> {
 public:
-	static const bool allow_leading_dot =  false;
+	static const bool allow_leading_dot = false;
 	static const bool allow_trailing_dot = false;
 
 	template<typename ScannerType>
@@ -73,8 +74,10 @@ public:
 		return scan.no_match();
 	}
 };
+
 template<typename ScannerType, GrammarRule rule_id>
 using DoRule = rule<ScannerType, parser_tag<static_cast<int>(rule_id)>>;
+
 class DoGrammar : public grammar<DoGrammar> {
 public:
 	template <typename ScannerType>

@@ -1,12 +1,11 @@
 SOURCE = source/thewizardplusplus/language_do/
 OBJECTS = \
 	$(SOURCE)main.o \
-	$(SOURCE)utils/version.o \
 	$(SOURCE)arguments/arguments.o \
-	$(SOURCE)preprocessor/get_code.o \
-	$(SOURCE)parser/parse.o \
-	$(SOURCE)translator/translate.o \
-	$(SOURCE)runner/run.o
+	$(SOURCE)preprocessor/preprocessor.o \
+	$(SOURCE)parser/parser.o \
+	$(SOURCE)translator/translator.o \
+	$(SOURCE)runner/runner.o
 BUILD = ../build/
 CXXFLAGS += -std=c++11 -Wpedantic -Wall -Wextra -O2
 LDFLAGS += \

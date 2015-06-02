@@ -1,18 +1,17 @@
 #include "arguments.h"
-#include "../utils/version.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
 using namespace thewizardplusplus::language_do::arguments;
-using namespace thewizardplusplus::language_do::utils;
 using namespace boost;
 using namespace boost::program_options;
 using namespace boost::filesystem;
 
 const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
 const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
+const auto VERSION_STRING = std::string("v0.1.1");
 
 namespace thewizardplusplus {
 namespace language_do {

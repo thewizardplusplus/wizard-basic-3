@@ -1,9 +1,8 @@
-#include "utils/utils.h"
 #include "arguments/arguments.h"
-#include "preprocessor/get_code.h"
-#include "parser/parse.h"
-#include "translator/translate.h"
-#include "runner/run.h"
+#include "preprocessor/preprocessor.h"
+#include "parser/parser.h"
+#include "translator/translator.h"
+#include "runner/runner.h"
 #include <fstream>
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
@@ -14,7 +13,6 @@
 #include <boost/algorithm/string.hpp>
 
 using namespace thewizardplusplus::language_do;
-using namespace thewizardplusplus::language_do::utils;
 using namespace thewizardplusplus::language_do::arguments;
 using namespace thewizardplusplus::language_do::preprocessor;
 using namespace thewizardplusplus::language_do::parser;
@@ -29,7 +27,7 @@ const auto XML_INDENT_SIZE = 4;
 const auto INDENT_STRING = "    ";
 
 auto FormatCode(const std::string& code) -> std::string {
-	auto lines = StringGroup();
+	auto lines = std::vector<std::string>();
 	split(lines, code, is_any_of("\n"));
 
 	const auto number_of_lines = lines.size();
@@ -37,7 +35,7 @@ auto FormatCode(const std::string& code) -> std::string {
 		std::to_string(number_of_lines)
 		.size();
 
-	auto numbered_lines = StringGroup(number_of_lines);
+	auto numbered_lines = std::vector<std::string>(number_of_lines);
 	auto number_of_line = size_t(1);
 	std::transform(
 		lines.begin(),

@@ -1,7 +1,6 @@
-#ifndef DO_TRANSLATE_HEADER
-#define DO_TRANSLATE_HEADER
+#ifndef DO_TRANSLATOR_TRANSLATOR_HEADER
+#define DO_TRANSLATOR_TRANSLATOR_HEADER
 
-#include <unordered_map>
 #include <wizard_parser/node/Node.h>
 
 namespace thewizardplusplus {

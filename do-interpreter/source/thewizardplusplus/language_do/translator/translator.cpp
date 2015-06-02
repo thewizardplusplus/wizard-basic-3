@@ -1,22 +1,25 @@
-#include "translate.h"
-#include "../utils/utils.h"
+#include "translator.h"
 #include <algorithm>
 #include <numeric>
 #include <set>
-#include <boost/format.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/random/random_device.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
-using namespace thewizardplusplus::language_do::utils;
 using namespace thewizardplusplus::wizard_parser::node;
 using namespace boost;
-using namespace boost::algorithm;
 using namespace boost::random;
+using namespace boost::algorithm;
 
-namespace {
+const auto RANDOM_PREFIX_SYMBOLS = std::string(
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	"abcdefghijklmnopqrstuvwxyz"
+	"1234567890"
+);
+const auto RANDOM_PREFIX_LENGTH = 5;
 
-const auto FUNCTION_NAME_LIST = StringGroup{
+const auto FUNCTION_NAME_LIST = std::vector<std::string>{
 	"ToString",
 	"GetSize",
 	"GetType",
@@ -41,12 +44,7 @@ const auto FUNCTION_NAME_LIST = StringGroup{
 	"Main"
 };
 
-const auto RANDOM_PREFIX_SYMBOLS = std::string(
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	"abcdefghijklmnopqrstuvwxyz"
-	"1234567890"
-);
-const auto RANDOM_PREFIX_LENGTH = 5;
+namespace {
 
 auto GetRandomPrefix() -> std::string {
 	random_device device;
