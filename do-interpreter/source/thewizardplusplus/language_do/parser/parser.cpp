@@ -180,16 +180,21 @@ public:
 				| inner_node_d[ch_p('(') >> expression >> ')']
 			];
 			null_definition = str_p("NULL");
-			array_listed_definition = inner_node_d[
-				ch_p('[') >> !infix_node_d[expression % ','] >> ']'
-			];
+			array_listed_definition =
+				ch_p('[')
+				>> !infix_node_d[expression % ',']
+				>> ']';
 			function_call =
 				identifier
 				>> inner_node_d[
 					ch_p('(') >> !infix_node_d[expression % ','] >> ')'
 				];
 
-			number = real_parser<double, UnsignedRealParserPolicies>();
+			number =
+				real_parser<double, UnsignedRealParserPolicies>()
+				| lexeme_d[
+					token_node_d[ch_p('\'') >>  (c_escape_ch_p - '\'') >> '\'']
+				];
 			identifier =
 				lexeme_d[token_node_d[(alpha_p ^ '_') >> *(alnum_p ^ '_')]]
 				- "and"
