@@ -11,7 +11,7 @@ using namespace boost::filesystem;
 
 const auto POSITIONAL_ARGUMENT_SIGNLE_REPETITION = 1;
 const auto POSITIONAL_ARGUMENT_UNLIMITED_REPETITIONS = -1;
-const auto VERSION_STRING = std::string("v0.1.1");
+const auto VERSION_STRING = std::string("v0.2");
 
 namespace thewizardplusplus {
 namespace wizard_basic_3 {
