@@ -58,6 +58,7 @@ unary =
 
 array sized definition = "new", "array", "(", expression, ")";
 structure definition = "new", identifier;
+
 accessor = atom, {array item access | structure field access};
 array item access = "[", expression, "]";
 structure field access = ".", identifier;
@@ -70,10 +71,10 @@ atom =
 	| string definition
 	| function call
 	| ("(", expression, ")");
-null definition = "NULL";
 array listed definition = "[", [expression, {",", expression}], "]";
 function call = identifier, "(", [expression, {",", expression}], ")";
 
+null definition = "NULL";
 number = ? /'(\\.|[^'])'/ ? | ? /\d+(\.\d+)?/ ?;
 identifier = ? /[a-z_]\w*/i ? - key words;
 string definition = ? /"(\\.|[^"])*"/ ?;
