@@ -1,6 +1,6 @@
 *.o
 /build/
-/do-runtime/runtime_tests
-/do-runtime/structure_storage_tests
-/do-runtime/io_test
-/io_test_result.txt
+/wizard-basic-3-runtime/runtime_tests
+/wizard-basic-3-runtime/structure_storage_tests
+/wizard-basic-3-runtime/io_test
+io_test_result.txt
