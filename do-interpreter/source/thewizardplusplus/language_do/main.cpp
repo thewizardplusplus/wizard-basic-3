@@ -3,14 +3,14 @@
 #include "parser/parser.h"
 #include "translator/translator.h"
 #include "runner/runner.h"
-#include <fstream>
-#include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/version.hpp>
 #include <boost/format.hpp>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
+#include <fstream>
+#include <iostream>
 
 using namespace thewizardplusplus::language_do;
 using namespace thewizardplusplus::language_do::arguments;
