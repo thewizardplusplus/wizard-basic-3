@@ -3,12 +3,12 @@ BUILD = build/libraries/
 .PHONY: clean
 
 main:
-	$(MAKE) -C do-interpreter
-	$(MAKE) -C do-runtime
+	$(MAKE) -C wizard-basic-3-compiler
+	$(MAKE) -C wizard-basic-3-runtime
 
 	mkdir -p $(BUILD)
 	cp -rv libraries/* $(BUILD)
 
 clean:
-	$(MAKE) -C do-interpreter clean
-	$(MAKE) -C do-runtime clean
+	$(MAKE) -C wizard-basic-3-compiler clean
+	$(MAKE) -C wizard-basic-3-runtime clean
