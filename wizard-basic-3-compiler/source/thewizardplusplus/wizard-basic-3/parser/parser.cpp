@@ -15,7 +15,8 @@ Parser CreateGrammar(void) {
 
 	WP_RULE(keywords)
 		word(
-			"and"_t
+			"NULL"_t
+			| "and"_t
 			| "break"_t
 			| "continue"_t
 			| "do"_t
@@ -23,12 +24,9 @@ Parser CreateGrammar(void) {
 			| "end"_t
 			| "function"_t
 			| "if"_t
-			| "include"_t
 			| "let"_t
 			| "new"_t
 			| "not"_t
-			| "note"_t
-			| "NULL"_t
 			| "or"_t
 			| "return"_t
 			| "structure"_t

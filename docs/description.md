@@ -8,9 +8,9 @@ Wizard BASIC 3 &mdash; интерпретируемый высокоуровне
 
 ### Ключевые слова
 
-19 ключевых слов:
-
-    and break continue do else end function if include let new not note NULL or return structure then while
+17 ключевых слов: `NULL`, `and`, `break`, `continue`, `do`, `else`, `end`,
+`function`, `if`, `let`, `new`, `not`, `or`, `return`, `structure`, `then`,
+`while`.
 
 ### Типы
 

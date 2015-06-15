@@ -79,7 +79,8 @@ identifier = ? /[a-z_]\w*/i ? - key words;
 string definition = ? /"(\\.|[^"])*"/ ?;
 
 key words =
-	"and"
+	"NULL"
+	| "and"
 	| "break"
 	| "continue"
 	| "do"
@@ -87,12 +88,9 @@ key words =
 	| "end"
 	| "function"
 	| "if"
-	| "include"
 	| "let"
 	| "new"
 	| "not"
-	| "note"
-	| "NULL"
 	| "or"
 	| "return"
 	| "structure"
