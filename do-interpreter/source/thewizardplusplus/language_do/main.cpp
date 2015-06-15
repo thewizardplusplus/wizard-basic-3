@@ -159,7 +159,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 	const auto ast = Parse(code);
 	ProcessResult<FinalStage::AST>(parameters, FormatAst(ast));
 
-	/*const auto ansi_c = Translate(ast);
+	const auto ansi_c = Translate(ast);
 	ProcessResult<FinalStage::C>(parameters, FormatAnsiC(ansi_c));
 
 	auto script_arguments = parameters.script_arguments;
@@ -171,7 +171,7 @@ int main(int number_of_arguments, char* arguments[]) try {
 		script_arguments
 	);
 
-	return exit_code;*/
+	return exit_code;
 } catch (const std::exception& exception) {
 	std::cerr << (format("Error: %s.\n") % exception.what()).str();
 }

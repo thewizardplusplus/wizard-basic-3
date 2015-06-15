@@ -17,6 +17,11 @@ const auto INCLUDE_OPERATOR_PATTERN = regex(
 const auto INCLUDED_FILENAME_MATCH_INDEX = 1;
 const auto LIBRARIES_PATH = std::string("libraries");
 
+const auto SINGLELINE_COMMENT_PATTERN = regex("^\\s*note\\b[^\n]*\n");
+const auto MULTILINE_COMMENT_PATTERN = regex(
+	R"(^\s*long\s+note\b.*?\.\.\.\s*$)"
+);
+
 namespace {
 
 struct CodeGetter {
@@ -90,6 +95,9 @@ auto GetCode(
 				% exception.what()).str()
 		);
 	}
+
+	code = regex_replace(code, SINGLELINE_COMMENT_PATTERN, "");
+	code = regex_replace(code, MULTILINE_COMMENT_PATTERN, "");
 
 	return regex_replace(
 		code,
