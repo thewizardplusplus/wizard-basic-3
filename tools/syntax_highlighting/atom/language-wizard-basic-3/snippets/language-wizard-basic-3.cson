@@ -1,4 +1,4 @@
-'.source.do':
+'.source.wizard_basic_3':
 	'include':
 		'prefix': 'in'
 		'body': 'include "$1"'

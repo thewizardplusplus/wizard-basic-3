@@ -1,6 +1,6 @@
 include "range/utils"
 include "array/utils"
-include "general"
+include "maths"
 include "args"
 
 let COMPARE_RESULT_LESS = -1

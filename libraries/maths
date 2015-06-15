@@ -1,4 +1,10 @@
 include "args"
+include "general"
+include "range/utils"
+
+let DEFAULT_NUMBER_PRECISION = 2
+let FIRST_DIGIT_CODE = 48
+let LAST_DIGIT_CODE = 57
 
 function Module(number)
 	if number < 0 then
@@ -23,6 +29,49 @@ function Clamp(args)
 		if number > maximum then
 			number = maximum
 		end
+	end
+
+	return number
+end
+
+function ParseNumber(text)
+	let number = 0
+	let negative = FALSE
+	let fractional = FALSE
+	let fractional_part = 0
+	let fractional_length = 0
+
+	let i = Range([text])
+	while Next(i) do
+		if i.value == '-' and i.first then
+			negative = TRUE
+		else if i.value == '.' and not i.first then
+			fractional = TRUE
+		else if i.value >= FIRST_DIGIT_CODE and i.value <= LAST_DIGIT_CODE then
+			let digit = i.value - FIRST_DIGIT_CODE
+			if not fractional then
+				number = number * 10 + digit
+			else
+				fractional_length = fractional_length + 1
+				let j = Range([1, fractional_length])
+				while Next(j) do
+					digit = digit / 10
+				end
+
+				fractional_part = fractional_part + digit
+			end
+
+			continue
+		else
+			break
+		end
+	end
+
+	if fractional then
+		number = number + fractional_part
+	end
+	if negative then
+		number = -number
 	end
 
 	return number
