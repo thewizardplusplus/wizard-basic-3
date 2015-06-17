@@ -37,10 +37,7 @@ function InputLn()
 	let line = ""
 	while TRUE do
 		let symbol = Input(1)
-		if
-			Compare(symbol, "\n") == COMPARE_RESULT_EQUAL
-			or GetSize(symbol) == 0
-		then
+		if IsEqual(symbol, "\n") or GetSize(symbol) == 0 then
 			break
 		end
 
