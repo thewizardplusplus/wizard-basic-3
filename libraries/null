@@ -1,0 +1,7 @@
+function IfNull(value, default_value)
+	if value == NULL then
+		value = default_value
+	end
+
+	return value
+end

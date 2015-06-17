@@ -1,0 +1,71 @@
+include "range/utils"
+include "type"
+include "args"
+include "io"
+
+function Copy(array)
+	let copy = new array(GetSize(array))
+	let i = Range([array])
+	while Next(i) do
+		copy[i.index] = i.value
+	end
+
+	return copy
+end
+
+function DeepCopy(array)
+	let copy = new array(GetSize(array))
+	let i = Range([array])
+	while Next(i) do
+		if HasType(i.value, "array") then
+			copy[i.index] = DeepCopy(i.value)
+		else
+			copy[i.index] = i.value
+		end
+	end
+
+	return copy
+end
+
+function Append(array_1, array_2)
+	let result = new array(GetSize(array_1) + GetSize(array_2))
+	let i = Range([result])
+	while Next(i) do
+		if i.index < GetSize(array_1) then
+			result[i.index] = array_1[i.index]
+		else
+			result[i.index] = array_2[i.index - GetSize(array_1)]
+		end
+	end
+
+	return result
+end
+
+function MultiAppend(arrays)
+	let result = []
+	let i = Range([arrays])
+	while Next(i) do
+		result = Append(result, i.value)
+	end
+
+	return result
+end
+
+note Slice(array, start = 0, finish = GetSize(array))
+function Slice(args)
+	let array = Arg([args, 0])
+	let start = Arg([args, 1, 0])
+	let finish = Arg([args, 2, GetSize(array)])
+
+	if start < 0 or finish > GetSize(array) then
+		Error("out of range")
+	end
+
+	let result = new array(finish - start)
+	let i = Range([result])
+	while Next(i) do
+		result[i.index] = array[start + i.index]
+	end
+
+	return result
+end

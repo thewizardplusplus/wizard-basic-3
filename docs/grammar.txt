@@ -1,7 +1,10 @@
 program =
-	variable definition
-	| structure declaration
-	| function declaration;
+	(variable definition
+		| structure declaration
+		| function declaration)
+	{variable definition
+		| structure declaration
+		| function declaration};
 
 variable definition = "let", identifier, "=", expression;
 structure declaration =
@@ -24,7 +27,6 @@ statement =
 	| loop break
 	| function return
 	| expression;
-
 assignment = expression, "=", expression;
 condition =
 	"if", expression, "then",
@@ -50,11 +52,13 @@ comparison = sum, {("<" | "<=" | ">" | ">="), sum};
 sum = product, {("+" | "-"), product};
 product = unary, {("*" | "/" | "%"), unary};
 unary =
-	("new", identifier)
-	| array sized definition
+	array sized definition
+	| structure definition
 	| ({"-" | "not"}, accessor);
 
 array sized definition = "new", "array", "(", expression, ")";
+structure definition = "new", identifier;
+
 accessor = atom, {array item access | structure field access};
 array item access = "[", expression, "]";
 structure field access = ".", identifier;
@@ -67,16 +71,17 @@ atom =
 	| string definition
 	| function call
 	| ("(", expression, ")");
-null definition = "NULL";
 array listed definition = "[", [expression, {",", expression}], "]";
 function call = identifier, "(", [expression, {",", expression}], ")";
 
+null definition = "NULL";
 number = ? /'(\\.|[^'])'/ ? | ? /\d+(\.\d+)?/ ?;
 identifier = ? /[a-z_]\w*/i ? - key words;
 string definition = ? /"(\\.|[^"])*"/ ?;
 
 key words =
-	"and"
+	"NULL"
+	| "and"
 	| "break"
 	| "continue"
 	| "do"
@@ -84,11 +89,9 @@ key words =
 	| "end"
 	| "function"
 	| "if"
-	| "include"
 	| "let"
 	| "new"
 	| "not"
-	| "NULL"
 	| "or"
 	| "return"
 	| "structure"

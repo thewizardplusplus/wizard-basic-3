@@ -1,0 +1,47 @@
+include "args"
+include "maths"
+include "general"
+
+structure NumberRange
+	minimum
+	maximum
+	step
+	reverse
+
+	size
+	value
+	first
+	last
+	index
+end
+
+note NumberRangeNew(minimum, maximum, step = 1, reverse = FALSE)
+function NumberRangeNew(args)
+	let minimum = Arg([args, 0])
+	let maximum = Arg([args, 1])
+	let step = Arg([args, 2, 1])
+
+	let reverse = Arg([args, 3, FALSE])
+	if reverse then
+		step = -step
+	end
+
+	let range = new NumberRange
+	if not reverse then
+		range.minimum = minimum
+		range.maximum = maximum
+	else
+		range.minimum = maximum
+		range.maximum = minimum
+	end
+
+	range.step = step
+	range.reverse = reverse
+	range.size = Clamp([Integral((maximum - minimum) / Module(step)) + 1, 0])
+	range.value = range.minimum - step
+	range.first = FALSE
+	range.last = not range.size > 0
+	range.index = -1
+
+	return range
+end

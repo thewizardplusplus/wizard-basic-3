@@ -1,0 +1,12 @@
+include "io"
+
+function Main(_)
+	while TRUE do
+		let string = InputLn()
+		if IsEqual(string, "exit") or IsEqual(string, "quit") then
+			break
+		end
+
+		ShowLn(MultiAppend(["\"", string, "\""]))
+	end
+end

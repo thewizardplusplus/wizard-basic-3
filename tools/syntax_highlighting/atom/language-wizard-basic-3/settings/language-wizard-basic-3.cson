@@ -1,0 +1,18 @@
+'.source.wizard_basic_3':
+	'editor':
+		'commentStart': 'note ',
+		'increaseIndentPattern': '(?x)
+				\\bthen\\s*$ |
+				\\belse\\s*$ |
+				\\bdo\\s*$ |
+				\\bstructure\\b.*$ |
+				\\bfunction\\b.*$ |
+				\\(\\s*$ |
+				\\[\\s*$
+			'
+		'decreaseIndentPattern': '(?x)
+				^\\s*end\\b |
+				^\\s*else\\b |
+				^\\s*\\) |
+				^\\s*\\]
+			'

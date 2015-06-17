@@ -1,0 +1,76 @@
+include "range/utils"
+include "array/utils"
+
+function Join(array, separator)
+	let result = ""
+	let i = Range([array])
+	while Next(i) do
+		if not i.first then
+			result = Append(result, separator)
+		end
+
+		result = Append(result, i.value)
+	end
+
+	return result
+end
+
+function Escape(string)
+	let escaped_string = ""
+	let i = Range([string])
+	while Next(i) do
+		if
+			i.value >= ' '
+			and i.value <= '~'
+			and i.value /= '\''
+			and i.value /= '"'
+			and i.value /= '\\'
+		then
+			escaped_string = Append(escaped_string, [i.value])
+		else
+			escaped_string = Append(escaped_string, "\\")
+			if i.value == '\'' or i.value == '"' or i.value == '\\' then
+				escaped_string = Append(escaped_string, [i.value])
+			else if i.value == '\a' then
+				escaped_string = Append(escaped_string, "a")
+			else if i.value == '\b' then
+				escaped_string = Append(escaped_string, "b")
+			else if i.value == '\f' then
+				escaped_string = Append(escaped_string, "f")
+			else if i.value == '\n' then
+				escaped_string = Append(escaped_string, "n")
+			else if i.value == '\r' then
+				escaped_string = Append(escaped_string, "r")
+			else if i.value == '\t' then
+				escaped_string = Append(escaped_string, "t")
+			else if i.value == '\v' then
+				escaped_string = Append(escaped_string, "v")
+			else
+				escaped_string[GetSize(escaped_string) - 1] = '?'
+			end
+		end
+	end
+
+	return escaped_string
+end
+
+function ArrayStringToString(array)
+	let result = "["
+	if GetSize(array) > 0 then
+		result = Append(result, "\"")
+	end
+
+	let i = Range([array])
+	while Next(i) do
+		if not i.first then
+			result = Append(result, "\", \"")
+		end
+
+		result = Append(result, Escape(i.value))
+	end
+
+	if GetSize(array) > 0 then
+		result = Append(result, "\"")
+	end
+	return Append(result, "]")
+end

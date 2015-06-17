@@ -1,0 +1,46 @@
+'.source.wizard_basic_3':
+	'include':
+		'prefix': 'in'
+		'body': 'include "$1"'
+	'structure':
+		'prefix': 'st'
+		'body': 'structure $1\n\t$2\nend'
+	'function':
+		'prefix': 'fu'
+		'body': 'function $1(${2:args})\n\t$3\nend'
+	'main':
+		'prefix': 'ma'
+		'body': 'function Main(${1:args})\n\t$2\nend'
+	'return':
+		'prefix': 're'
+		'body': 'return$1'
+	'let':
+		'prefix': 'le'
+		'body': 'let $1 = $2'
+	'let structure':
+		'prefix': 'les'
+		'body': 'let $1 = new $2'
+	'let array':
+		'prefix': 'lea'
+		'body': 'let $1 = new array($2)'
+	'if':
+		'prefix': 'if'
+		'body': 'if $1 then\n\t$2\nend'
+	'if else':
+		'prefix': 'ife'
+		'body': 'if $1 then\n\t$2\nelse\n\t$3\nend'
+	'else':
+		'prefix': 'el'
+		'body': 'else\n\t$1'
+	'else if':
+		'prefix': 'eli'
+		'body': 'else if $1 then\n\t$2'
+	'while':
+		'prefix': 'wh'
+		'body': 'while $1 do\n\t$2\nend'
+	'continue':
+		'prefix': 'co'
+		'body': 'continue'
+	'break':
+		'prefix': 'br'
+		'body': 'break'

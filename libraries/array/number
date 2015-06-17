@@ -1,0 +1,55 @@
+include "range/utils"
+include "array/utils"
+include "maths"
+include "args"
+
+let COMPARE_RESULT_LESS = -1
+let COMPARE_RESULT_EQUAL = 0
+let COMPARE_RESULT_GREATER = 1
+
+function Compare(array_1, array_2)
+	long note
+		Can't use ranges because Next() uses this function
+		and it'll create recursion.
+	...
+	let i = 0
+	while i < GetSize(array_1) and i < GetSize(array_2) do
+		if array_1[i] < array_2[i] then
+			return COMPARE_RESULT_LESS
+		else if array_1[i] > array_2[i] then
+			return COMPARE_RESULT_GREATER
+		end
+
+		i = i + 1
+	end
+
+	if GetSize(array_1) < GetSize(array_2) then
+		return COMPARE_RESULT_LESS
+	else if GetSize(array_1) == GetSize(array_2) then
+		return COMPARE_RESULT_EQUAL
+	else
+		return COMPARE_RESULT_GREATER
+	end
+end
+
+function IsEqual(array_1, array_2)
+	return Compare(array_1, array_2) == COMPARE_RESULT_EQUAL
+end
+
+note ArrayNumberToString(array, precision = DEFAULT_NUMBER_PRECISION)
+function ArrayNumberToString(args)
+	let array = Arg([args, 0])
+	let precision = Arg([args, 1, DEFAULT_NUMBER_PRECISION])
+
+	let result = "["
+	let i = Range([array])
+	while Next(i) do
+		if not i.first then
+			result = Append(result, ", ")
+		end
+
+		result = Append(result, ToString(i.value, precision))
+	end
+
+	return Append(result, "]")
+end

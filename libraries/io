@@ -1,0 +1,48 @@
+include "array/utils"
+include "array/number"
+include "general"
+
+let STANDART_STREAM_INPUT = 0
+let STANDART_STREAM_OUTPUT = 1
+let STANDART_STREAM_ERROR = 2
+
+let FILE_OPEN_MODE_READ = 0
+let FILE_OPEN_MODE_WRITE = 1
+let FILE_OPEN_MODE_APPEND = 2
+
+function Show(message)
+	Write(STANDART_STREAM_OUTPUT, message)
+end
+
+function ShowLn(message)
+	message = Append(message, "\n")
+	Show(message)
+end
+
+function Die(message)
+	Write(STANDART_STREAM_ERROR, message)
+	Exit(EXIT_CODE_FAILURE)
+end
+
+function Error(message)
+	message = MultiAppend(["Error: ", message, ".\n"])
+	Die(message)
+end
+
+function Input(number_of_bytes)
+	return Read(STANDART_STREAM_INPUT, number_of_bytes)
+end
+
+function InputLn()
+	let line = ""
+	while TRUE do
+		let symbol = Input(1)
+		if IsEqual(symbol, "\n") or GetSize(symbol) == 0 then
+			break
+		end
+
+		line = Append(line, symbol)
+	end
+
+	return line
+end

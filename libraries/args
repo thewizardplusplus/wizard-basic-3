@@ -1,0 +1,16 @@
+note Arg(array, index, default_value = NULL)
+function Arg(args)
+	let array = args[0]
+	let index = args[1]
+
+	let default_value = NULL
+	if GetSize(args) > 2 then
+		default_value = args[2]
+	end
+
+	if index < GetSize(array) then
+		return array[index]
+	else
+		return default_value
+	end
+end

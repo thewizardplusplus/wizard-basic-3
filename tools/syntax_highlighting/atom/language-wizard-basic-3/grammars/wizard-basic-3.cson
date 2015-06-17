@@ -1,0 +1,87 @@
+"name": "Wizard BASIC 3",
+"scopeName": "source.wizard_basic_3",
+"fileTypes": ["wb3"],
+"patterns": [
+	{
+		"match": "\\b(and|break|continue|wizard_basic_3|else|end|if|include|let|new|not|or|return|structure|then|while)\\b",
+		"name": "keyword.control.statement.wizard_basic_3",
+		"comment": "Keywords."
+	},
+	{
+		"match": "\\=|<|<\\=|>|>\\=|\\=\\=|\\/\\=|\\+|\\-|\\*|/|%",
+		"name": "keyword.operator.wizard_basic_3",
+		"comment": "Operators."
+	},
+	{
+		"match": "\\b(ToString|GetLength|GetType|GetTime|Exit|Read|Write|Open|Close|Sin|Cos|Tg|Arcsin|Arccos|Arctg|SquareRoot|Power|Exp|Ln|Integral|GetRandom)\\b",
+		"name": "entity.name.function.built-in.wizard_basic_3",
+		"comment": "Built-in functions."
+	},
+	{
+		"match": "(function)|([A-Za-z_]\\w*)(?=\\()",
+		"captures": {
+			"1": {
+				"name": "keyword.control.statement.wizard_basic_3"
+			},
+			"2": {
+				"name": "entity.name.function.wizard_basic_3"
+			}
+		},
+		"comment": "Functions."
+	},
+	{
+		"match": "\\.[A-Za-z_]\\w*",
+		"name": "variable.accessor.structure-field.wizard_basic_3",
+		"comment": "Access to structure field."
+	},
+	{
+		"match": "\\bNULL\\b",
+		"name": "constant.language.wizard_basic_3",
+		"comment": "Constants."
+	},
+	{
+		"match": "\\b\\d+(\\.\\d+)?\\b",
+		"name": "constant.numeric.wizard_basic_3",
+		"comment": "Numbers."
+	},
+	{
+		"begin": "\"",
+		"end": "\"",
+		"name": "string.quoted.double.wizard_basic_3",
+		"comment": "Strings.",
+		"patterns": [
+			{
+				"include": "#escaped_symbol"
+			}
+		]
+	},
+	{
+		"begin": "\'",
+		"end": "\'",
+		"name": "string.quoted.single.wizard_basic_3",
+		"comment": "Symbols.",
+		"patterns": [
+			{
+				"include": "#escaped_symbol"
+			}
+		]
+	},
+	{
+		"match": "^\\s*note\\b.*$",
+		"name": "comment.line.wizard_basic_3",
+		"comment": "Singleline comments."
+	},
+	{
+		"begin": "^\\s*long\\s+note\\b",
+		"end": "\\.\\.\\.\\s*$",
+		"name": "comment.block.wizard_basic_3",
+		"comment": "Multiline comments."
+	}
+],
+"repository": {
+	"escaped_symbol": {
+		"match": "\\\\.",
+		"name": "constant.character.escape.wizard_basic_3",
+		"comment": "Escaped symbol."
+	}
+}

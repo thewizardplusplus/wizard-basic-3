@@ -1,8 +1,6 @@
-Wizard Basic 3 &mdash; интерпретируемый высокоуровневый язык программирования.
+Wizard BASIC 3 &mdash; интерпретируемый высокоуровневый язык программирования.
 Поддерживает структурную парадигму, обладает строгой динамической типизацией и
 сборкой мусора.
-
-<cut />
 
 ### Исходники
 
@@ -10,9 +8,9 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 
 ### Ключевые слова
 
-19 ключевых слов:
-
-    and break continue do else end function if include let new not note NULL or return structure then while
+17 ключевых слов: `NULL`, `and`, `break`, `continue`, `do`, `else`, `end`,
+`function`, `if`, `let`, `new`, `not`, `or`, `return`, `structure`, `then`,
+`while`.
 
 ### Типы
 
@@ -191,6 +189,12 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 В `arguments` передаются аргументы командной строки. В `arguments[0]` передаётся
 путь к исполняемому файлу.
 
+### Комментарии
+
+Однострочные: `? /^\s*note\b[^\n]*\n/ ?`.
+
+Многострочные: `? /^\s*long\s+note\b.*?\.\.\.\s*$/ ?`.
+
 ### Модульность
 
 Тип: включением кода как текста.
@@ -202,17 +206,11 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
 
 Файлы включаются рекурсивно, и каждый только один раз.
 
-### Комментарии
-
-Однострочные: `? /^\s*note\b[^\n]*\n/ ?`.
-
-Многострочные: `? /^\s*long\s+note\b.*?\.\.\.\s*$/ ?`.
-
 ### Рантайм
 
 * модуль `lang`:
     * `ToString(number, precision)`;
-    * `GetLength(array)`;
+    * `GetSize(array)`;
     * `GetType(value)`;
 * модуль `system`:
     * `GetTime()`;
@@ -238,3 +236,106 @@ Wizard Basic 3 &mdash; интерпретируемый высокоуровне
     * `Ln(number)`;
     * `Integral(number)`;
     * `GetRandom()` &mdash; возвращает случайное число в диапазоне [0; 1].
+
+### Библиотеки
+
+Если в описании функции аргументы взяты в квадратные скобки, это означает, что
+функция ожидает не список аргументов, а массив с аргументами.
+
+* библиотека `"general"`:
+    * константы:
+        * `FALSE`;
+        * `TRUE`;
+        * `EXIT_CODE_SUCCESS`;
+        * `EXIT_CODE_FAILURE`;
+* библиотека `"array"`:
+    * библиотека `"array/number"`:
+        * константы:
+            * `COMPARE_RESULT_LESS`;
+            * `COMPARE_RESULT_EQUAL`;
+            * `COMPARE_RESULT_GREATER`;
+        * функции:
+            * `Compare(array_1, array_2)`;
+            * `IsEqual(array_1, array_2)`;
+            * `ArrayNumberToString([array, precision = DEFAULT_NUMBER_PRECISION])`;
+    * библиотека `"array/string"`:
+        * функции:
+            * `Join(array, separator)`;
+            * `Escape(string)`;
+            * `ArrayStringToString(array)`;
+    * библиотека `"array/utils"`:
+        * функции:
+            * `Copy(array)`;
+            * `DeepCopy(array)`;
+            * `Append(array_1, array_2)`;
+            * `MultiAppend(arrays)`;
+            * `Slice([array, start = 0, finish = GetSize(array)])`;
+* библиотека `"range"`:
+    * библиотека `"range/utils"`:
+        * интерфейсы:
+            * `Range` (см. ниже);
+        * функции:
+            * `Range([minimum, maximum, step = 1, reverse = FALSE])`;
+            * `Range([array, start = 0, finish = GetSize(array), reverse = FALSE])`;
+            * `Next(range)`;
+* библиотека `"args"`:
+    * функции:
+        * `Arg([array, index, default_value = NULL])` &mdash; возвращает элемент
+        массива по индексу; если элемента нет, возвращает значение по умолчанию;
+* библиотека `"io"`:
+    * константы:
+        * `STANDART_STREAM_INPUT`;
+        * `STANDART_STREAM_OUTPUT`;
+        * `STANDART_STREAM_ERROR`;
+        * `FILE_OPEN_MODE_READ`;
+        * `FILE_OPEN_MODE_WRITE`;
+        * `FILE_OPEN_MODE_APPEND`;
+    * функции:
+        * `Show(message)`;
+        * `ShowLn(message)`;
+        * `Die(message)` &mdash; пишет сообщение в stderr и завершает программу
+        с кодом `EXIT_CODE_FAILURE`;
+        * `Error(message)` &mdash; форматирует сообщение об ошибке стандартным
+        для языка образом, затем вызывает `Die()`;
+        * `Input(number_of_bytes)`;
+        * `InputLn()`;
+* библиотека `"maths"`:
+    * константы:
+        * `DEFAULT_NUMBER_PRECISION = 2`;
+    * функции:
+        * `Module(number)` &mdash; возвращает модуль числа;
+        * `Clamp([number, minimum = NULL, maximum = NULL])`;
+        * `ParseNumber(text)` &mdash; парсит число в формате `/-?\d*\.?\d*/`;
+        останавливает парсинг при первом неподходящем символе; при полном
+        отсутствии числа в начале текста возвращает 0;
+* библиотека `"null"`:
+    * функции:
+        * `IfNull(value, default_value)` &mdash; возвращает значение, если оно
+        не равно `NULL`, в противном случае возвращает значение по умолчанию;
+* библиотека `"ref"`:
+    * структуры:
+        * `Reference` (см. ниже);
+    * функции:
+        * `Ref(value)` &mdash; обрачивает значение в структуру `Reference`;
+        * `Deref(reference)` &mdash; если значение обёрнуто в структуру
+        `Reference`, разворачивает его; в противном случае возвращает без
+        изменений;
+* библиотека `"type"`:
+    * функции:
+        * `HasType(value, type_name)`;
+
+Интерфейс `Range`:
+
+    structure Range
+        size  note количество элементов в Range
+        value note значение текущего элемента Range
+        first note TRUE, если текущий элемент - первый в Range
+        last  note TRUE, если текущий элемент - последний в Range
+        index note индекс текущего элемента Range (начинается с 0)
+    end
+
+Структура `Reference`:
+
+    structure Reference
+    	value
+    end

@@ -1,0 +1,30 @@
+include "maths"
+include "array/utils"
+include "io"
+
+let NUMBER_PRECISION = 5
+
+function ParseNumberTest(text)
+	ShowLn(
+		MultiAppend(
+			[
+				"\"",
+				text,
+				"\" = ",
+				ToString(ParseNumber(text), NUMBER_PRECISION)
+			]
+		)
+	)
+end
+
+function Main(_)
+	ParseNumberTest("0")
+	ParseNumberTest("5")
+	ParseNumberTest("12")
+	ParseNumberTest("-42")
+	ParseNumberTest("23.5")
+	ParseNumberTest("-23.51242")
+	ParseNumberTest("test")
+	ParseNumberTest("12test")
+	ParseNumberTest("12.5test")
+end
