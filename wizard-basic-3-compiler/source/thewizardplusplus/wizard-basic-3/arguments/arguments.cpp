@@ -67,7 +67,7 @@ auto ProcessArguments(const std::vector<std::string>& arguments) -> Parameters {
 	if (parsed_arguments.count("help")) {
 		std::cout
 			<< "Usage:\n"
-			<< "  doi [options] <script-file> [<script-argument>...]\n"
+			<< "  wb3 [options] <script-file> [<script-argument>...]\n"
 			<< "\n"
 			<< arguments_description;
 		std::exit(EXIT_SUCCESS);
